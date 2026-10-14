@@ -1,0 +1,150 @@
+.envelope-stage {
+  width: min(100%, 540px);
+  aspect-ratio: 540 / 510;
+  position: relative;
+  margin-inline: auto;
+  perspective: 1100px;
+  isolation: isolate;
+}
+
+.envelope-illustration {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  animation: envelope-drift 7s ease-in-out infinite;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.25, 1);
+}
+
+.envelope-letter {
+  transition: transform 1.2s cubic-bezier(0.2, 0.65, 0.2, 1);
+}
+
+.envelope-flap {
+  transform-box: fill-box;
+  transform-origin: center top;
+  transition:
+    transform 0.8s ease-in-out,
+    opacity 0.6s ease;
+}
+
+.envelope-seal {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0.7s ease,
+    opacity 0.5s ease;
+}
+
+.envelope-bow {
+  transform-box: fill-box;
+  transform-origin: 45% 48%;
+  animation: envelope-ribbon 7s ease-in-out infinite;
+}
+
+.envelope-date {
+  font-family: var(--font-display, "Cormorant Garamond", Georgia, serif);
+  font-size: 48px;
+  font-weight: 500;
+  letter-spacing: 2px;
+}
+
+.envelope-letter-label {
+  font-family: var(--font-body, "Be Vietnam Pro", sans-serif);
+  font-size: 6.3px;
+  letter-spacing: 1.7px;
+  font-weight: 500;
+}
+
+.envelope-greeting,
+.envelope-signature,
+.envelope-stamp-love {
+  font-family: var(--font-script, "Dancing Script", cursive);
+}
+
+.envelope-greeting {
+  font-size: 25px;
+}
+.envelope-message {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 16px;
+  font-style: italic;
+}
+.envelope-signature {
+  font-size: 18px;
+}
+.envelope-stamp {
+  font-family: var(--font-body, sans-serif);
+  font-size: 5px;
+  letter-spacing: 1.3px;
+}
+.envelope-stamp-love {
+  font-size: 19px;
+}
+
+.envelope-stage:hover .envelope-letter {
+  transform: translateY(-7px) rotate(-0.5deg);
+}
+.envelope-stage.is-open .envelope-letter {
+  transform: translateY(-65px) rotate(-2deg);
+  transition-delay: 0.25s;
+}
+.envelope-stage.is-open .envelope-flap {
+  transform: rotateX(170deg);
+  opacity: 0.15;
+}
+.envelope-stage.is-open .envelope-seal {
+  transform: translateY(9px) scale(0.85) rotate(10deg);
+  opacity: 0.55;
+}
+.envelope-stage.is-compact {
+  max-width: 290px;
+}
+
+@keyframes envelope-drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(0.4deg);
+  }
+}
+
+@keyframes envelope-ribbon {
+  0%,
+  100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .envelope-stage {
+    max-width: 420px;
+  }
+  .envelope-stage.is-compact {
+    max-width: 250px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-illustration,
+  .envelope-bow {
+    animation: none;
+  }
+  .envelope-letter,
+  .envelope-flap,
+  .envelope-seal {
+    transition-duration: 0.01ms;
+    transition-delay: 0s !important;
+  }
+  .envelope-stage:hover .envelope-letter {
+    transform: none;
+  }
+  .envelope-stage.is-open .envelope-letter {
+    transform: translateY(-50px);
+  }
+}
