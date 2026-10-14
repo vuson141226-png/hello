@@ -422,7 +422,7 @@ function GirlsPage({ navigate }: { navigate: (page: Page) => void }) {
                   key={girl.id}
                   onClick={() => setIndex(position)}
                   className={position === index ? "active" : ""}
-                  aria-label={`Xem ${girl.displayName}`}
+                  aria-label={`Xem ${girl.fullName}`}
                   aria-pressed={position === index}
                 />
               ))}
@@ -442,7 +442,11 @@ function GirlsPage({ navigate }: { navigate: (page: Page) => void }) {
           </div>
           <div className="girl-introduction" aria-live="polite">
             <h2>{selected.fullName}</h2>
-            <p>{selected.introduction}</p>
+            <p>
+              {selected.introduction.trim()
+                ? selected.introduction
+                : "Phần giới thiệu của cậu đang được chuẩn bị."}
+            </p>
             {!selected.isPlaceholder && (
               <>
                 <p className="personality-note">{selected.personality}</p>
@@ -464,7 +468,7 @@ function GirlsPage({ navigate }: { navigate: (page: Page) => void }) {
             <p className="sample-note">
               Một chỗ nhỏ đang chờ những gương mặt thật của DM66.
               <br />
-              Ảnh và thông tin hiện tại là nội dung mẫu.
+              Website đang hiển thị dữ liệu thử và ảnh mẫu.
             </p>
           )}
         </>
@@ -523,7 +527,10 @@ function GreetingCard({
           visible: { transition: { staggerChildren: 0.18 } },
         }}
       >
-        {girl.wish
+        {(girl.wish.trim()
+          ? girl.wish
+          : "Lời chúc riêng của cậu đang được chuẩn bị."
+        )
           .split(/\n+/)
           .filter(Boolean)
           .map((paragraph, index) => (
@@ -541,8 +548,8 @@ function GreetingCard({
       </motion.div>
       {girl.isPlaceholder && (
         <p className="card-placeholder-note">
-          Đây là thiệp minh họa. Ảnh và lời chúc riêng sẽ được thêm khi có dữ
-          liệu thật.
+          Đây là thiệp từ dữ liệu thử. Ảnh hiện dùng hình mẫu; các phần còn
+          thiếu đang được chuẩn bị.
         </p>
       )}
       <div className="card-signature">
@@ -859,41 +866,25 @@ function WishPage({
             </span>
             <p>
               Thử với{" "}
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("demo 01");
-                  setError("");
-                  setMatches([]);
-                  inputRef.current?.focus();
-                }}
-              >
-                demo 01
-              </button>
-              ,{" "}
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("demo 02");
-                  setError("");
-                  setMatches([]);
-                  inputRef.current?.focus();
-                }}
-              >
-                demo 02
-              </button>{" "}
-              hoặc{" "}
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("demo 03");
-                  setError("");
-                  setMatches([]);
-                  inputRef.current?.focus();
-                }}
-              >
-                demo 03
-              </button>
+              {girls
+                .filter((girl) => girl.isPlaceholder)
+                .slice(0, 3)
+                .map((girl, index) => (
+                  <span key={girl.id}>
+                    {index > 0 ? ", " : ""}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuery(girl.fullName);
+                        setError("");
+                        setMatches([]);
+                        inputRef.current?.focus();
+                      }}
+                    >
+                      {girl.fullName}
+                    </button>
+                  </span>
+                ))}
               .
             </p>
           </div>
