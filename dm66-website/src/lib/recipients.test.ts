@@ -98,16 +98,23 @@ describe("findRecipients", () => {
     expect(samples).toEqual(snapshot);
   });
 
-  it("provides three explicitly labeled, discoverable placeholders", () => {
-    expect(girls).toHaveLength(3);
-    expect(girls.every((girl) => girl.isPlaceholder)).toBe(true);
-    expect(new Set(girls.map((girl) => girl.id)).size).toBe(3);
-
-    girls.forEach((girl, index) => {
-      const number = String(index + 1).padStart(2, "0");
-      expect(findRecipients(`demo ${number}`, girls)).toEqual([girl]);
-      expect(girl.fullName).toContain(`[Họ và tên bạn nữ ${number}]`);
-      expect(girl.image).toBe("/images/portrait-placeholder.svg");
+  it("keeps configured recipients uniquely identified and discoverable", () => {
+    expect(girls.length).toBeGreaterThan(0);
+    expect(new Set(girls.map((girl) => girl.id)).size).toBe(girls.length);
+    girls.forEach((girl) => {
+      expect(girl.id.trim()).not.toBe("");
+      expect(girl.fullName.trim()).not.toBe("");
+      expect(findRecipients(girl.fullName, girls)).toContain(girl);
     });
+  });
+
+  it("returns every recipient sharing the same display name", () => {
+    const sameDisplayName = samples.map((girl) => ({
+      ...girl,
+      displayName: "Tên hiển thị mẫu chung",
+    }));
+    expect(findRecipients("ten hien thi mau chung", sameDisplayName)).toEqual(
+      sameDisplayName,
+    );
   });
 });

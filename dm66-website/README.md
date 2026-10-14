@@ -2,7 +2,7 @@
 
 Website lời chúc dành cho các bạn nữ Digital Marketing 66, xây dựng bằng React, TypeScript và Vite. Giao diện hỗ trợ điện thoại, tìm lời chúc theo tên hoặc biệt danh, tải thiệp PNG và nhạc nền tùy chọn.
 
-Mã nguồn được giải nén từ `dm66-source.zip` vào thư mục `dm66-website/` trong repository, giữ nguyên chức năng của bản gốc. Thư mục `prebuilt/` lưu bản website tĩnh gốc được giải nén từ `dm66-website.zip`; nội dung đã được đối chiếu khớp từng byte với tệp ZIP. Đây là bản chụp tại thời điểm nhận, không tự cập nhật khi sửa mã nguồn. Lệnh `npm run build` tạo bản mới trong `dist/` (được Git bỏ qua), không ghi đè `prebuilt/`.
+Mã nguồn ban đầu được giải nén từ `dm66-source.zip` vào thư mục `dm66-website/` trong repository. Thư mục `prebuilt/` chứa bản production đã được cập nhật theo dữ liệu thử trong Excel. Lệnh `npm run build` tạo bản mới trong `dist/` (được Git bỏ qua); cần đồng bộ lại `prebuilt/` khi muốn cập nhật bản dựng sẵn sau các lần sửa mã nguồn.
 
 ## Chạy trên máy
 
@@ -34,7 +34,9 @@ Ba trang dùng hash route: `/#/`, `/#/our-girls` và `/#/your-wish`. Khi chia s�
 
 ## Thay dữ liệu và ảnh thật
 
-Dữ liệu trong `src/data/girls.ts` là dữ liệu mẫu. Chưa có ảnh chân dung hay thông tin cá nhân thật được cung cấp. Hãy thay bằng nội dung được các bạn đồng ý sử dụng trước khi chia sẻ website.
+Dữ liệu trong `src/data/girls.ts` được nhập từ 6 dòng đã điền ở sheet `DANH SACH` của file Excel thử do người dùng cung cấp: ABC, ABE, ABA, ABZ, ABQ và ABD. Không nhập sheet `VI DU` hoặc `HUONG DAN`. Có thể thử tìm `abe` hoặc nhập `1` để thấy danh sách chọn ABC/ABE vì hai hồ sơ cùng tên hiển thị. Các gợi ý trên trang tra cứu lấy trực tiếp từ danh sách hiện tại.
+
+File chưa có ảnh, biệt danh, tính cách và kỷ niệm; ABC cũng chưa có giới thiệu và lời chúc. Các ô trống được giữ nguyên, ảnh dùng placeholder, còn phần giới thiệu/lời chúc thiếu hiện thông báo đang chuẩn bị. Nội dung đã nhập giữ nguyên cả cách viết và xuống dòng. Đây vẫn là dữ liệu thử (`isPlaceholder: true`); thay bằng thông tin và ảnh thật trước khi chia sẻ món quà hoàn chỉnh.
 
 1. Thêm ảnh vào `public/images/`, ví dụ `public/images/minh-anh.jpg`.
 2. Sửa hoặc thêm đối tượng trong mảng `girls` của `src/data/girls.ts` theo kiểu `Girl` có sẵn: `id`, `fullName`, `displayName`, `nicknames`, `image`, `introduction`, `personality`, `wish`, cùng `memory` nếu có.
