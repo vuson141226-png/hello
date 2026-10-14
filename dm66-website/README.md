@@ -34,6 +34,8 @@ Ba trang dùng hash route: `/#/`, `/#/our-girls` và `/#/your-wish`. Khi chia s�
 
 ## Thay dữ liệu và ảnh thật
 
+Mẫu Excel để thu thập thông tin: [DM66-data-template.xlsx](templates/DM66-data-template.xlsx). Điền mỗi người một dòng trong sheet `DANH SACH`; sheet `VI DU` và `HUONG DAN` cung cấp ví dụ và cách ghép ảnh. Có sẵn 100 dòng trống và có thể thêm tiếp; ID có thể để trống để gán sau. Gửi lại Excel cùng ZIP ảnh có tên tệp khớp từng dòng. Việc điền Excel không tự thay đổi website; dữ liệu sẽ được kiểm tra rồi chuyển sang `src/data/girls.ts`.
+
 Dữ liệu trong `src/data/girls.ts` là dữ liệu mẫu. Chưa có ảnh chân dung hay thông tin cá nhân thật được cung cấp. Hãy thay bằng nội dung được các bạn đồng ý sử dụng trước khi chia sẻ website.
 
 1. Thêm ảnh vào `public/images/`, ví dụ `public/images/minh-anh.jpg`.
