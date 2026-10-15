@@ -1,6 +1,8 @@
-# Chúc mừng 20/10 · Digital Marketing 66
+# Chúc mừng 20/10 · Digital Marketing 66D
 
-Website lời chúc dành cho các bạn nữ Digital Marketing 66, xây dựng bằng React, TypeScript và Vite. Giao diện hỗ trợ điện thoại, tìm lời chúc theo tên hoặc biệt danh, tải thiệp PNG và nhạc nền tùy chọn.
+Website lời chúc dành riêng cho các bạn nữ lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Giao diện hỗ trợ điện thoại, tìm lời chúc theo tên hoặc biệt danh, tải thiệp PNG và nhạc nền tùy chọn.
+
+Thiệp cá nhân hóa đặt ảnh lớn bên trái, tiêu đề và lời chúc bên phải trên màn hình rộng; trên điện thoại, các phần xếp dọc để dễ đọc. Thiệp PNG được xuất theo bố cục ngang từ mọi thiết bị.
 
 Mã nguồn ban đầu được giải nén từ `dm66-source.zip` vào thư mục `dm66-website/` trong repository. Thư mục `prebuilt/` chứa bản production đã được cập nhật theo dữ liệu thử trong Excel. Lệnh `npm run build` tạo bản mới trong `dist/` (được Git bỏ qua); cần đồng bộ lại `prebuilt/` khi muốn cập nhật bản dựng sẵn sau các lần sửa mã nguồn.
 
