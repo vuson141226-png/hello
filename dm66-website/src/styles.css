@@ -826,7 +826,9 @@ h1 em {
 .polaroid img {
   width: 100%;
   aspect-ratio: 4/5;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  background: var(--cream);
   pointer-events: none;
   user-select: none;
 }
@@ -1271,7 +1273,9 @@ h1 em {
 .match-list img {
   height: 43px;
   width: 35px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  background: var(--cream);
 }
 .match-list strong,
 .match-list small {
@@ -1368,7 +1372,9 @@ h1 em {
 .card-photo > img {
   width: 100%;
   aspect-ratio: 4/5;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  background: var(--cream);
 }
 .card-photo-bow {
   width: 66px;
