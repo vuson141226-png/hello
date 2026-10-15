@@ -26,6 +26,16 @@ async function expectNoHorizontalOverflow(page: Page) {
   }))).toEqual({ content: 390, viewport: 390 })
 }
 
+async function expectUpdatedClassName(page: Page) {
+  await expect(page.getByRole('link', { name: 'DM66D With Love — Trang chủ', exact: true })).toBeVisible()
+  await expect(page).toHaveTitle(/· DM66D$/)
+  const visibleText = await page.locator('body').innerText()
+  expect(visibleText).toMatch(/DM66D/)
+  expect(visibleText).not.toMatch(/\bDM66\b|Digital\s*Marketing\s*66(?!D)/i)
+  const accessibleLabels = await page.locator('[aria-label]').evaluateAll(elements => elements.map(element => element.getAttribute('aria-label')).join('\n'))
+  expect(accessibleLabels).not.toMatch(/\bDM66\b|Digital\s*Marketing\s*66(?!D)/i)
+}
+
 test('opens the gift and lets visitors explore the gallery and next chapter', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Gửi cậu')
@@ -151,23 +161,72 @@ test('downloads a real, high resolution PNG for the selected recipient', async (
   await expect(page.locator('.card-letter p')).toHaveCSS('opacity', '1')
   const cardSize = await page.locator('.greeting-card').evaluate(element => ({
     width: element.clientWidth,
-    height: element.clientHeight,
   }))
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     page.getByRole('button', { name: 'Lưu thiệp của mình' }).click(),
   ])
-  expect(download.suggestedFilename()).toBe('DM66-20-10-dm66-002.png')
+  expect(download.suggestedFilename()).toBe('DM66D-20-10-dm66-002.png')
   expect(await download.failure()).toBeNull()
   const path = await download.path()
   expect(path).not.toBeNull()
   const png = await readFile(path!)
   expect(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))).toBe(true)
   expect(png.toString('ascii', 12, 16)).toBe('IHDR')
-  expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(cardSize.width * 3)
-  expect(png.readUInt32BE(20)).toBeGreaterThanOrEqual(cardSize.height * 3)
+  expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(Math.max(1000, cardSize.width) * 3)
+  expect(png.readUInt32BE(20)).toBeGreaterThanOrEqual(900)
+  expect(png.readUInt32BE(16) / png.readUInt32BE(20)).toBeGreaterThan(1.2)
   expect(png.length).toBeGreaterThan(10_000)
   await expect(page.getByRole('status')).toContainText('Thiệp đã được tạo')
+})
+
+test('uses a large left portrait on wide screens, stacks on phones and always exports a landscape card', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await openWish(page)
+  const card = page.locator('.result-layout > .greeting-card')
+  const photo = card.locator('.card-body > .card-portrait-panel > .card-photo')
+  const message = card.locator('.card-body > .card-message')
+  await expect(photo).toBeVisible()
+  await expect(message.locator('.card-dear')).toHaveText('Dear 1,')
+  await expect(message.locator('h2')).toBeVisible()
+  await expect(message.locator('.card-letter')).toHaveText('cảm ớndsa')
+  await expect(message.locator('.card-signature')).toContainText('DM66D Boys')
+  await expect(card.locator('.card-topline')).toContainText('DIGITAL MARKETING 66D')
+  let photoBox = (await photo.boundingBox())!
+  let messageBox = (await message.boundingBox())!
+  expect(photoBox.width).toBeGreaterThanOrEqual(290)
+  expect(photoBox.x + photoBox.width).toBeLessThanOrEqual(messageBox.x + 1)
+  expect(photoBox.y).toBeLessThan(messageBox.y + messageBox.height)
+  expect(messageBox.y).toBeLessThan(photoBox.y + photoBox.height)
+  await expectUpdatedClassName(page)
+
+  await page.setViewportSize({ width: 820, height: 1000 })
+  photoBox = (await photo.boundingBox())!
+  messageBox = (await message.boundingBox())!
+  expect(photoBox.x + photoBox.width).toBeLessThanOrEqual(messageBox.x + 1)
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  photoBox = (await photo.boundingBox())!
+  messageBox = (await message.boundingBox())!
+  expect(photoBox.width).toBeGreaterThanOrEqual(240)
+  expect(photoBox.y + photoBox.height).toBeLessThanOrEqual(messageBox.y + 1)
+  await expectNoHorizontalOverflow(page)
+  await expectUpdatedClassName(page)
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: 'Lưu thiệp của mình' }).click(),
+  ])
+  expect(await download.failure()).toBeNull()
+  expect(download.suggestedFilename()).toBe('DM66D-20-10-dm66-002.png')
+  const path = await download.path()
+  const png = await readFile(path!)
+  expect(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))).toBe(true)
+  expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(3000)
+  expect(png.readUInt32BE(16) / png.readUInt32BE(20)).toBeGreaterThan(1.2)
+  await expect(page.locator('[data-card-export="true"]')).toHaveCount(0)
+  await expectNoHorizontalOverflow(page)
 })
 
 test('exports every letter paragraph fully visible when saved immediately during replay', async ({ page }) => {
@@ -207,7 +266,7 @@ test('exports every letter paragraph fully visible when saved immediately during
     }),
   ])
   expect(await download.failure()).toBeNull()
-  expect(download.suggestedFilename()).toBe('DM66-20-10-dm66-002.png')
+  expect(download.suggestedFilename()).toBe('DM66D-20-10-dm66-002.png')
   const path = await download.path()
   const png = await readFile(path!)
   expect(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))).toBe(true)
@@ -224,13 +283,14 @@ test('exports every letter paragraph fully visible when saved immediately during
 test('supports direct hash routes, navigation history and the optional music explanation', async ({ page }) => {
   for (const [route, title] of [
     ['/#/', 'Gửi cậu'],
-    ['/#/our-girls', 'Những cô gái của DM66'],
+    ['/#/our-girls', 'Những cô gái của DM66D'],
     ['/#/your-wish', 'Lời chúc dành riêng cho cậu'],
   ]) {
     await page.goto(route)
     await expect(page).toHaveTitle(new RegExp(title))
     await expect(page.locator('main')).toBeVisible()
     await expect(page.locator('nav [aria-current="page"]')).toHaveAttribute('href', route.slice(1))
+    await expectUpdatedClassName(page)
   }
   await page.locator('nav a[href="#/our-girls"]').click()
   await expect(page.locator('.gallery-count')).toHaveText('01 / 06')
@@ -255,7 +315,7 @@ test('fits mobile routes, supports swiping and keeps errors and the result usabl
     await expectNoHorizontalOverflow(page)
   }
   await page.goto('/#/our-girls')
-  const gallery = page.getByRole('region', { name: 'Những cô gái Digital Marketing 66' })
+  const gallery = page.getByRole('region', { name: 'Những cô gái Digital Marketing 66D' })
   await gallery.dispatchEvent('pointerdown', { clientX: 290, clientY: 450, pointerType: 'touch', pointerId: 1 })
   await gallery.dispatchEvent('pointerup', { clientX: 90, clientY: 450, pointerType: 'touch', pointerId: 1 })
   await expect(page.locator('.gallery-count')).toHaveText('02 / 06')

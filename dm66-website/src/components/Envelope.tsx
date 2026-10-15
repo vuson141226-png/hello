@@ -2,7 +2,7 @@ import "./envelope.css";
 
 type EnvelopeProps = { open?: boolean; compact?: boolean };
 
-/** A little paper keepsake, drawn especially for Digital Marketing 66. */
+/** A little paper keepsake, drawn especially for the Digital Marketing 66D class. */
 export function Envelope({ open = false, compact = false }: EnvelopeProps) {
   return (
     <div
@@ -229,7 +229,7 @@ export function Envelope({ open = false, compact = false }: EnvelopeProps) {
                 textAnchor="end"
                 fill="#A85474"
               >
-                Thương, DM66 ♡
+                Thương, DM66D ♡
               </text>
             </g>
             <path

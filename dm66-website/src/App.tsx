@@ -39,7 +39,7 @@ const readPage = (): Page => {
 };
 const pageLinks: { page: Page; label: string; short: string }[] = [
   { page: "welcome", label: "Lời chào", short: "Chào cậu" },
-  { page: "our-girls", label: "Những cô gái DM66", short: "Our girls" },
+  { page: "our-girls", label: "Những cô gái DM66D", short: "Our girls" },
   { page: "your-wish", label: "Lời chúc riêng", short: "Lời chúc" },
 ];
 
@@ -193,12 +193,12 @@ function Welcome({
           <p className="welcome-dedication">
             Gửi những cô gái đặc biệt của
             <br className="mobile-break" />{" "}
-            <strong>Digital Marketing 66</strong>{" "}
+            <strong>lớp Digital Marketing 66D</strong>{" "}
             <Heart size={15} fill="currentColor" />
           </p>
           <p className="welcome-description">
             Nhân ngày 20/10, chúng tớ đã chuẩn bị một món quà nho nhỏ dành riêng
-            cho những cô gái tuyệt vời của DM66. Hy vọng món quà này sẽ khiến
+            cho những cô gái tuyệt vời của DM66D. Hy vọng món quà này sẽ khiến
             các cậu mỉm cười!
           </p>
           <button
@@ -256,7 +256,7 @@ function Welcome({
             <p>
               Mỗi cậu là một sắc màu.
               <br />
-              <strong>Cùng nhau, chúng mình là DM66.</strong>
+              <strong>Cùng nhau, chúng mình là DM66D.</strong>
             </p>
           </div>
           <div className="experience-chips">
@@ -303,12 +303,11 @@ function GirlsPage({ navigate }: { navigate: (page: Page) => void }) {
           <span className="little-line" /> CHƯƠNG 02 · NHỮNG SẮC MÀU ĐẶC BIỆT
         </div>
         <h1>
-          Những cô gái <em>của DM66.</em>
+          Những cô gái <em>của DM66D.</em>
         </h1>
         <p>
           Mỗi cô gái là một sắc màu riêng, cùng nhau tạo nên
-          <br className="desktop-break" /> một Digital Marketing 66 thật đặc
-          biệt.
+          <br className="desktop-break" /> một tập thể lớp 66D thật đặc biệt.
         </p>
         <span className="heading-script">Meet our beautiful girls</span>
       </div>
@@ -318,7 +317,7 @@ function GirlsPage({ navigate }: { navigate: (page: Page) => void }) {
             className="gallery"
             role="region"
             aria-roledescription="băng chuyền"
-            aria-label="Những cô gái Digital Marketing 66"
+            aria-label="Những cô gái Digital Marketing 66D"
             onPointerDown={(event) => {
               swipeHandled.current = false;
               touchStart.current = event.clientX;
@@ -466,7 +465,7 @@ function GirlsPage({ navigate }: { navigate: (page: Page) => void }) {
           </button>
           {girls.some((girl) => girl.isPlaceholder) && (
             <p className="sample-note">
-              Một chỗ nhỏ đang chờ những gương mặt thật của DM66.
+              Một chỗ nhỏ đang chờ những gương mặt thật của DM66D.
               <br />
               Website đang hiển thị dữ liệu thử và ảnh mẫu.
             </p>
@@ -502,60 +501,66 @@ function GreetingCard({
   return (
     <div className="greeting-card" ref={cardRef}>
       <div className="card-topline">
-        <span>DIGITAL MARKETING 66</span>
+        <span>DIGITAL MARKETING 66D</span>
         <Heart size={15} />
         <span>20.10.2026</span>
       </div>
-      <div className="card-photo">
-        <Portrait girl={girl} />
-        <Bow className="card-photo-bow" />
-        {girl.isPlaceholder && (
-          <span className="sample-sticker">THIỆP MẪU</span>
-        )}
-      </div>
-      <span className="card-dear">Dear {girl.displayName},</span>
-      <h2>
-        Chúc mừng ngày <em>20/10!</em>
-      </h2>
-      <motion.div
-        key={replay}
-        className="card-letter"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: 0.18 } },
-        }}
-      >
-        {(girl.wish.trim()
-          ? girl.wish
-          : "Lời chúc riêng của cậu đang được chuẩn bị."
-        )
-          .split(/\n+/)
-          .filter(Boolean)
-          .map((paragraph, index) => (
-            <motion.p
-              key={index}
-              variants={{
-                hidden: { opacity: 0, y: 8 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: 0.45 }}
-            >
-              {paragraph}
-            </motion.p>
-          ))}
-      </motion.div>
-      {girl.isPlaceholder && (
-        <p className="card-placeholder-note">
-          Đây là thiệp từ dữ liệu thử. Ảnh hiện dùng hình mẫu; các phần còn
-          thiếu đang được chuẩn bị.
-        </p>
-      )}
-      <div className="card-signature">
-        <Heart size={18} fill="currentColor" />
-        <span>From DM66 Boys — With Love</span>
-        <small>YOU MAKE OUR CLASS BRIGHTER.</small>
+      <div className="card-body">
+        <div className="card-portrait-panel">
+          <div className="card-photo">
+            <Portrait girl={girl} />
+            <Bow className="card-photo-bow" />
+            {girl.isPlaceholder && (
+              <span className="sample-sticker">THIỆP MẪU</span>
+            )}
+          </div>
+        </div>
+        <div className="card-message">
+          <span className="card-dear">Dear {girl.displayName},</span>
+          <h2>
+            Chúc mừng ngày <em>20/10!</em>
+          </h2>
+          <motion.div
+            key={replay}
+            className="card-letter"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.18 } },
+            }}
+          >
+            {(girl.wish.trim()
+              ? girl.wish
+              : "Lời chúc riêng của cậu đang được chuẩn bị."
+            )
+              .split(/\n+/)
+              .filter(Boolean)
+              .map((paragraph, index) => (
+                <motion.p
+                  key={index}
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  transition={{ duration: 0.45 }}
+                >
+                  {paragraph}
+                </motion.p>
+              ))}
+          </motion.div>
+          {girl.isPlaceholder && (
+            <p className="card-placeholder-note">
+              Đây là thiệp từ dữ liệu thử. Ảnh hiện dùng hình mẫu; các phần còn
+              thiếu đang được chuẩn bị.
+            </p>
+          )}
+          <div className="card-signature">
+            <Heart size={18} fill="currentColor" />
+            <span>From DM66D Boys — With Love</span>
+            <small>YOU MAKE OUR CLASS BRIGHTER.</small>
+          </div>
+        </div>
       </div>
       <div className="card-corner-flower">
         <Flower2 size={36} strokeWidth={1} />
@@ -643,7 +648,7 @@ function WishPage({
       const source = cardRef.current;
       if (!source) return;
       const clone = source.cloneNode(true) as HTMLDivElement;
-      clone.style.width = `${source.getBoundingClientRect().width}px`;
+      clone.style.width = `${Math.max(1000, source.getBoundingClientRect().width)}px`;
       clone.style.maxWidth = "none";
       clone.dataset.cardExport = "true";
       clone
@@ -671,7 +676,7 @@ function WishPage({
         backgroundColor: "#fff9f5",
       });
       const link = document.createElement("a");
-      link.download = `DM66-20-10-${recipient.id.replace(/[^a-zA-Z0-9_-]/g, "_")}.png`;
+      link.download = `DM66D-20-10-${recipient.id.replace(/[^a-zA-Z0-9_-]/g, "_")}.png`;
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
@@ -775,7 +780,7 @@ function WishPage({
         <div className="wish-quote">
           <HeartHandshake size={27} strokeWidth={1.2} />
           <span>
-            Vì mỗi cô gái của DM66
+            Vì mỗi cô gái của DM66D
             <br />
             đều đặc biệt theo cách rất riêng.
           </span>
@@ -913,7 +918,7 @@ export default function App() {
     return () => window.removeEventListener("hashchange", change);
   }, []);
   useEffect(() => {
-    document.title = `${page === "welcome" ? "Gửi cậu, với yêu thương" : page === "our-girls" ? "Những cô gái của DM66" : "Lời chúc dành riêng cho cậu"} · DM66`;
+    document.title = `${page === "welcome" ? "Gửi cậu, với yêu thương" : page === "our-girls" ? "Những cô gái của DM66D" : "Lời chúc dành riêng cho cậu"} · DM66D`;
   }, [page]);
   useEffect(
     () => () => {
@@ -967,14 +972,14 @@ export default function App() {
           <a
             href="#/"
             className="brand"
-            aria-label="DM66 With Love — Trang chủ"
+            aria-label="DM66D With Love — Trang chủ"
           >
             <span className="brand-mark">
               <Bow />
             </span>
             <span>
               <strong>
-                DM66<span className="brand-dot">.</span>
+                DM66D<span className="brand-dot">.</span>
               </strong>
               <small>WITH LOVE, ALWAYS</small>
             </span>
@@ -1032,7 +1037,7 @@ export default function App() {
         <footer className="site-footer">
           <p>
             Được chuẩn bị bằng <Heart size={11} fill="currentColor" /> bởi những
-            chàng trai DM66
+            chàng trai DM66D
           </p>
           <span>TO OUR GIRLS · YOU MAKE OUR CLASS BRIGHTER</span>
           <a href="#/" aria-label="Trở về đầu hành trình">
