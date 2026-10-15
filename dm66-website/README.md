@@ -4,7 +4,7 @@ Website lời chúc dành riêng cho các bạn nữ lớp Digital Marketing 66D
 
 Thiệp cá nhân hóa đặt ảnh lớn bên trái, tiêu đề và lời chúc bên phải trên màn hình rộng; trên điện thoại, các phần xếp dọc để dễ đọc. Thiệp PNG được xuất theo bố cục ngang từ mọi thiết bị.
 
-Mã nguồn ban đầu được giải nén từ `dm66-source.zip` vào thư mục `dm66-website/` trong repository. Thư mục `prebuilt/` chứa bản production đã được cập nhật theo dữ liệu thử trong Excel. Lệnh `npm run build` tạo bản mới trong `dist/` (được Git bỏ qua); cần đồng bộ lại `prebuilt/` khi muốn cập nhật bản dựng sẵn sau các lần sửa mã nguồn.
+Mã nguồn ban đầu được giải nén từ `dm66-source.zip` vào thư mục `dm66-website/` trong repository. Thư mục `prebuilt/` lưu bản dựng sẵn của website, không tự cập nhật theo mã nguồn. Lệnh `npm run build` tạo bản mới trong `dist/` (được Git bỏ qua); cần đồng bộ lại `prebuilt/` khi muốn cập nhật bản dựng sẵn sau các lần sửa mã nguồn.
 
 ## Chạy trên máy
 
@@ -34,11 +34,21 @@ Trong môi trường đám mây này, Chromium đã có sẵn. Có thể đặt 
 
 Ba trang dùng hash route: `/#/`, `/#/our-girls` và `/#/your-wish`. Khi chia sẻ đường dẫn trực tiếp, giữ nguyên phần `/#/...`.
 
-## Thay dữ liệu và ảnh thật
+## Dữ liệu và ảnh
 
-Dữ liệu trong `src/data/girls.ts` được nhập từ 6 dòng đã điền ở sheet `DANH SACH` của file Excel thử do người dùng cung cấp: ABC, ABE, ABA, ABZ, ABQ và ABD. Không nhập sheet `VI DU` hoặc `HUONG DAN`. Có thể thử tìm `abe` hoặc nhập `1` để thấy danh sách chọn ABC/ABE vì hai hồ sơ cùng tên hiển thị. Các gợi ý trên trang tra cứu lấy trực tiếp từ danh sách hiện tại.
+Dữ liệu trong `src/data/girls.ts` gồm **5 hồ sơ thử có ảnh** từ sheet `DANH SACH` của file Excel do người dùng cung cấp. Dòng ABC không được hiển thị vì chưa có ảnh; không nhập sheet `VI DU` hoặc `HUONG DAN`. Các ảnh được ghép như sau:
 
-File chưa có ảnh, biệt danh, tính cách và kỷ niệm; ABC cũng chưa có giới thiệu và lời chúc. Các ô trống được giữ nguyên, ảnh dùng placeholder, còn phần giới thiệu/lời chúc thiếu hiện thông báo đang chuẩn bị. Nội dung đã nhập giữ nguyên cả cách viết và xuống dòng. Đây vẫn là dữ liệu thử (`isPlaceholder: true`); thay bằng thông tin và ảnh thật trước khi chia sẻ món quà hoàn chỉnh.
+| Họ tên trong Excel | Tên hiển thị | Ảnh trong `public/images/girls/` |
+| --- | --- | --- |
+| ABE | 1 | `ban1.png` |
+| ABA | 3 | `ban2.jpg` |
+| ABZ | 4 | `ban3.jpg` |
+| ABQ | 5 | `ban4.jpg` |
+| ABD | 6 | `ban5.png` |
+
+Có thể thử tìm `abe` hoặc `1`; tên hiển thị `1` hiện chỉ ứng với ABE. Các gợi ý trên trang tra cứu lấy trực tiếp từ danh sách hiện tại.
+
+Nội dung giữ nguyên cách viết và xuống dòng trong Excel. Biệt danh, tính cách và kỷ niệm chưa được điền nên giữ trống. Cả 5 hồ sơ dùng ảnh được cung cấp (ban1 và ban5 là bản PNG đã che thông tin theo yêu cầu, không lưu bản gốc) và đặt `isPlaceholder: false`; dữ liệu vẫn phục vụ thử nghiệm, cần kiểm tra lại trước khi chia sẻ món quà hoàn chỉnh.
 
 1. Thêm ảnh vào `public/images/`, ví dụ `public/images/minh-anh.jpg`.
 2. Sửa hoặc thêm đối tượng trong mảng `girls` của `src/data/girls.ts` theo kiểu `Girl` có sẵn: `id`, `fullName`, `displayName`, `nicknames`, `image`, `introduction`, `personality`, `wish`, cùng `memory` nếu có.
@@ -61,6 +71,8 @@ Nhạc chỉ phát sau thao tác bật của người dùng; website không tự
 
 Kết nối repository trên GitHub với **Vercel** hoặc **Netlify**, rồi chọn thư mục dự án `dm66-website`. Hai tệp cấu hình trong thư mục này đã đặt lệnh build là `npm run build` và thư mục xuất bản là `dist`. Không cần máy chủ ứng dụng hay khóa API.
 
+Thay đổi của 5 hồ sơ được chuẩn bị cho **Vercel Preview riêng** để kiểm tra trước khi phát hành. Việc tạo Preview không cập nhật website production.
+
 | Nền tảng | Thiết lập |
 | --- | --- |
 | Vercel | Import repository, đặt **Root Directory** là `dm66-website`, chọn framework Vite; dùng cấu hình `dm66-website/vercel.json`. Output Directory là `dist`. |
@@ -68,7 +80,7 @@ Kết nối repository trên GitHub với **Vercel** hoặc **Netlify**, rồi c
 
 Dự án dùng đường dẫn gốc `/`, phù hợp khi deploy ở tên miền hoặc subdomain riêng. Nếu phục vụ dưới một thư mục con, cần điều chỉnh `base` của Vite và các đường dẫn tài nguyên trước khi build.
 
-Trước khi chia sẻ, chạy `npm test` và `npm run build`, rồi kiểm tra trên bản production:
+Trước khi chia sẻ, chạy `npm test` và `npm run build`, rồi kiểm tra trên bản Preview:
 
 - Ba trang và đường dẫn chia sẻ trực tiếp hoạt động trên máy tính, điện thoại.
 - Tìm bằng họ tên có dấu, không dấu và biệt danh; thử tên không tồn tại và tên trùng.

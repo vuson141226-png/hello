@@ -43,25 +43,27 @@ test('opens the gift and lets visitors explore the gallery and next chapter', as
   await gift.click()
   await expect(page.getByRole('button', { name: 'Đang mở điều bất ngờ...' })).toBeDisabled()
   await expect(page).toHaveURL(/#\/our-girls$/)
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 06')
-  await expect(page.locator('.girl-introduction h2')).toHaveText('ABC')
-  await expect(page.locator('.girl-introduction > p').first()).toHaveText('Phần giới thiệu của cậu đang được chuẩn bị.')
-  expect(await page.locator('.gallery-dots button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')))).toEqual([
-    'Xem ABC', 'Xem ABE', 'Xem ABA', 'Xem ABZ', 'Xem ABQ', 'Xem ABD',
-  ])
-  await page.getByRole('button', { name: 'Bạn tiếp theo', exact: true }).click()
-  await expect(page.locator('.gallery-count')).toHaveText('02 / 06')
+  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
   await expect(page.locator('.girl-introduction h2')).toHaveText('ABE')
   await expect(page.locator('.girl-introduction > p').first()).toHaveText('assssssssssssssss')
-  for (const [position, name] of [[3, 'ABA'], [4, 'ABZ'], [5, 'ABQ'], [6, 'ABD']] as const) {
+  await expect(page.locator('.selected-polaroid img')).toHaveAttribute('src', '/images/girls/ban1.png')
+  await expect(page.locator('.sample-sticker,.sample-note')).toHaveCount(0)
+  expect(await page.locator('.gallery-dots button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')))).toEqual([
+    'Xem ABE', 'Xem ABA', 'Xem ABZ', 'Xem ABQ', 'Xem ABD',
+  ])
+  await page.getByRole('button', { name: 'Bạn tiếp theo', exact: true }).click()
+  await expect(page.locator('.gallery-count')).toHaveText('02 / 05')
+  await expect(page.locator('.girl-introduction h2')).toHaveText('ABA')
+  await expect(page.locator('.girl-introduction > p').first()).toHaveText('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+  for (const [position, name] of [[3, 'ABZ'], [4, 'ABQ'], [5, 'ABD']] as const) {
     const dot = page.getByRole('button', { name: `Xem ${name}`, exact: true })
     await dot.click()
-    await expect(page.locator('.gallery-count')).toHaveText(`0${position} / 06`)
+    await expect(page.locator('.gallery-count')).toHaveText(`0${position} / 05`)
     await expect(page.locator('.girl-introduction h2')).toHaveText(name)
     await expect(dot).toHaveAttribute('aria-pressed', 'true')
   }
   await page.getByRole('button', { name: 'Bạn tiếp theo', exact: true }).click()
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 06')
+  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
   await page.getByRole('button', { name: 'Có một lời nhắn dành riêng cho cậu' }).click()
   await expect(page).toHaveURL(/#\/your-wish$/)
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
@@ -84,7 +86,7 @@ test('validates names accessibly and finds one exact normalized recipient', asyn
   await input.fill('AB')
   await submit.click()
   await expect(page.getByRole('alert')).toContainText('chưa tìm thấy tên')
-  for (const excludedExample of ['VI DU', 'Trần Thu Phương']) {
+  for (const excludedExample of ['ABC', 'VI DU', 'Trần Thu Phương']) {
     await input.fill(excludedExample)
     await submit.click()
     await expect(page.getByRole('alert')).toContainText('chưa tìm thấy tên')
@@ -99,38 +101,51 @@ test('validates names accessibly and finds one exact normalized recipient', asyn
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
 })
 
-test('asks which shared display name belongs to the visitor and preserves blank workbook wishes', async ({ page }) => {
+test('opens the only supplied profile named 1 and excludes the row without a photo', async ({ page }) => {
   await page.goto('/#/your-wish')
   const input = page.getByLabel('Tên của cậu là gì?')
   const submit = page.getByRole('button', { name: 'Nhận lời chúc của mình' })
   await input.fill('1')
   await submit.click()
-  const choices = page.locator('.match-list')
-  await expect(choices).toBeVisible()
-  await expect(choices.locator('button')).toHaveCount(2)
-  await expect(choices.locator('strong')).toHaveText(['ABC', 'ABE'])
-  await expect(choices).toContainText('dm66-001')
-  await expect(choices).toContainText('dm66-002')
-  await expect(page.locator('.greeting-card')).toHaveCount(0)
-  await expect(submit).toBeEnabled()
-  await choices.getByRole('button', { name: /ABE/ }).click()
   await expect(page.locator('.card-dear')).toHaveText('Dear 1,')
   await expect(page.locator('.card-letter')).toHaveText('cảm ớndsa')
-  await expect(page.locator('.card-letter')).not.toContainText('Lời chúc riêng của cậu đang được chuẩn bị.')
-  await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
-  await expect(input).toHaveValue('')
-  await input.fill('1')
-  await submit.click()
-  await expect(choices).toBeVisible()
-  await expect(page.locator('.greeting-card')).toHaveCount(0)
-  await choices.getByRole('button', { name: /ABC/ }).click()
-  await expect(page.locator('.card-dear')).toHaveText('Dear 1,')
-  await expect(page.locator('.card-letter')).toHaveText('Lời chúc riêng của cậu đang được chuẩn bị.')
-  await expect(page.locator('.card-letter')).not.toContainText('cảm ớndsa')
+  await expect(page.locator('.card-photo img')).toHaveAttribute('src', '/images/girls/ban1.png')
+  await expect(page.locator('.match-list')).toHaveCount(0)
   await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
   await expect(input).toHaveValue('')
   await expect(input).toBeFocused()
-  await expect(choices).toHaveCount(0)
+  await input.fill('ABC')
+  await submit.click()
+  await expect(page.getByRole('alert')).toContainText('chưa tìm thấy tên')
+  await expect(page.locator('.greeting-card')).toHaveCount(0)
+  await expect(page.locator('.match-list')).toHaveCount(0)
+})
+
+test('pairs all five supplied photos with their original names and literal workbook wishes', async ({ page }) => {
+  const expectedProfiles = [
+    { name: 'ABE', shortName: '1', image: '/images/girls/ban1.png', width: 853, wish: 'cảm ớndsa' },
+    { name: 'ABA', shortName: '3', image: '/images/girls/ban2.jpg', width: 1381, wish: 'ádsvfdffds' },
+    { name: 'ABZ', shortName: '4', image: '/images/girls/ban3.jpg', width: 1276, wish: 'ádsssssssssssssssss' },
+    { name: 'ABQ', shortName: '5', image: '/images/girls/ban4.jpg', width: 1627, wish: 'dấdaasdada' },
+    { name: 'ABD', shortName: '6', image: '/images/girls/ban5.png', width: 853, wish: 'ffffffffffffffffffffffff' },
+  ]
+  for (const profile of expectedProfiles) {
+    await openWish(page, profile.name)
+    const image = page.locator('.greeting-card .card-photo img')
+    await expect(image).toHaveAttribute('alt', `Ảnh ${profile.name}`)
+    const naturalWidth = await image.evaluate(async element => {
+      const photo = element as HTMLImageElement
+      await photo.decode()
+      return photo.naturalWidth
+    })
+    await expect(image).toHaveAttribute('src', profile.image)
+    expect(naturalWidth, `${profile.name} should display the expected photo instead of a fallback`).toBe(profile.width)
+    await expect(page.locator('.card-dear')).toHaveText(`Dear ${profile.shortName},`)
+    await expect(page.locator('.card-letter')).toHaveText(profile.wish)
+    await expect(page.locator('.sample-sticker,.card-placeholder-note,.demo-hint')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
+    await expect(page.getByLabel('Tên của cậu là gì?')).toHaveValue('')
+  }
 })
 
 test('replays the letter, sends a heart, dismisses the toast and starts another search', async ({ page }) => {
@@ -149,7 +164,8 @@ test('replays the letter, sends a heart, dismisses the toast and starts another 
   await expect(input).toBeFocused()
   await expect(input).toHaveAttribute('aria-invalid', 'false')
   await expect(page.locator('.greeting-card')).toHaveCount(0)
-  await page.getByRole('button', { name: 'ABA', exact: true }).click()
+  await expect(page.locator('.demo-hint')).toHaveCount(0)
+  await input.fill('ABA')
   await expect(input).toHaveValue('ABA')
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.locator('.card-dear')).toHaveText('Dear 3,')
@@ -293,11 +309,11 @@ test('supports direct hash routes, navigation history and the optional music exp
     await expectUpdatedClassName(page)
   }
   await page.locator('nav a[href="#/our-girls"]').click()
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 06')
+  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
   await page.goBack()
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
   await page.goForward()
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 06')
+  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
   const music = page.getByRole('button', { name: 'Bật nhạc', exact: true })
   await expect(music).toHaveAttribute('aria-pressed', 'false')
   await expect(page.locator('audio')).toHaveCount(0)
@@ -318,8 +334,8 @@ test('fits mobile routes, supports swiping and keeps errors and the result usabl
   const gallery = page.getByRole('region', { name: 'Những cô gái Digital Marketing 66D' })
   await gallery.dispatchEvent('pointerdown', { clientX: 290, clientY: 450, pointerType: 'touch', pointerId: 1 })
   await gallery.dispatchEvent('pointerup', { clientX: 90, clientY: 450, pointerType: 'touch', pointerId: 1 })
-  await expect(page.locator('.gallery-count')).toHaveText('02 / 06')
-  await expect(page.locator('.girl-introduction h2')).toHaveText('ABE')
+  await expect(page.locator('.gallery-count')).toHaveText('02 / 05')
+  await expect(page.locator('.girl-introduction h2')).toHaveText('ABA')
   await expectNoHorizontalOverflow(page)
   const sidePhoto = page.getByRole('button', { name: 'Xem bạn tiếp theo', exact: true })
   await sidePhoto.scrollIntoViewIfNeeded()
@@ -330,7 +346,7 @@ test('fits mobile routes, supports swiping and keeps errors and the result usabl
   await page.mouse.down()
   await page.mouse.move(startX - 60, dragY, { steps: 6 })
   await page.mouse.up()
-  await expect(page.locator('.gallery-count')).toHaveText('03 / 06')
+  await expect(page.locator('.gallery-count')).toHaveText('03 / 05')
   await page.locator('nav a[href="#/your-wish"]').click()
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.getByRole('alert')).toBeVisible()
@@ -350,7 +366,7 @@ test('honors reduced motion while retaining the complete gift interaction', asyn
   await expect(page).toHaveURL(/#\/our-girls$/)
   await expect(page.locator('.heart-burst > span')).toHaveCount(0)
   await page.getByRole('button', { name: 'Có một lời nhắn dành riêng cho cậu' }).click()
-  await page.getByLabel('Tên của cậu là gì?').fill('ABC')
+  await page.getByLabel('Tên của cậu là gì?').fill('ABE')
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.locator('.card-dear')).toHaveText('Dear 1,')
   await expect(page.locator('.heart-burst > span')).toHaveCount(0)
