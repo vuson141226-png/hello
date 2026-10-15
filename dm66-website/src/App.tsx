@@ -25,10 +25,11 @@ import {
   VolumeX,
   X,
 } from "lucide-react";
-import { toPng } from "html-to-image";
 import { girls } from "./data/girls";
 import type { Girl } from "./data/girls";
 import { findRecipients } from "./lib/recipients";
+import { createCardImage } from "./lib/cardImage";
+import { downloadImage, isMobileDevice, saveImage } from "./lib/saveImage";
 import { Envelope } from "./components/Envelope";
 import { siteConfig } from "./config";
 
@@ -582,13 +583,72 @@ function WishPage({
   const [recipientId, setRecipientId] = useState<string | null>(null);
   const [opening, setOpening] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [preparingImage, setPreparingImage] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageAttempt, setImageAttempt] = useState(0);
+  const [cardImage, setCardImage] = useState<{
+    recipientId: string;
+    file: File;
+  } | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [replay, setReplay] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLHeadingElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveDialogRef = useRef<HTMLDialogElement>(null);
+  const mounted = useRef(true);
   const reduced = useReducedMotion();
   const recipient = girls.find((girl) => girl.id === recipientId);
+  const preparedImage = cardImage?.recipientId === recipientId ? cardImage : null;
+  const mobile = isMobileDevice();
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    setCardImage(null);
+    setImageError(false);
+    setPreviewOpen(false);
+    const source = cardRef.current;
+    if (!source || !recipient) {
+      setPreparingImage(false);
+      return;
+    }
+    setPreparingImage(true);
+    createCardImage(source, recipient.id)
+      .then((file) => {
+        if (!cancelled) setCardImage({ recipientId: recipient.id, file });
+      })
+      .catch(() => {
+        if (!cancelled) setImageError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setPreparingImage(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [recipient, imageAttempt]);
+  useEffect(() => {
+    if (!preparedImage) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(preparedImage.file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [preparedImage]);
+  useEffect(() => {
+    const dialog = saveDialogRef.current;
+    if (!dialog) return;
+    if (previewOpen && previewUrl && !dialog.open) dialog.showModal();
+    else if (!previewOpen && dialog.open) dialog.close();
+  }, [previewOpen, previewUrl]);
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
@@ -639,56 +699,22 @@ function WishPage({
     setTimeout(() => inputRef.current?.focus(), 50);
   };
   const saveCard = async () => {
-    if (!cardRef.current || !recipient || saving) return;
+    if (!preparedImage || saving) return;
     setSaving(true);
-    let exportContainer: HTMLDivElement | null = null;
     try {
-      await document.fonts.ready;
-      // Export a static copy so saving during a reveal/replay never omits fading text.
-      const source = cardRef.current;
-      if (!source) return;
-      const clone = source.cloneNode(true) as HTMLDivElement;
-      clone.style.width = `${Math.max(1000, source.getBoundingClientRect().width)}px`;
-      clone.style.maxWidth = "none";
-      clone.dataset.cardExport = "true";
-      clone
-        .querySelectorAll<HTMLElement>(".card-letter p")
-        .forEach((paragraph) => {
-          paragraph.style.opacity = "1";
-          paragraph.style.transform = "none";
-          paragraph.style.animation = "none";
-          paragraph.style.transition = "none";
-        });
-      exportContainer = document.createElement("div");
-      exportContainer.setAttribute("aria-hidden", "true");
-      exportContainer.style.cssText =
-        "position:fixed;left:-10000px;top:0;pointer-events:none;";
-      exportContainer.appendChild(clone);
-      document.body.appendChild(exportContainer);
-      await Promise.all(
-        Array.from(clone.querySelectorAll("img")).map((img) => {
-          img.loading = "eager";
-          return img.decode();
-        }),
-      );
-      const dataUrl = await toPng(clone, {
-        pixelRatio: 3,
-        backgroundColor: "#fff9f5",
-      });
-      const link = document.createElement("a");
-      link.download = `DM66D-20-10-${recipient.id.replace(/[^a-zA-Z0-9_-]/g, "_")}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      notify("Thiệp đã được tạo. Giữ lại chút yêu thương này nhé!");
+      // No await before saveImage: native pickers/sharing need this click's activation.
+      const result = await saveImage(preparedImage.file);
+      if (!mounted.current) return;
+      if (result === "saved") notify("Thiệp đã được lưu vào nơi cậu chọn.");
+      else if (result === "shared")
+        notify("Ảnh thiệp đã được chuyển tới ứng dụng cậu chọn.");
+      else if (result === "downloaded")
+        notify("Thiệp đã được tạo. Cậu kiểm tra thư mục Tải xuống nhé!");
+      else if (result === "preview") setPreviewOpen(true);
     } catch {
-      notify(
-        "Chưa thể lưu thiệp. Cậu thử lại nhé; ảnh cần tải đủ và cho phép xuất PNG.",
-      );
+      if (mounted.current) setPreviewOpen(true);
     } finally {
-      exportContainer?.remove();
-      setSaving(false);
+      if (mounted.current) setSaving(false);
     }
   };
   if (recipient)
@@ -713,12 +739,28 @@ function WishPage({
             </span>
             <button
               className="button button-primary"
-              onClick={saveCard}
-              disabled={saving}
+              onClick={
+                imageError
+                  ? () => setImageAttempt((value) => value + 1)
+                  : saveCard
+              }
+              disabled={saving || preparingImage || (!preparedImage && !imageError)}
+              aria-busy={preparingImage || saving}
             >
               <Download size={18} />
-              {saving ? "Đang gói ghém thiệp..." : "Lưu thiệp của mình"}
+              {imageError
+                ? "Thử tạo ảnh lại"
+                : preparingImage || !preparedImage
+                  ? "Đang chuẩn bị ảnh..."
+                  : saving
+                    ? "Đang mở bảng lưu..."
+                    : "Lưu thiệp của mình"}
             </button>
+            {imageError && (
+              <p className="save-image-error" role="alert">
+                Chưa tạo được ảnh thiệp. Cậu thử tạo lại nhé!
+              </p>
+            )}
             <button
               className="button button-secondary"
               onClick={() => {
@@ -742,17 +784,81 @@ function WishPage({
               <Heart size={18} />
               Gửi một trái tim
             </button>
-            <button className="text-button find-another" onClick={reset}>
+            {mobile && (
+              <button
+                className="text-button save-image-preview"
+                disabled={!preparedImage || saving}
+                onClick={() => setPreviewOpen(true)}
+              >
+                Mở ảnh để lưu vào máy
+              </button>
+            )}
+            <button
+              className="text-button find-another"
+              onClick={reset}
+              disabled={saving}
+            >
               <Search size={15} />
               Tìm một lời chúc khác
             </button>
             <p className="actions-footnote">
-              Lưu thành ảnh PNG để giữ lại
-              <br />
-              một kỷ niệm nhỏ của chúng mình.
+              {mobile
+                ? "Chọn Lưu hình ảnh trong bảng chia sẻ, hoặc mở ảnh và nhấn giữ để lưu."
+                : "Chọn nơi lưu ảnh PNG. Nếu trình duyệt tự tải, cậu kiểm tra thư mục Tải xuống nhé."}
             </p>
           </aside>
         </div>
+        <dialog
+          ref={saveDialogRef}
+          className="save-image-dialog"
+          aria-labelledby="save-image-title"
+          aria-describedby="save-image-help"
+          onCancel={() => setPreviewOpen(false)}
+          onClose={() => setPreviewOpen(false)}
+        >
+          <button
+            className="save-image-close"
+            aria-label="Đóng ảnh thiệp"
+            onClick={() => setPreviewOpen(false)}
+          >
+            <X size={21} />
+          </button>
+          <h2 id="save-image-title">Lưu thiệp vào máy</h2>
+          <p id="save-image-help">
+            {mobile
+              ? "Nhấn giữ ảnh bên dưới rồi chọn Lưu vào Ảnh hoặc Tải hình ảnh xuống."
+              : "Chọn Tải ảnh PNG để lưu vào máy theo thiết lập của trình duyệt."}
+          </p>
+          {previewUrl && (
+            <img
+              className="save-image-full"
+              src={previewUrl}
+              alt={`Thiệp chúc mừng dành cho ${recipient.fullName}`}
+            />
+          )}
+          <div className="save-image-options">
+            <button
+              className="button button-primary"
+              onClick={() => {
+                if (!preparedImage) return;
+                downloadImage(preparedImage.file);
+                notify("Đã yêu cầu tải ảnh PNG. Cậu kiểm tra mục tải xuống của trình duyệt nhé!");
+              }}
+            >
+              <Download size={18} />Tải ảnh PNG
+            </button>
+            {previewUrl && (
+              <a
+                className="button button-secondary"
+                href={previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Mở ảnh riêng
+              </a>
+            )}
+          </div>
+        </dialog>
       </main>
     );
   return (
