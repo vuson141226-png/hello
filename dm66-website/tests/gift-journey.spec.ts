@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { expect, test as base } from '@playwright/test'
 import type { Download, Page } from '@playwright/test'
 
@@ -57,6 +57,47 @@ async function downloadedPng(download: Download) {
   expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(3000)
   expect(png.readUInt32BE(16) / png.readUInt32BE(20)).toBeGreaterThan(1.2)
   return png
+}
+
+async function inspectPngPixels(page: Page, png: Buffer) {
+  return page.evaluate(async base64 => {
+    const image = new Image()
+    image.src = `data:image/png;base64,${base64}`
+    await image.decode()
+    const canvas = document.createElement('canvas')
+    canvas.width = image.naturalWidth
+    canvas.height = image.naturalHeight
+    const context = canvas.getContext('2d')!
+    context.drawImage(image, 0, 0)
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
+    const edgeColors = {
+      left: [220, 0, 0], right: [0, 0, 220],
+      top: [0, 170, 0], bottom: [230, 180, 0],
+    }
+    const edges = Object.fromEntries(Object.keys(edgeColors).map(edge => [edge, {
+      count: 0, minX: canvas.width, minY: canvas.height, maxX: 0, maxY: 0,
+    }])) as Record<keyof typeof edgeColors, { count: number; minX: number; minY: number; maxX: number; maxY: number }>
+    let darkPhotoPixels = 0
+    // Sample the actual decoded PNG, rather than trusting a valid file header
+    // or the on-screen DOM, which both passed when phone exports lost the photo.
+    for (let y = 0; y < canvas.height; y += 3) {
+      for (let x = 0; x < canvas.width; x += 3) {
+        const index = (y * canvas.width + x) * 4
+        const rgb = [pixels[index], pixels[index + 1], pixels[index + 2]]
+        if (x > canvas.width * .05 && x < canvas.width * .45 && y > canvas.height * .18 && y < canvas.height * .9 && rgb.every(channel => channel < 90)) darkPhotoPixels += 1
+        for (const [edge, color] of Object.entries(edgeColors)) {
+          if (!rgb.every((channel, channelIndex) => Math.abs(channel - color[channelIndex]) < 8)) continue
+          const stats = edges[edge as keyof typeof edges]
+          stats.count += 1
+          stats.minX = Math.min(stats.minX, x)
+          stats.minY = Math.min(stats.minY, y)
+          stats.maxX = Math.max(stats.maxX, x)
+          stats.maxY = Math.max(stats.maxY, y)
+        }
+      }
+    }
+    return { width: canvas.width, height: canvas.height, darkPhotoPixels, edges }
+  }, png.toString('base64'))
 }
 
 type NativeSaveMode = 'picker' | 'picker-abort' | 'share' | 'share-abort' | 'share-failed' | 'mobile-unsupported'
@@ -304,6 +345,8 @@ test('downloads a real, high resolution PNG for the selected recipient', async (
   expect(png.readUInt32BE(20)).toBeGreaterThanOrEqual(900)
   expect(png.readUInt32BE(16) / png.readUInt32BE(20)).toBeGreaterThan(1.2)
   expect(png.length).toBeGreaterThan(10_000)
+  const pixels = await inspectPngPixels(page, png)
+  expect(pixels.darkPhotoPixels, 'The saved PNG must include the supplied photo, including its dark redaction blocks').toBeGreaterThan(1_000)
 })
 
 test('uses a large left portrait on wide screens, stacks on phones and always exports a landscape card', async ({ page }) => {
@@ -353,36 +396,18 @@ test('uses a large left portrait on wide screens, stacks on phones and always ex
   expect(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))).toBe(true)
   expect(png.readUInt32BE(16)).toBeGreaterThanOrEqual(3000)
   expect(png.readUInt32BE(16) / png.readUInt32BE(20)).toBeGreaterThan(1.2)
+  const pixels = await inspectPngPixels(page, png)
+  expect(pixels.darkPhotoPixels, 'The phone PNG must include the photo as well as the text').toBeGreaterThan(1_000)
   await expect(page.locator('[data-card-export="true"]')).toHaveCount(0)
   await expectNoHorizontalOverflow(page)
 })
 
-test('prepares fully visible letter content once and reuses the cached PNG after replay', async ({ page }) => {
+test('prepares the full letter and reuses the identical cached PNG after replay', async ({ page }) => {
   await disableSavePicker(page)
-  await page.addInitScript(() => {
-    const snapshots: { opacities: string[]; text: string }[] = []
-    Object.assign(window, { preparedCardSnapshots: snapshots })
-    new MutationObserver(records => {
-      for (const record of records) for (const node of record.addedNodes) {
-        if (!(node instanceof Element)) continue
-        const card = node.matches('[data-card-export="true"]') ? node : node.querySelector('[data-card-export="true"]')
-        if (card) snapshots.push({
-          opacities: Array.from(card.querySelectorAll('.card-letter p'), paragraph => getComputedStyle(paragraph).opacity),
-          text: card.querySelector('.card-letter')?.textContent?.trim() || '',
-        })
-      }
-    }).observe(document, { childList: true, subtree: true })
-  })
   await openWish(page)
   const save = await readySaveButton(page)
+  await expect(page.locator('main .card-letter')).toHaveText('cảm ớndsa')
   await expect(page.locator('[data-card-export="true"]')).toHaveCount(0)
-  const beforeReplay = await page.evaluate(() => (window as unknown as { preparedCardSnapshots: { opacities: string[]; text: string }[] }).preparedCardSnapshots)
-  expect(beforeReplay.length).toBeGreaterThan(0)
-  for (const snapshot of beforeReplay) {
-    expect(snapshot.opacities.length).toBeGreaterThan(0)
-    expect(snapshot.opacities.every(opacity => opacity === '1')).toBe(true)
-    expect(snapshot.text).toBe('cảm ớndsa')
-  }
   const [firstDownload] = await Promise.all([page.waitForEvent('download'), save.click()])
   const firstPng = await downloadedPng(firstDownload)
   await page.getByRole('button', { name: 'Đọc lại lời chúc' }).click()
@@ -392,9 +417,104 @@ test('prepares fully visible letter content once and reuses the cached PNG after
   const [secondDownload] = await Promise.all([page.waitForEvent('download'), save.click()])
   const secondPng = await downloadedPng(secondDownload)
   expect(secondPng.equals(firstPng)).toBe(true)
-  const afterReplay = await page.evaluate(() => (window as unknown as { preparedCardSnapshots: unknown[] }).preparedCardSnapshots.length)
-  expect(afterReplay).toBe(beforeReplay.length)
   await expect(page.locator('[data-card-export="true"]')).toHaveCount(0)
+})
+
+test('keeps every edge of portrait and landscape photos visible in the phone PNG', async ({ page }, testInfo) => {
+  await disableSavePicker(page)
+  await page.setViewportSize({ width: 390, height: 844 })
+  for (const [orientation, width, height] of [
+    ['portrait', 180, 360], ['landscape', 360, 180],
+  ] as const) {
+    const fixture = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" fill="#e9e1d8"/><path fill="rgb(220,0,0)" d="M0 8h8v84H0z"/><path fill="rgb(0,0,220)" d="M92 8h8v84h-8z"/><path fill="rgb(0,170,0)" d="M0 0h100v8H0z"/><path fill="rgb(230,180,0)" d="M0 92h100v8H0z"/></svg>`
+    await page.route('**/images/girls/ban1.png', route => route.fulfill({ contentType: 'image/svg+xml', body: fixture }))
+    await openWish(page)
+    const save = await readySaveButton(page)
+    const [download] = await Promise.all([page.waitForEvent('download'), save.click()])
+    const png = await downloadedPng(download)
+    const pixels = await inspectPngPixels(page, png)
+    for (const [edge, stats] of Object.entries(pixels.edges)) {
+      expect(stats.count, `${orientation}: the saved image must retain the ${edge} edge instead of cropping or omitting the photo`).toBeGreaterThan(100)
+      expect(stats.maxX, `${orientation}: the full photo should remain in the left side of the card`).toBeLessThan(pixels.width / 2)
+    }
+    expect(pixels.edges.left.minX).toBeLessThan(pixels.edges.right.minX)
+    expect(pixels.edges.top.minY).toBeLessThan(pixels.edges.bottom.minY)
+    const proofPath = testInfo.outputPath(`phone-${orientation}-whole-photo.png`)
+    await writeFile(proofPath, png)
+    await testInfo.attach(`phone-${orientation}-whole-photo.png`, { path: proofPath, contentType: 'image/png' })
+    await page.unroute('**/images/girls/ban1.png')
+    await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
+  }
+})
+
+test('exports a long Vietnamese wish without overlapping text or losing paragraphs', async ({ page }, testInfo) => {
+  await disableSavePicker(page)
+  await page.setViewportSize({ width: 390, height: 844 })
+  await openWish(page)
+  const save = await readySaveButton(page)
+  const [shortDownload] = await Promise.all([page.waitForEvent('download'), save.click()])
+  const shortPng = await downloadedPng(shortDownload)
+  const paragraphs = [
+    'Chúc cậu một ngày 20/10 thật nhiều niềm vui, luôn tự tin với những điều mình lựa chọn và giữ mãi nụ cười rạng rỡ. Mong mọi cố gắng của cậu đều được đền đáp bằng những kết quả thật xứng đáng.',
+    'Cảm ơn cậu vì những buổi học, những lần cùng nhau hoàn thành bài tập và những kỷ niệm đáng nhớ của lớp Digital Marketing 66D. Chúc cậu luôn có những người bạn tốt bên cạnh, được yêu thương và sống hết mình với ước mơ.',
+    'Dù hành trình phía trước có nhiều thử thách, hy vọng cậu vẫn luôn mạnh mẽ, hạnh phúc và biết trân trọng bản thân. Chúng tớ mong rằng mỗi ngày của cậu đều có một điều đáng yêu để nhớ, một điều mới mẻ để học và một lý do để mỉm cười.',
+  ]
+  const exported = await page.evaluate(async paragraphs => {
+    const card = document.querySelector<HTMLDivElement>('main .greeting-card')!
+    card.querySelector('.card-letter')!.replaceChildren(...paragraphs.map(text => {
+      const paragraph = document.createElement('p')
+      paragraph.textContent = text
+      return paragraph
+    }))
+    const paintedText: { text: string; left: number; top: number; right: number; bottom: number; baseline: number }[] = []
+    const originalFillText = CanvasRenderingContext2D.prototype.fillText
+    CanvasRenderingContext2D.prototype.fillText = function (text, x, y, maxWidth) {
+      const metrics = this.measureText(text)
+      const transform = this.getTransform()
+      const corners = [
+        new DOMPoint(x - metrics.actualBoundingBoxLeft, y - metrics.actualBoundingBoxAscent),
+        new DOMPoint(x + metrics.actualBoundingBoxRight, y + metrics.actualBoundingBoxDescent),
+      ].map(point => point.matrixTransform(transform))
+      paintedText.push({
+        text, left: Math.min(...corners.map(point => point.x)), top: Math.min(...corners.map(point => point.y)),
+        right: Math.max(...corners.map(point => point.x)), bottom: Math.max(...corners.map(point => point.y)),
+        baseline: new DOMPoint(x, y).matrixTransform(transform).y,
+      })
+      if (maxWidth === undefined) return originalFillText.call(this, text, x, y)
+      return originalFillText.call(this, text, x, y, maxWidth)
+    }
+    try {
+      const modulePath = '/src/lib/cardImage.ts'
+      const { createCardImage } = await import(modulePath)
+      const file: File = await createCardImage(card, 'long-wish-fixture')
+      const png = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve((reader.result as string).split(',')[1])
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+      return { png, paintedText }
+    } finally {
+      CanvasRenderingContext2D.prototype.fillText = originalFillText
+    }
+  }, paragraphs)
+  const png = Buffer.from(exported.png, 'base64')
+  expect(png.readUInt32BE(16)).toBe(shortPng.readUInt32BE(16))
+  expect(png.readUInt32BE(20), 'The card should grow to fit a long wish instead of squeezing lines together').toBeGreaterThan(shortPng.readUInt32BE(20) + 100)
+  const paintedWords = exported.paintedText.map(line => line.text).join(' ').replace(/\s+/g, ' ')
+  expect(paintedWords).toContain(paragraphs.join(' '))
+  for (let index = 0; index < exported.paintedText.length; index += 1) {
+    const first = exported.paintedText[index]
+    for (const second of exported.paintedText.slice(index + 1)) {
+      if (Math.abs(first.baseline - second.baseline) < 2) continue // Inline title fragments share a baseline.
+      const horizontalOverlap = Math.min(first.right, second.right) - Math.max(first.left, second.left)
+      const verticalOverlap = Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top)
+      expect(horizontalOverlap > 1 && verticalOverlap > 1, `Saved text must not overlap: “${first.text}” / “${second.text}”`).toBe(false)
+    }
+  }
+  const proofPath = testInfo.outputPath('phone-long-vietnamese-wish.png')
+  await writeFile(proofPath, png)
+  await testInfo.attach('phone-long-vietnamese-wish.png', { path: proofPath, contentType: 'image/png' })
 })
 
 test('opens the desktop file picker during the click and writes and closes a valid PNG', async ({ page }) => {

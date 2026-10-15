@@ -63,6 +63,8 @@ Tìm kiếm chạy ngay trên trình duyệt, đối chiếu tên và biệt dan
 
 ## Lưu thiệp PNG
 
+Bản PNG được vẽ trực tiếp bằng Canvas để tránh lỗi mất ảnh và chồng chữ khi xuất qua SVG trên WebKit/Safari. Ảnh tải và giải mã đầy đủ trước khi vẽ; chữ được đo sau khi tải phông tiếng Việt, tự xuống dòng và dành chỗ riêng cho chữ ký. Kích thước canvas được giới hạn để tránh ảnh trắng khi lời chúc dài trên điện thoại.
+
 Website chuẩn bị sẵn PNG sau khi mở thiệp; đợi nút lưu sẵn sàng rồi chọn:
 
 - **Máy tính:** Chrome/Edge có hỗ trợ Save As cho phép chọn thư mục lưu. Firefox/Safari tải theo tùy chọn tải xuống của trình duyệt.
