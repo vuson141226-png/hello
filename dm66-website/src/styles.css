@@ -1535,6 +1535,21 @@ h1 em {
   line-height: 1.9;
   margin-top: 10px;
 }
+.wish-letter-transition {
+  max-width: 720px;
+  margin: 46px auto 0;
+  text-align: center;
+}
+.wish-letter-transition p {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+}
+.wish-letter-transition .button {
+  white-space: normal;
+  line-height: 1.6;
+}
 .save-image-preview,
 .save-image-error {
   grid-column: 1 / -1;

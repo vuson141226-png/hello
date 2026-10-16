@@ -1,6 +1,6 @@
 # Chúc mừng 20/10 · Digital Marketing 66D
 
-Website lời chúc dành riêng cho các bạn nữ lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Giao diện hỗ trợ điện thoại, tìm lời chúc theo tên hoặc biệt danh, tải thiệp PNG và nhạc nền tùy chọn.
+Website lời chúc dành riêng cho lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Hành trình hiện có 4 trang: Welcome → Our Memories → Your Special Wish → Letters To DM66D Boys. Giữ nguyên trang Welcome và các chức năng tìm tên, thiệp PNG, gửi trái tim, nhạc nền; bổ sung album kỷ niệm và thư gửi lại được lưu tập trung bằng Supabase.
 
 Thiệp cá nhân hóa đặt ảnh lớn bên trái, tiêu đề và lời chúc bên phải trên màn hình rộng; trên điện thoại, các phần xếp dọc để dễ đọc. Thiệp PNG được xuất theo bố cục ngang từ mọi thiết bị.
 
@@ -32,7 +32,19 @@ npm run test:e2e
 
 Trong môi trường đám mây này, Chromium đã có sẵn. Có thể đặt `PLAYWRIGHT_CHROMIUM_EXECUTABLE` nếu trình duyệt nằm ở đường dẫn khác.
 
-Ba trang dùng hash route: `/#/`, `/#/our-girls` và `/#/your-wish`. Khi chia sẻ đường dẫn trực tiếp, giữ nguyên phần `/#/...`.
+Bốn trang dùng hash route: `/#/`, `/#/our-memories`, `/#/your-wish`, `/#/letters-to-boys`. Link cũ `/#/our-girls` vẫn mở album kỷ niệm. Khu vực quản trị riêng tại `/#/admin`, không tính vào hành trình và yêu cầu đăng nhập quản trị. Khi chia sẻ đường dẫn trực tiếp, giữ nguyên phần `/#/...`.
+
+## Album kỷ niệm và hộp thư
+
+`src/data/memories.ts` là nguồn dữ liệu album: `id`, `title`, `date` tùy chọn, `image`, `description`, `altText`. Thêm ảnh thật vào `public/images/`, rồi thay đường dẫn và câu chuyện trong file dữ liệu. Ba khung hiện tại ghi rõ **mẫu/chờ nội dung**; không dùng ảnh hồ sơ hoặc bịa chuyện thành kỷ niệm thật. Album hiển thị một ảnh ngang giữ nguyên tỷ lệ, hỗ trợ mũi tên, chấm, bàn phím và vuốt.
+
+Trang viết thư chỉ báo thành công sau khi API xác nhận đã lưu PostgreSQL. Hướng dẫn tạo bảng, cấu hình Supabase, tài khoản quản trị và quyền truy cập nằm ở [supabase/README.md](supabase/README.md). Copy `.env.example` sang `.env.local` cho local, nhập ba biến server; `npm run dev` chạy cùng bộ API với Vercel. Chưa cấu hình thì API trả `503 NOT_CONFIGURED`, nội dung đang viết được giữ nguyên để thử lại.
+
+Quản trị đăng nhập tại `/#/admin` để xem tổng số, sắp xếp và tải `DM66_Loi_Nhan_20_10.csv` hoặc `.json`. Cookie xác thực HttpOnly; không có mật khẩu hay khóa bí mật trong frontend. `prebuilt/` chỉ là giao diện tĩnh, không thay thế API/database cho chức năng gửi và quản trị thư.
+
+```sh
+npm run test:database # Cần Docker; kiểm tra PostgreSQL thật, restart, retry, rate limit và quyền
+```
 
 ## Dữ liệu và ảnh
 
@@ -79,20 +91,15 @@ Nhạc chỉ phát sau thao tác bật của người dùng; website không tự
 
 ## Deploy
 
-Kết nối repository trên GitHub với **Vercel** hoặc **Netlify**, rồi chọn thư mục dự án `dm66-website`. Hai tệp cấu hình trong thư mục này đã đặt lệnh build là `npm run build` và thư mục xuất bản là `dist`. Không cần máy chủ ứng dụng hay khóa API.
+Website đầy đủ được triển khai trên **Vercel**, chọn **Root Directory** là `dm66-website`, framework Vite, build `npm run build`, output `dist`. Các API Node trong `api/` được Vercel triển khai cùng giao diện; cần cấu hình ba biến server Supabase theo [hướng dẫn backend](supabase/README.md) và redeploy Preview sau khi lưu biến.
 
-Thay đổi của 5 hồ sơ được chuẩn bị cho **Vercel Preview riêng** để kiểm tra trước khi phát hành. Việc tạo Preview không cập nhật website production.
-
-| Nền tảng | Thiết lập |
-| --- | --- |
-| Vercel | Import repository, đặt **Root Directory** là `dm66-website`, chọn framework Vite; dùng cấu hình `dm66-website/vercel.json`. Output Directory là `dist`. |
-| Netlify | Import repository, đặt **Base directory** là `dm66-website`, dùng cấu hình `dm66-website/netlify.toml`. Build command là `npm run build`, Publish directory là `dist` tính từ Base directory. |
+Bản thay đổi dùng **Vercel Preview riêng** để kiểm tra trước khi phát hành. Việc tạo Preview không cập nhật website production. Cấu hình Netlify cũ vẫn còn trong repository, nhưng chỉ phục vụ giao diện tĩnh; chưa có bản chuyển đổi API thư sang Netlify Functions.
 
 Dự án dùng đường dẫn gốc `/`, phù hợp khi deploy ở tên miền hoặc subdomain riêng. Nếu phục vụ dưới một thư mục con, cần điều chỉnh `base` của Vite và các đường dẫn tài nguyên trước khi build.
 
 Trước khi chia sẻ, chạy `npm test` và `npm run build`, rồi kiểm tra trên bản Preview:
 
-- Ba trang và đường dẫn chia sẻ trực tiếp hoạt động trên máy tính, điện thoại.
+- Cả bốn trang, CTA và đường dẫn chia sẻ trực tiếp hoạt động trên máy tính, điện thoại.
 - Tìm bằng họ tên có dấu, không dấu và biệt danh; thử tên không tồn tại và tên trùng.
 - Ảnh và lời chúc đúng người, nội dung không còn là dữ liệu mẫu.
 - Thiệp PNG tải được, đủ chữ tiếng Việt và ảnh; nhạc bật/tắt được nếu đã cấu hình.

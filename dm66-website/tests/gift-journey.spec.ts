@@ -186,35 +186,28 @@ function expectNativePng(file: NativeSaveProbe['files'][number]) {
   expect(file.width / file.height).toBeGreaterThan(1.2)
 }
 
-test('opens the gift and lets visitors explore the gallery and next chapter', async ({ page }) => {
+test('opens the unchanged gift into a single-photo memory album and the next chapter', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Gửi cậu')
-  const gift = page.getByRole('button', { name: 'Mở món quà của chúng tớ' })
-  await gift.click()
-  await expect(page.getByRole('button', { name: 'Đang mở điều bất ngờ...' })).toBeDisabled()
-  await expect(page).toHaveURL(/#\/our-girls$/)
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
-  await expect(page.locator('.girl-introduction h2')).toHaveText('ABE')
-  await expect(page.locator('.girl-introduction > p').first()).toHaveText('assssssssssssssss')
-  await expect(page.locator('.selected-polaroid img')).toHaveAttribute('src', '/images/girls/ban1.png')
-  await expect(page.locator('.sample-sticker,.sample-note')).toHaveCount(0)
-  expect(await page.locator('.gallery-dots button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')))).toEqual([
-    'Xem ABE', 'Xem ABA', 'Xem ABZ', 'Xem ABQ', 'Xem ABD',
-  ])
-  await page.getByRole('button', { name: 'Bạn tiếp theo', exact: true }).click()
-  await expect(page.locator('.gallery-count')).toHaveText('02 / 05')
-  await expect(page.locator('.girl-introduction h2')).toHaveText('ABA')
-  await expect(page.locator('.girl-introduction > p').first()).toHaveText('aaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-  for (const [position, name] of [[3, 'ABZ'], [4, 'ABQ'], [5, 'ABD']] as const) {
-    const dot = page.getByRole('button', { name: `Xem ${name}`, exact: true })
-    await dot.click()
-    await expect(page.locator('.gallery-count')).toHaveText(`0${position} / 05`)
-    await expect(page.locator('.girl-introduction h2')).toHaveText(name)
-    await expect(dot).toHaveAttribute('aria-pressed', 'true')
-  }
-  await page.getByRole('button', { name: 'Bạn tiếp theo', exact: true }).click()
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
-  await page.getByRole('button', { name: 'Có một lời nhắn dành riêng cho cậu' }).click()
+  await page.getByRole('button', { name: /Mở món quà của chúng tớ/ }).click()
+  await expect(page.getByRole('button', { name: /Đang mở điều bất ngờ/ })).toBeDisabled()
+  await expect(page).toHaveURL(/#\/our-memories$/)
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Our Little Memories')
+  await expect(page.locator('.memories-count')).toHaveText('01/03')
+  await expect(page.locator('.memories-slide')).toHaveCount(1)
+  await expect(page.locator('.memories-slide img')).toHaveAttribute('src', '/images/memories-placeholder.svg')
+  await expect(page.locator('.memories-placeholder-label')).toContainText('TRANG MẪU')
+  await expect(page.locator('.gallery,.girl-introduction')).toHaveCount(0)
+  await page.getByRole('button', { name: /Xem kỷ niệm tiếp theo/ }).click()
+  await expect(page.locator('.memories-caption h2')).toHaveText('Một khoảnh khắc đang chờ được kể')
+  await expect(page.locator('.memories-count')).toHaveText('02/03')
+  await page.getByRole('button', { name: /Xem kỷ niệm 3:/ }).click()
+  await expect(page.locator('.memories-caption h2')).toHaveText('Còn nhiều điều đẹp đẽ để lưu giữ')
+  await expect(page.locator('.memories-description')).toContainText('Đây vẫn là trang mẫu')
+  await expect(page.getByRole('button', { name: /Xem kỷ niệm 3:/ })).toHaveAttribute('aria-current', 'true')
+  await page.getByRole('button', { name: /Xem kỷ niệm tiếp theo/ }).click()
+  await expect(page.locator('.memories-count')).toHaveText('01/03')
+  await page.getByRole('button', { name: /Khám phá lời chúc dành riêng cho cậu/ }).click()
   await expect(page).toHaveURL(/#\/your-wish$/)
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
 })
@@ -637,11 +630,12 @@ test('keeps saving disabled during preparation and can retry a failed PNG encode
   await expect(page.locator('[data-card-export="true"]')).toHaveCount(0)
 })
 
-test('supports direct hash routes, navigation history and the optional music explanation', async ({ page }) => {
+test('supports four public routes, legacy memory links, navigation history and music explanation', async ({ page }) => {
   for (const [route, title] of [
     ['/#/', 'Gửi cậu'],
-    ['/#/our-girls', 'Những cô gái của DM66D'],
+    ['/#/our-memories', 'Kỷ niệm của chúng mình'],
     ['/#/your-wish', 'Lời chúc dành riêng cho cậu'],
+    ['/#/letters-to-boys', 'Thư gửi các bạn nam'],
   ]) {
     await page.goto(route)
     await expect(page).toHaveTitle(new RegExp(title))
@@ -649,12 +643,15 @@ test('supports direct hash routes, navigation history and the optional music exp
     await expect(page.locator('nav [aria-current="page"]')).toHaveAttribute('href', route.slice(1))
     await expectUpdatedClassName(page)
   }
-  await page.locator('nav a[href="#/our-girls"]').click()
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
-  await page.goBack()
+  await page.goto('/#/our-girls')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Our Little Memories')
+  await expect(page.locator('nav [aria-current="page"]')).toHaveAttribute('href', '#/our-memories')
+  await page.locator('nav a[href="#/your-wish"]').click()
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
+  await page.goBack()
+  await expect(page.locator('.memories-count')).toHaveText('01/03')
   await page.goForward()
-  await expect(page.locator('.gallery-count')).toHaveText('01 / 05')
+  await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
   const music = page.getByRole('button', { name: 'Bật nhạc', exact: true })
   await expect(music).toHaveAttribute('aria-pressed', 'false')
   await expect(page.locator('audio')).toHaveCount(0)
@@ -664,31 +661,26 @@ test('supports direct hash routes, navigation history and the optional music exp
   await expect(page.locator('.music-popover')).toHaveCount(0)
 })
 
-test('fits mobile routes, supports swiping and keeps errors and the result usable', async ({ page }) => {
+test('fits every mobile route, swipes memories and keeps errors and personalized card usable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  for (const route of ['/#/', '/#/our-girls', '/#/your-wish']) {
+  await page.route('**/api/admin/session', route => route.fulfill({ status: 401, json: { error: 'unauthorized' } }))
+  for (const route of ['/#/', '/#/our-memories', '/#/your-wish', '/#/letters-to-boys', '/#/admin']) {
     await page.goto(route)
     await expect(page.locator('main')).toBeVisible()
     await expectNoHorizontalOverflow(page)
   }
-  await page.goto('/#/our-girls')
-  const gallery = page.getByRole('region', { name: 'Những cô gái Digital Marketing 66D' })
-  await gallery.dispatchEvent('pointerdown', { clientX: 290, clientY: 450, pointerType: 'touch', pointerId: 1 })
-  await gallery.dispatchEvent('pointerup', { clientX: 90, clientY: 450, pointerType: 'touch', pointerId: 1 })
-  await expect(page.locator('.gallery-count')).toHaveText('02 / 05')
-  await expect(page.locator('.girl-introduction h2')).toHaveText('ABA')
+  await page.goto('/#/our-memories')
+  const album = page.locator('.memories-scrapbook')
+  await album.dispatchEvent('touchstart', { touches: [{ identifier: 1, clientX: 290, clientY: 450 }] })
+  await album.dispatchEvent('touchend', { changedTouches: [{ identifier: 1, clientX: 90, clientY: 450 }] })
+  await expect(page.locator('.memories-count')).toHaveText('02/03')
+  await expect(page.locator('.memories-caption h2')).toHaveText('Một khoảnh khắc đang chờ được kể')
   await expectNoHorizontalOverflow(page)
-  const sidePhoto = page.getByRole('button', { name: 'Xem bạn tiếp theo', exact: true })
-  await sidePhoto.scrollIntoViewIfNeeded()
-  const photoBox = (await sidePhoto.boundingBox())!
-  const startX = Math.min(380, photoBox.x + photoBox.width - 15)
-  const dragY = photoBox.y + photoBox.height * 0.3
-  await page.mouse.move(startX, dragY)
-  await page.mouse.down()
-  await page.mouse.move(startX - 60, dragY, { steps: 6 })
-  await page.mouse.up()
-  await expect(page.locator('.gallery-count')).toHaveText('03 / 05')
-  await page.locator('nav a[href="#/your-wish"]').click()
+  // A mostly vertical gesture must scroll instead of changing the memory.
+  await album.dispatchEvent('touchstart', { touches: [{ identifier: 2, clientX: 240, clientY: 350 }] })
+  await album.dispatchEvent('touchend', { changedTouches: [{ identifier: 2, clientX: 200, clientY: 550 }] })
+  await expect(page.locator('.memories-count')).toHaveText('02/03')
+  await page.getByRole('button', { name: /Khám phá lời chúc dành riêng cho cậu/ }).click()
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.getByRole('alert')).toBeVisible()
   await expectNoHorizontalOverflow(page)
@@ -697,6 +689,10 @@ test('fits mobile routes, supports swiping and keeps errors and the result usabl
   await expect(page.locator('main .greeting-card')).toBeVisible()
   await expectNoHorizontalOverflow(page)
   await readySaveButton(page)
+  await page.getByRole('button', { name: /Gửi lời nhắn đến các bạn nam/ }).click()
+  await expect(page).toHaveURL(/#\/letters-to-boys$/)
+  await expect(page.getByLabel(/Tên của cậu là gì/)).toHaveValue('ABE')
+  await expectNoHorizontalOverflow(page)
 })
 
 test('honors reduced motion while retaining the complete gift interaction', async ({ page }) => {
@@ -704,9 +700,10 @@ test('honors reduced motion while retaining the complete gift interaction', asyn
   await page.goto('/')
   await expect(page.locator('.ambient-heart').first()).toHaveCSS('animation-name', 'none')
   await page.getByRole('button', { name: 'Mở món quà của chúng tớ' }).click()
-  await expect(page).toHaveURL(/#\/our-girls$/)
+  await expect(page).toHaveURL(/#\/our-memories$/)
   await expect(page.locator('.heart-burst > span')).toHaveCount(0)
-  await page.getByRole('button', { name: 'Có một lời nhắn dành riêng cho cậu' }).click()
+  await expect(page.locator('.memories-floating-heart')).toHaveCSS('animation-name', 'none')
+  await page.getByRole('button', { name: /Khám phá lời chúc dành riêng cho cậu/ }).click()
   await page.getByLabel('Tên của cậu là gì?').fill('ABE')
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.locator('main .card-dear')).toHaveText('Dear 1,')
