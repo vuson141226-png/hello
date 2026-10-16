@@ -104,17 +104,6 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
             <Flower2 className="memories-decor memories-flower" size={62} strokeWidth={1.1} aria-hidden="true" />
             <span className="memories-decor memories-forever" aria-hidden="true">Forever DM66D ♡</span>
 
-            {hasMultiple && (
-              <button
-                className="memories-arrow memories-arrow-prev"
-                type="button"
-                aria-label="Xem kỷ niệm trước"
-                onClick={() => goToMemory(activeIndex - 1, -1)}
-              >
-                <ChevronLeft size={23} />
-              </button>
-            )}
-
             <div
               className="memories-scrapbook"
               onTouchStart={handleTouchStart}
@@ -140,41 +129,47 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
                   aria-roledescription="trang album"
                   aria-label={`${activeIndex + 1} trên ${memories.length}`}
                 >
-                  <div className="memories-image-frame">
-                    <img
-                      src={currentMemory.image}
-                      alt={currentMemory.altText}
-                      draggable={false}
-                      decoding="async"
-                      onError={(event) => {
-                        const image = event.currentTarget;
-                        if (!image.src.endsWith("/images/memories-placeholder.svg")) {
-                          image.src = "/images/memories-placeholder.svg";
-                          image.alt = "Khung ảnh minh họa; ảnh kỷ niệm này chưa tải được";
-                        }
-                      }}
-                    />
+                  <div className="memories-photo">
+                    <div className="memories-image-frame">
+                      {currentMemory.date && (
+                        <span className="memories-date">
+                          <Heart size={12} aria-hidden="true" />
+                          <span>{currentMemory.date}</span>
+                        </span>
+                      )}
+                      <img
+                        src={currentMemory.image}
+                        alt={currentMemory.altText}
+                        draggable={false}
+                        decoding="async"
+                        onError={(event) => {
+                          const image = event.currentTarget;
+                          if (!image.src.endsWith("/images/memories-placeholder.svg")) {
+                            image.src = "/images/memories-placeholder.svg";
+                            image.alt = "Khung ảnh minh họa; ảnh kỷ niệm này chưa tải được";
+                          }
+                        }}
+                      />
+                    </div>
+                    {hasMultiple && (
+                      <>
+                        <button className="memories-arrow memories-arrow-prev" type="button" aria-label="Xem kỷ niệm trước" onClick={() => goToMemory(activeIndex - 1, -1)}>
+                          <ChevronLeft size={23} />
+                        </button>
+                        <button className="memories-arrow memories-arrow-next" type="button" aria-label="Xem kỷ niệm tiếp theo" onClick={() => goToMemory(activeIndex + 1, 1)}>
+                          <ChevronRight size={23} />
+                        </button>
+                      </>
+                    )}
                   </div>
                   <figcaption className="memories-caption">
                     {currentMemory.isPlaceholder && <span className="memories-placeholder-label">TRANG MẪU · ĐANG CHỜ KỶ NIỆM THẬT</span>}
                     <h2>{currentMemory.title}</h2>
-                    {currentMemory.date && <p className="memories-date">{currentMemory.date}</p>}
                     <p className="memories-description">{currentMemory.description}</p>
                   </figcaption>
                 </motion.figure>
               </AnimatePresence>
             </div>
-
-            {hasMultiple && (
-              <button
-                className="memories-arrow memories-arrow-next"
-                type="button"
-                aria-label="Xem kỷ niệm tiếp theo"
-                onClick={() => goToMemory(activeIndex + 1, 1)}
-              >
-                <ChevronRight size={23} />
-              </button>
-            )}
           </div>
 
           <div className="memories-controls">

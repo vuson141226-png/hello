@@ -73,6 +73,10 @@ Tìm kiếm chạy ngay trên trình duyệt, đối chiếu tên và biệt dan
 
 Ảnh trong `public/images/` được khuyến nghị cho chức năng tải PNG. Ảnh từ dịch vụ bên ngoài cần cho phép CORS; ảnh vẫn có thể hiển thị trên trang nhưng bị chặn khi xuất thiệp. Kiểm tra tải PNG trên bản đã deploy sau khi thay ảnh.
 
+## Dữ liệu album kỷ niệm
+
+Mẫu Excel: [DM66D-memories-template.xlsx](public/downloads/DM66D-memories-template.xlsx). Điền sheet `Du_lieu_ky_niem`, mỗi dòng là một kỷ niệm; gửi kèm `anh-ky-niem.zip` với tên ảnh khớp cột `image`. Cột `date` là chữ hiển thị trên dải nhãn góc trái ảnh, chấp nhận ngày, tháng/năm hoặc tên dịp. Sheet `Vi_du_minh_hoa` chỉ để tham khảo. Dữ liệu website được quản lý trong `src/data/memories.ts`; file mẫu dùng để chuẩn bị dữ liệu gửi lại, không phải chức năng tự nhập Excel trên website.
+
 ## Lưu thiệp PNG
 
 Bản PNG được vẽ trực tiếp bằng Canvas để tránh lỗi mất ảnh và chồng chữ khi xuất qua SVG trên WebKit/Safari. Ảnh tải và giải mã đầy đủ trước khi vẽ; chữ được đo sau khi tải phông tiếng Việt, tự xuống dòng và dành chỗ riêng cho chữ ký. Kích thước canvas được giới hạn để tránh ảnh trắng khi lời chúc dài trên điện thoại.

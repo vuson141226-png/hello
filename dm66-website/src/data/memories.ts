@@ -14,6 +14,7 @@ export const memories: Memory[] = [
   {
     id: "memory-placeholder-01",
     title: "Một trang dành cho kỷ niệm của chúng mình",
+    date: "Thời gian · đang chờ cập nhật",
     image: "/images/memories-placeholder.svg",
     description:
       "Đây là vị trí minh họa cho một bức ảnh của lớp Digital Marketing 66D. Khi có ảnh và câu chuyện thật, tên kỷ niệm, thời gian cùng những dòng chia sẻ sẽ được thêm vào trang album này.",
@@ -23,6 +24,7 @@ export const memories: Memory[] = [
   {
     id: "memory-placeholder-02",
     title: "Một khoảnh khắc đang chờ được kể",
+    date: "Thời gian · đang chờ cập nhật",
     image: "/images/memories-placeholder.svg",
     description:
       "Trang album này đang chờ một hình ảnh do các bạn cung cấp. Những dòng chữ hiện tại là nội dung mẫu và sẽ được thay bằng câu chuyện gắn với chính bức ảnh đó.",
@@ -32,6 +34,7 @@ export const memories: Memory[] = [
   {
     id: "memory-placeholder-03",
     title: "Còn nhiều điều đẹp đẽ để lưu giữ",
+    date: "Thời gian · đang chờ cập nhật",
     image: "/images/memories-placeholder.svg",
     description:
       "Một chỗ nhỏ nữa dành cho những hình ảnh mà lớp muốn lưu lại. Đây vẫn là trang mẫu; album sẽ có câu chuyện riêng khi chúng mình bổ sung những kỷ niệm thực tế.",

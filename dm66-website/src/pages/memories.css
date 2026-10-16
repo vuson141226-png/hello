@@ -54,8 +54,8 @@
 
 .memories-photo-area {
   position: relative;
-  width: 72%;
-  max-width: 900px;
+  width: 82%;
+  max-width: 1080px;
   margin: 0 auto;
 }
 
@@ -64,7 +64,7 @@
   z-index: 1;
   background: #fffdfa;
   border: 1px solid #efdee2;
-  padding: 14px 14px 24px;
+  padding: 8px 8px 24px;
   border-radius: 11px;
   box-shadow: 0 12px 37px #9f6a7d0d, 0 2px 6px #86576806;
   touch-action: pan-y pinch-zoom;
@@ -74,21 +74,23 @@
   margin: 0;
 }
 
+.memories-photo {
+  position: relative;
+}
+
 .memories-image-frame {
+  position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
   background: #fff5f3;
   border-radius: 5px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .memories-image-frame img {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: auto 16 / 9;
   object-fit: contain;
   object-position: center;
   user-select: none;
@@ -235,9 +237,29 @@
 }
 
 .memories-date {
-  font-size: 10px;
-  color: #b18095;
-  margin: -2px 0 12px;
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(78%, 430px);
+  padding: 11px 28px 11px 16px;
+  color: #fff9f5;
+  background: #a83f70f0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%);
+  filter: drop-shadow(0 3px 5px #6e294d24);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+  text-align: left;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
+.memories-date svg {
+  flex: 0 0 auto;
 }
 
 .memories-description {
@@ -252,7 +274,8 @@
 
 .memories-arrow {
   position: absolute;
-  top: min(14vw, 180px);
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 3;
   display: grid;
   place-items: center;
@@ -269,7 +292,7 @@
 .memories-arrow:hover {
   background: #fae7ee;
   color: var(--rose);
-  transform: scale(1.06);
+  transform: translateY(-50%) scale(1.06);
 }
 
 .memories-arrow-prev {
@@ -426,7 +449,7 @@
 }
 
 @media (max-width: 1150px) {
-  .memories-photo-area { width: 76%; }
+  .memories-photo-area { width: 84%; }
   .memories-note { left: -99px; top: 14px; width: 88px; font-size: 17px; min-height: 83px; }
   .memories-note::before { left: 26px; }
   .memories-doodle { right: -109px; width: 97px; font-size: 20px; }
@@ -435,19 +458,19 @@
   .memories-floating-heart { left: -46px; top: 128px; width: 17px; }
   .memories-arrow-prev { left: -54px; }
   .memories-arrow-next { right: -54px; }
-  .memories-arrow { top: 12vw; width: 42px; height: 44px; }
+  .memories-arrow { width: 42px; height: 44px; }
 }
 
 @media (max-width: 850px) {
   .memories-heading { margin-bottom: 39px; }
-  .memories-photo-area { width: 86%; }
+  .memories-photo-area { width: 90%; }
   .memories-note, .memories-doodle, .memories-forever, .memories-floating-heart { display: none; }
   .memories-flower { left: -35px; bottom: 10px; width: 40px; }
   .memories-sparkle { right: -26px; top: 66px; width: 20px; }
   .memories-bow { right: -17px; top: -29px; width: 65px; }
   .memories-arrow-prev { left: -44px; }
   .memories-arrow-next { right: -44px; }
-  .memories-arrow { width: 39px; height: 44px; top: 15vw; }
+  .memories-arrow { width: 39px; height: 44px; }
   .memories-caption { padding: 20px 9px 0; }
   .memories-description { font-size: 10px; }
 }
@@ -459,14 +482,13 @@
   .memories-eyebrow { font-size: 6px; letter-spacing: 1.7px; margin-bottom: 13px; }
   .memories-subtitle { font-size: 10px; line-height: 1.9; padding: 0 5px; }
   .memories-photo-area { width: 100%; }
-  .memories-scrapbook { padding: 8px 8px 21px; border-radius: 8px; }
+  .memories-scrapbook { padding: 5px 5px 21px; border-radius: 8px; }
   .memories-image-frame { border-radius: 4px; }
   .memories-tape-left { left: 21px; width: 68px; height: 19px; top: -8px; }
   .memories-bow { right: -5px; top: -27px; width: 55px; height: 49px; }
   .memories-sparkle { display: none; }
   .memories-flower { left: -12px; bottom: -10px; width: 33px; height: 38px; opacity: 0.75; }
   .memories-arrow {
-    top: calc((100vw - 50px) * 0.28125 - 22px);
     width: 36px;
     height: 44px;
     border-radius: 10px;
@@ -479,7 +501,7 @@
   .memories-caption { padding: 19px 9px 0; }
   .memories-placeholder-label { padding: 5px 6px; font-size: 6px; letter-spacing: 0.7px; margin-bottom: 12px; }
   .memories-caption h2 { font-size: 25px; margin-bottom: 11px; }
-  .memories-date { font-size: 9px; }
+  .memories-date { top: 12px; max-width: 82%; padding: 8px 22px 8px 11px; gap: 6px; font-size: 9px; }
   .memories-description { font-size: 10px; line-height: 1.95; }
   .memories-controls { margin-top: 10px; gap: 15px; }
   .memories-dots button { width: 29px; }

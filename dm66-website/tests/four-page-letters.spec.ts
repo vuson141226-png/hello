@@ -43,10 +43,15 @@ test('keeps one landscape memory and synchronized captions with arrows, dots and
   const frame = (await page.locator('.memories-image-frame').boundingBox())!
   const content = (await page.locator('main').boundingBox())!
   expect(frame.width / frame.height).toBeCloseTo(16 / 9, 1)
-  expect(frame.width / content.width).toBeGreaterThan(0.65)
-  expect(frame.width / content.width).toBeLessThan(0.75)
+  expect(frame.width / content.width).toBeGreaterThan(0.78)
+  expect(frame.width / content.width).toBeLessThan(0.9)
   await expect(page.locator('.memories-slide')).toHaveCount(1)
-  await expect(page.locator('.memories-date')).toHaveCount(0)
+  const ribbon = page.locator('.memories-image-frame .memories-date')
+  await expect(ribbon).toContainText('đang chờ cập nhật')
+  const ribbonBox = (await ribbon.boundingBox())!
+  expect(ribbonBox.x).toBeCloseTo(frame.x, 0)
+  expect(ribbonBox.y).toBeGreaterThanOrEqual(frame.y)
+  expect(ribbonBox.y + ribbonBox.height).toBeLessThan(frame.y + frame.height)
   await expect(page.locator('.memories-placeholder-label')).toHaveText(/ĐANG CHỜ KỶ NIỆM THẬT/)
   await carousel.focus()
   await page.keyboard.press('ArrowLeft')
