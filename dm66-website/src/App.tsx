@@ -10,8 +10,6 @@ import {
   ArrowDown,
   ArrowRight,
   Check,
-  ChevronLeft,
-  ChevronRight,
   Download,
   Flower2,
   Heart,
@@ -25,22 +23,28 @@ import {
   VolumeX,
   X,
 } from "lucide-react";
-import { toPng } from "html-to-image";
 import { girls } from "./data/girls";
 import type { Girl } from "./data/girls";
 import { findRecipients } from "./lib/recipients";
+import { createCardImage } from "./lib/cardImage";
+import { downloadImage, isMobileDevice, saveImage } from "./lib/saveImage";
 import { Envelope } from "./components/Envelope";
 import { siteConfig } from "./config";
+import { MemoriesPage } from "./pages/MemoriesPage";
+import { LettersPage } from "./pages/LettersPage";
+import { AdminLettersPage } from "./pages/AdminLettersPage";
 
-type Page = "welcome" | "our-girls" | "your-wish";
+type Page = "welcome" | "our-girls" | "our-memories" | "your-wish" | "letters-to-boys" | "admin";
 const readPage = (): Page => {
   const page = window.location.hash.replace(/^#\/?/, "");
-  return page === "our-girls" || page === "your-wish" ? page : "welcome";
+  if (page === "our-girls") return "our-memories";
+  return page === "our-memories" || page === "your-wish" || page === "letters-to-boys" || page === "admin" ? page : "welcome";
 };
 const pageLinks: { page: Page; label: string; short: string }[] = [
   { page: "welcome", label: "Lời chào", short: "Chào cậu" },
-  { page: "our-girls", label: "Những cô gái DM66D", short: "Our girls" },
+  { page: "our-memories", label: "Kỷ niệm của chúng mình", short: "Kỷ niệm" },
   { page: "your-wish", label: "Lời chúc riêng", short: "Lời chúc" },
+  { page: "letters-to-boys", label: "Thư gửi các bạn nam", short: "Gửi thư" },
 ];
 
 function Bow({ className = "" }: { className?: string }) {
@@ -289,206 +293,6 @@ function Welcome({
   );
 }
 
-function GirlsPage({ navigate }: { navigate: (page: Page) => void }) {
-  const [index, setIndex] = useState(0);
-  const touchStart = useRef<number | null>(null);
-  const swipeHandled = useRef(false);
-  const selected = girls[index];
-  const change = (delta: number) =>
-    setIndex((previous) => (previous + delta + girls.length) % girls.length);
-  return (
-    <main className="girls-page page-shell" id="main-content" tabIndex={-1}>
-      <div className="section-heading">
-        <div className="eyebrow">
-          <span className="little-line" /> CHƯƠNG 02 · NHỮNG SẮC MÀU ĐẶC BIỆT
-        </div>
-        <h1>
-          Những cô gái <em>của DM66D.</em>
-        </h1>
-        <p>
-          Mỗi cô gái là một sắc màu riêng, cùng nhau tạo nên
-          <br className="desktop-break" /> một tập thể lớp 66D thật đặc biệt.
-        </p>
-        <span className="heading-script">Meet our beautiful girls</span>
-      </div>
-      {selected ? (
-        <>
-          <div
-            className="gallery"
-            role="region"
-            aria-roledescription="băng chuyền"
-            aria-label="Những cô gái Digital Marketing 66D"
-            onPointerDown={(event) => {
-              swipeHandled.current = false;
-              touchStart.current = event.clientX;
-            }}
-            onPointerUp={(event) => {
-              if (
-                touchStart.current !== null &&
-                Math.abs(event.clientX - touchStart.current) > 50 &&
-                girls.length > 1
-              ) {
-                swipeHandled.current = true;
-                change(event.clientX < touchStart.current ? 1 : -1);
-              }
-              touchStart.current = null;
-            }}
-            onClickCapture={(event) => {
-              // A drag can also synthesize a click on a side photo.
-              if (swipeHandled.current && event.detail > 0) {
-                event.preventDefault();
-                event.stopPropagation();
-                swipeHandled.current = false;
-              }
-            }}
-            onPointerCancel={() => {
-              touchStart.current = null;
-            }}
-          >
-            <span className="gallery-doodle doodle-left">
-              a little sunshine{" "}
-              <svg viewBox="0 0 60 45">
-                <path d="M5 8q38-4 39 31m-6-8 7 9 8-10" />
-              </svg>
-            </span>
-            {girls.length > 1 && (
-              <button
-                className="polaroid side-polaroid previous-polaroid"
-                onClick={() => change(-1)}
-                aria-label="Xem bạn trước"
-              >
-                <Portrait
-                  girl={girls[(index - 1 + girls.length) % girls.length]}
-                  loading="lazy"
-                />
-                <span>
-                  {girls[(index - 1 + girls.length) % girls.length].displayName}
-                </span>
-              </button>
-            )}
-            <div className="main-polaroid-area">
-              <Bow className="photo-bow" />
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  className="polaroid selected-polaroid"
-                  key={selected.id}
-                  initial={{ opacity: 0, x: 25, rotate: 2 }}
-                  animate={{ opacity: 1, x: 0, rotate: -2 }}
-                  exit={{ opacity: 0, x: -25, rotate: -3 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <span className="photo-tape" />
-                  <Portrait girl={selected} />
-                  <div className="polaroid-caption">
-                    <span>{selected.displayName}</span>
-                    <Heart size={17} />
-                  </div>
-                  {selected.isPlaceholder && (
-                    <span className="sample-sticker">DỮ LIỆU MẪU</span>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-            {girls.length > 1 && (
-              <button
-                className="polaroid side-polaroid next-polaroid"
-                onClick={() => change(1)}
-                aria-label="Xem bạn tiếp theo"
-              >
-                <Portrait
-                  girl={girls[(index + 1) % girls.length]}
-                  loading="lazy"
-                />
-                <span>{girls[(index + 1) % girls.length].displayName}</span>
-              </button>
-            )}
-            <span className="gallery-doodle doodle-right">
-              you make us brighter <span>✧</span>
-            </span>
-          </div>
-          <div className="gallery-controls">
-            <button
-              className="round-button"
-              onClick={() => change(-1)}
-              disabled={girls.length < 2}
-              aria-label="Bạn trước"
-            >
-              <ChevronLeft size={19} />
-            </button>
-            <div className="gallery-dots" aria-label="Chọn bạn">
-              {girls.map((girl, position) => (
-                <button
-                  key={girl.id}
-                  onClick={() => setIndex(position)}
-                  className={position === index ? "active" : ""}
-                  aria-label={`Xem ${girl.fullName}`}
-                  aria-pressed={position === index}
-                />
-              ))}
-            </div>
-            <span className="gallery-count">
-              {String(index + 1).padStart(2, "0")}{" "}
-              <span>/ {String(girls.length).padStart(2, "0")}</span>
-            </span>
-            <button
-              className="round-button"
-              onClick={() => change(1)}
-              disabled={girls.length < 2}
-              aria-label="Bạn tiếp theo"
-            >
-              <ChevronRight size={19} />
-            </button>
-          </div>
-          <div className="girl-introduction" aria-live="polite">
-            <h2>{selected.fullName}</h2>
-            <p>
-              {selected.introduction.trim()
-                ? selected.introduction
-                : "Phần giới thiệu của cậu đang được chuẩn bị."}
-            </p>
-            {!selected.isPlaceholder && (
-              <>
-                <p className="personality-note">{selected.personality}</p>
-                {selected.memory && (
-                  <p className="memory-note">“{selected.memory}”</p>
-                )}
-              </>
-            )}
-          </div>
-          <button
-            className="button button-primary"
-            onClick={() => navigate("your-wish")}
-          >
-            <Heart size={18} />
-            Có một lời nhắn dành riêng cho cậu
-            <ArrowRight size={18} />
-          </button>
-          {girls.some((girl) => girl.isPlaceholder) && (
-            <p className="sample-note">
-              Một chỗ nhỏ đang chờ những gương mặt thật của DM66D.
-              <br />
-              Website đang hiển thị dữ liệu thử và ảnh mẫu.
-            </p>
-          )}
-        </>
-      ) : (
-        <div className="empty-state">
-          <Mail size={36} />
-          <h2>Album đang chờ những sắc màu đầu tiên.</h2>
-          <p>Chúng tớ đang chuẩn bị ảnh và lời giới thiệu cho các cậu.</p>
-          <button
-            className="button button-primary"
-            onClick={() => navigate("your-wish")}
-          >
-            Đến trang lời chúc
-            <ArrowRight size={18} />
-          </button>
-        </div>
-      )}
-    </main>
-  );
-}
-
 function GreetingCard({
   girl,
   cardRef,
@@ -572,9 +376,11 @@ function GreetingCard({
 function WishPage({
   celebrate,
   notify,
+  onWriteLetter,
 }: {
   celebrate: () => void;
   notify: (message: string) => void;
+  onWriteLetter: (senderName: string) => void;
 }) {
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
@@ -582,13 +388,72 @@ function WishPage({
   const [recipientId, setRecipientId] = useState<string | null>(null);
   const [opening, setOpening] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [preparingImage, setPreparingImage] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageAttempt, setImageAttempt] = useState(0);
+  const [cardImage, setCardImage] = useState<{
+    recipientId: string;
+    file: File;
+  } | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [replay, setReplay] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLHeadingElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveDialogRef = useRef<HTMLDialogElement>(null);
+  const mounted = useRef(true);
   const reduced = useReducedMotion();
   const recipient = girls.find((girl) => girl.id === recipientId);
+  const preparedImage = cardImage?.recipientId === recipientId ? cardImage : null;
+  const mobile = isMobileDevice();
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    setCardImage(null);
+    setImageError(false);
+    setPreviewOpen(false);
+    const source = cardRef.current;
+    if (!source || !recipient) {
+      setPreparingImage(false);
+      return;
+    }
+    setPreparingImage(true);
+    createCardImage(source, recipient.id)
+      .then((file) => {
+        if (!cancelled) setCardImage({ recipientId: recipient.id, file });
+      })
+      .catch(() => {
+        if (!cancelled) setImageError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setPreparingImage(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [recipient, imageAttempt]);
+  useEffect(() => {
+    if (!preparedImage) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(preparedImage.file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [preparedImage]);
+  useEffect(() => {
+    const dialog = saveDialogRef.current;
+    if (!dialog) return;
+    if (previewOpen && previewUrl && !dialog.open) dialog.showModal();
+    else if (!previewOpen && dialog.open) dialog.close();
+  }, [previewOpen, previewUrl]);
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
@@ -639,56 +504,22 @@ function WishPage({
     setTimeout(() => inputRef.current?.focus(), 50);
   };
   const saveCard = async () => {
-    if (!cardRef.current || !recipient || saving) return;
+    if (!preparedImage || saving) return;
     setSaving(true);
-    let exportContainer: HTMLDivElement | null = null;
     try {
-      await document.fonts.ready;
-      // Export a static copy so saving during a reveal/replay never omits fading text.
-      const source = cardRef.current;
-      if (!source) return;
-      const clone = source.cloneNode(true) as HTMLDivElement;
-      clone.style.width = `${Math.max(1000, source.getBoundingClientRect().width)}px`;
-      clone.style.maxWidth = "none";
-      clone.dataset.cardExport = "true";
-      clone
-        .querySelectorAll<HTMLElement>(".card-letter p")
-        .forEach((paragraph) => {
-          paragraph.style.opacity = "1";
-          paragraph.style.transform = "none";
-          paragraph.style.animation = "none";
-          paragraph.style.transition = "none";
-        });
-      exportContainer = document.createElement("div");
-      exportContainer.setAttribute("aria-hidden", "true");
-      exportContainer.style.cssText =
-        "position:fixed;left:-10000px;top:0;pointer-events:none;";
-      exportContainer.appendChild(clone);
-      document.body.appendChild(exportContainer);
-      await Promise.all(
-        Array.from(clone.querySelectorAll("img")).map((img) => {
-          img.loading = "eager";
-          return img.decode();
-        }),
-      );
-      const dataUrl = await toPng(clone, {
-        pixelRatio: 3,
-        backgroundColor: "#fff9f5",
-      });
-      const link = document.createElement("a");
-      link.download = `DM66D-20-10-${recipient.id.replace(/[^a-zA-Z0-9_-]/g, "_")}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      notify("Thiệp đã được tạo. Giữ lại chút yêu thương này nhé!");
+      // No await before saveImage: native pickers/sharing need this click's activation.
+      const result = await saveImage(preparedImage.file);
+      if (!mounted.current) return;
+      if (result === "saved") notify("Thiệp đã được lưu vào nơi cậu chọn.");
+      else if (result === "shared")
+        notify("Ảnh thiệp đã được chuyển tới ứng dụng cậu chọn.");
+      else if (result === "downloaded")
+        notify("Thiệp đã được tạo. Cậu kiểm tra thư mục Tải xuống nhé!");
+      else if (result === "preview") setPreviewOpen(true);
     } catch {
-      notify(
-        "Chưa thể lưu thiệp. Cậu thử lại nhé; ảnh cần tải đủ và cho phép xuất PNG.",
-      );
+      if (mounted.current) setPreviewOpen(true);
     } finally {
-      exportContainer?.remove();
-      setSaving(false);
+      if (mounted.current) setSaving(false);
     }
   };
   if (recipient)
@@ -713,12 +544,28 @@ function WishPage({
             </span>
             <button
               className="button button-primary"
-              onClick={saveCard}
-              disabled={saving}
+              onClick={
+                imageError
+                  ? () => setImageAttempt((value) => value + 1)
+                  : saveCard
+              }
+              disabled={saving || preparingImage || (!preparedImage && !imageError)}
+              aria-busy={preparingImage || saving}
             >
               <Download size={18} />
-              {saving ? "Đang gói ghém thiệp..." : "Lưu thiệp của mình"}
+              {imageError
+                ? "Thử tạo ảnh lại"
+                : preparingImage || !preparedImage
+                  ? "Đang chuẩn bị ảnh..."
+                  : saving
+                    ? "Đang mở bảng lưu..."
+                    : "Lưu thiệp của mình"}
             </button>
+            {imageError && (
+              <p className="save-image-error" role="alert">
+                Chưa tạo được ảnh thiệp. Cậu thử tạo lại nhé!
+              </p>
+            )}
             <button
               className="button button-secondary"
               onClick={() => {
@@ -742,17 +589,87 @@ function WishPage({
               <Heart size={18} />
               Gửi một trái tim
             </button>
-            <button className="text-button find-another" onClick={reset}>
+            {mobile && (
+              <button
+                className="text-button save-image-preview"
+                disabled={!preparedImage || saving}
+                onClick={() => setPreviewOpen(true)}
+              >
+                Mở ảnh để lưu vào máy
+              </button>
+            )}
+            <button
+              className="text-button find-another"
+              onClick={reset}
+              disabled={saving}
+            >
               <Search size={15} />
               Tìm một lời chúc khác
             </button>
             <p className="actions-footnote">
-              Lưu thành ảnh PNG để giữ lại
-              <br />
-              một kỷ niệm nhỏ của chúng mình.
+              {mobile
+                ? "Chọn Lưu hình ảnh trong bảng chia sẻ, hoặc mở ảnh và nhấn giữ để lưu."
+                : "Chọn nơi lưu ảnh PNG. Nếu trình duyệt tự tải, cậu kiểm tra thư mục Tải xuống nhé."}
             </p>
           </aside>
         </div>
+        <section className="wish-letter-transition" aria-label="Một lời nhắn gửi lại">
+          <p>Chúng tớ đã gửi những lời chúc của mình rồi. Còn cậu, có điều gì muốn nhắn gửi đến những chàng trai DM66D không? 💗</p>
+          <button className="button button-primary" onClick={() => onWriteLetter(recipient.fullName)}>
+            <Mail size={18} /> 💌 Gửi lời nhắn đến các bạn nam
+          </button>
+        </section>
+        <dialog
+          ref={saveDialogRef}
+          className="save-image-dialog"
+          aria-labelledby="save-image-title"
+          aria-describedby="save-image-help"
+          onCancel={() => setPreviewOpen(false)}
+          onClose={() => setPreviewOpen(false)}
+        >
+          <button
+            className="save-image-close"
+            aria-label="Đóng ảnh thiệp"
+            onClick={() => setPreviewOpen(false)}
+          >
+            <X size={21} />
+          </button>
+          <h2 id="save-image-title">Lưu thiệp vào máy</h2>
+          <p id="save-image-help">
+            {mobile
+              ? "Nhấn giữ ảnh bên dưới rồi chọn Lưu vào Ảnh hoặc Tải hình ảnh xuống."
+              : "Chọn Tải ảnh PNG để lưu vào máy theo thiết lập của trình duyệt."}
+          </p>
+          {previewUrl && (
+            <img
+              className="save-image-full"
+              src={previewUrl}
+              alt={`Thiệp chúc mừng dành cho ${recipient.fullName}`}
+            />
+          )}
+          <div className="save-image-options">
+            <button
+              className="button button-primary"
+              onClick={() => {
+                if (!preparedImage) return;
+                downloadImage(preparedImage.file);
+                notify("Đã yêu cầu tải ảnh PNG. Cậu kiểm tra mục tải xuống của trình duyệt nhé!");
+              }}
+            >
+              <Download size={18} />Tải ảnh PNG
+            </button>
+            {previewUrl && (
+              <a
+                className="button button-secondary"
+                href={previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Mở ảnh riêng
+              </a>
+            )}
+          </div>
+        </dialog>
       </main>
     );
   return (
@@ -901,6 +818,7 @@ function WishPage({
 
 export default function App() {
   const [page, setPage] = useState<Page>(readPage);
+  const [letterSenderName, setLetterSenderName] = useState("");
   const [burst, setBurst] = useState(0);
   const [toast, setToast] = useState("");
   const [playing, setPlaying] = useState(false);
@@ -918,7 +836,15 @@ export default function App() {
     return () => window.removeEventListener("hashchange", change);
   }, []);
   useEffect(() => {
-    document.title = `${page === "welcome" ? "Gửi cậu, với yêu thương" : page === "our-girls" ? "Những cô gái của DM66D" : "Lời chúc dành riêng cho cậu"} · DM66D`;
+    const titles: Record<Page, string> = {
+      welcome: "Gửi cậu, với yêu thương",
+      "our-girls": "Kỷ niệm của chúng mình",
+      "our-memories": "Kỷ niệm của chúng mình",
+      "your-wish": "Lời chúc dành riêng cho cậu",
+      "letters-to-boys": "Thư gửi các bạn nam",
+      admin: "Quản trị lời nhắn",
+    };
+    document.title = `${titles[page]} · DM66D`;
   }, [page]);
   useEffect(
     () => () => {
@@ -927,8 +853,9 @@ export default function App() {
     [],
   );
   const navigate = (next: Page) => {
-    if (next === page) return;
-    window.location.hash = next === "welcome" ? "#/" : `#/${next}`;
+    const destination = next === "our-girls" ? "our-memories" : next;
+    if (destination === page) return;
+    window.location.hash = destination === "welcome" ? "#/" : `#/${destination}`;
     pageRef.current?.focus({ preventScroll: true });
   };
   const notify = (message: string) => {
@@ -1023,12 +950,24 @@ export default function App() {
                   navigate={navigate}
                   celebrate={() => setBurst((value) => value + 1)}
                 />
-              ) : page === "our-girls" ? (
-                <GirlsPage navigate={navigate} />
+              ) : page === "our-memories" ? (
+                <MemoriesPage onContinue={() => navigate("your-wish")} />
+              ) : page === "letters-to-boys" ? (
+                <LettersPage
+                  initialSenderName={letterSenderName}
+                  onHome={() => navigate("welcome")}
+                  onCelebrate={() => setBurst((value) => value + 1)}
+                />
+              ) : page === "admin" ? (
+                <AdminLettersPage onHome={() => navigate("welcome")} />
               ) : (
                 <WishPage
                   celebrate={() => setBurst((value) => value + 1)}
                   notify={notify}
+                  onWriteLetter={(senderName) => {
+                    setLetterSenderName(senderName);
+                    navigate("letters-to-boys");
+                  }}
                 />
               )}
             </motion.div>
