@@ -412,6 +412,7 @@ function WishPage({
   const recipient = useMemo<Girl | null>(() => matchedRecipient ? ({
     ...matchedRecipient, nicknames: [], wish: selectedWish?.message ?? "",
     senderName: selectedWish?.senderName,
+    image: selectedWish?.image ?? matchedRecipient.image,
   }) : null, [matchedRecipient, selectedWish]);
   const imageKey = selectedWish && recipient ? `${recipient.id}/${selectedWish.id}` : null;
   const preparedImage = cardImage?.imageKey === imageKey ? cardImage : null;

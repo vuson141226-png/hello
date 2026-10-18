@@ -135,18 +135,22 @@ for (const width of [320, 390, 1440]) {
   })
 }
 
-test('loads every uploaded event photo and preserves events whose images or descriptions are missing', async ({ page }) => {
+test('loads all 30 final event photos and every complete event description', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/#/our-memories')
-  expect(memories.flatMap(memory => memory.images).filter(image => !image.isPlaceholder)).toHaveLength(28)
+  expect(memories.flatMap(memory => memory.images)).toHaveLength(30)
+  expect(memories.every(memory => memory.images.length === 2 && memory.images.every(image => !image.isPlaceholder))).toBe(true)
+  expect(memories.every(memory => memory.description.trim().length > 0)).toBe(true)
   for (const [index] of memories.entries()) {
     await page.locator('.memories-dots button').nth(index).click()
     await expectMemory(page, index)
     await expectMemoryPhotos(page, index)
     await expectFitsViewport(page)
   }
-  await expect(page.locator('.memories-photo-unavailable')).toHaveCount(2)
+  await expect(page.locator('.memories-photo-unavailable')).toHaveCount(0)
   await expect(page.locator('.memories-caption h2')).toHaveText('Lẩu Phann')
+  await expect(page.locator('.memories-image-frame img').first()).toHaveAttribute('src', '/images/memories/lauphan1.jpg')
+  await expect(page.locator('.memories-image-frame img').last()).toHaveAttribute('src', '/images/memories/lauphan2.jpg')
 })
 
 test('keeps the other photo and complete event caption when an uploaded photo fails to load', async ({ page }) => {

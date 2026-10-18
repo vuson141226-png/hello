@@ -36,7 +36,7 @@ Bốn trang dùng hash route: `/#/`, `/#/our-memories`, `/#/your-wish`, `/#/lett
 
 ## Album kỷ niệm và hộp thư
 
-`src/data/memories.ts` lưu 15 sự kiện từ Excel được cung cấp, mỗi sự kiện gồm tên đầy đủ, mô tả và hai ảnh. Album dùng hai khung ảnh hơi nghiêng, chồng nhẹ lên nhau; giữ tỷ lệ ảnh gốc và hỗ trợ mũi tên, chấm, bàn phím, vuốt trên điện thoại. 28 ảnh thật nằm trong `public/images/memories/`. Cặp ảnh Lẩu Phann chưa có trong ZIP nên dùng khung chờ ảnh; ba sự kiện chưa có mô tả được giữ trống, không thêm câu chuyện tự tạo. Xem [báo cáo nhập dữ liệu](docs/memories-import-report.md).
+`src/data/memories.ts` lưu 15 sự kiện từ Excel cuối được cung cấp, mỗi sự kiện gồm tên đầy đủ, mô tả và hai ảnh. Album dùng hai khung ảnh gọn, hơi nghiêng và chồng nhẹ lên nhau; giữ tỷ lệ ảnh gốc và hỗ trợ mũi tên, chấm, bàn phím, vuốt trên điện thoại. Đủ 30 ảnh thật nằm trong `public/images/memories/`, gồm cặp ảnh Lẩu Phann. Xem [báo cáo nhập dữ liệu](docs/memories-import-report.md).
 
 Trang viết thư chỉ báo thành công sau khi API xác nhận đã lưu PostgreSQL. Hướng dẫn tạo bảng, cấu hình Supabase, tài khoản quản trị và quyền truy cập nằm ở [supabase/README.md](supabase/README.md). Copy `.env.example` sang `.env.local` cho local, nhập ba biến server; `npm run dev` chạy cùng bộ API với Vercel. Chưa cấu hình thì API trả `503 NOT_CONFIGURED`, nội dung đang viết được giữ nguyên để thử lại.
 
@@ -48,7 +48,7 @@ npm run test:database # Cần Docker; kiểm tra PostgreSQL thật, restart, ret
 
 ## Tra cứu tên, mã sinh viên và lời chúc
 
-Trang `/#/your-wish` đối chiếu họ tên và mã sinh viên ngay trong trình duyệt. Tên được chuẩn hóa dấu, chữ hoa/thường và khoảng trắng; mã được so dưới dạng chuỗi để giữ số 0 đầu. Cả hai phải khớp cùng một dòng. Sau khi tra cứu, trang thông báo số lời chúc, hiển thị các nút để mở từng lời; thiệp và PNG dùng đúng nội dung và người gửi của lời đang chọn. Người có 0 lời chúc được báo rõ trạng thái này.
+Trang `/#/your-wish` đối chiếu họ tên và mã sinh viên ngay trong trình duyệt. Tên được chuẩn hóa dấu, chữ hoa/thường và khoảng trắng; mã được so dưới dạng chuỗi để giữ số 0 đầu. Cả hai phải khớp cùng một dòng. Sau khi tra cứu, trang thông báo số lời chúc, hiển thị các nút để mở từng lời; thiệp và PNG dùng đúng nội dung và ảnh của lời đang chọn. Dữ liệu cuối có 44 người nhận và 60 lời chúc. Người có 0 lời chúc vẫn được báo rõ trạng thái này khi cập nhật dữ liệu sau này.
 
 Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json`. Đây là dữ liệu công khai, có thể được người truy cập website đọc. Tra cứu này không có đăng nhập, cookie phiên hoặc yêu cầu Supabase. Phần gửi thư và quản trị hộp thư dùng API Supabase hiện có.
 
@@ -56,7 +56,7 @@ Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json
 - [Hướng dẫn cập nhật dữ liệu](docs/wishes.md).
 - [Báo cáo đối chiếu file được cung cấp](docs/wishes-data-report.md).
 
-File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Ảnh người nhận dùng khung minh họa vì file không có ánh xạ ảnh; các đường dẫn ảnh cũ vẫn được giữ để tương thích. Ảnh ngoài miền cần CORS để xuất PNG.
+File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Đã ghép 55 ảnh gốc theo tên file Excel cho 59 lời chúc; một lời không ghi tên ảnh giữ hình minh họa. Ánh xạ được lưu trong `scripts/recipient-photo-manifest.json` để giữ ảnh khi xuất lại dữ liệu. Xem tình trạng ghép ảnh trong báo cáo dữ liệu. Ảnh ngoài miền cần CORS để xuất PNG.
 
 ## Dữ liệu album kỷ niệm
 

@@ -42,7 +42,7 @@ export const memories: Memory[] = [
         "altText": "First 20/10 — ảnh kỷ niệm 2"
       }
     ],
-    "description": ""
+    "description": "Oh wowowowowowo first time lần đầu tiên tổ chức ngày cho các bạn nữ nè, lần đầu có một chút bối rối vì cũng vừa mới quen các bạn nên cũng chưa biết phải tổ chức như thế nào nhưng mà trộm vía là thành công phổng mũi tự hào 😤"
   },
   {
     "id": "ky-niem-03",
@@ -132,7 +132,7 @@ export const memories: Memory[] = [
         "altText": "2 ngày 1 đêm đầu tiênnn — ảnh kỷ niệm 2"
       }
     ],
-    "description": ""
+    "description": "Uồi đi với nhau như này mà đã đi uống với lớp r á, chắc không có gì đâu uống chắc bàn với nhau thôi, đó là suy nghĩ ban đầu của tui NHƯNG thật crazy khi mọi người tiến sang bàn khác để cụng ly uống với nhau, tự dưng thấy lớp mình các bạn nữ thật lì lợm và dễ thương at the same time khi các bạn say rồi vẫn cố uống cho bằng được"
   },
   {
     "id": "ky-niem-09",
@@ -192,7 +192,7 @@ export const memories: Memory[] = [
         "altText": "08/03/2026 — ảnh kỷ niệm 2"
       }
     ],
-    "description": ""
+    "description": "Ngày 8/3 đầu tiên của 66D với lớp, ban đầu còn nghĩ là chắc tặng quà gì đó nhưng mà lúc đó đã có idea bánh có khuôn mặt mọi người và một chiếc banner siêu sến. Trộm vía là may thay tui đã kịp nhớ hết khuôn mặt đến tóc tai của các bạn nên khi thấy cái bánh đó các bạn chụp lên up str tui thích lắm phổng mũi tự hào lần 2 và lại thêm một kỷ niệm nữa với lớp D"
   },
   {
     "id": "ky-niem-13",
@@ -229,14 +229,12 @@ export const memories: Memory[] = [
     "title": "Lẩu Phann",
     "images": [
       {
-        "src": "/images/memories-placeholder.svg",
-        "altText": "Lẩu Phann — đang chờ ảnh kỷ niệm 1",
-        "isPlaceholder": true
+        "src": "/images/memories/lauphan1.jpg",
+        "altText": "Lẩu Phann — ảnh kỷ niệm 1"
       },
       {
-        "src": "/images/memories-placeholder.svg",
-        "altText": "Lẩu Phann — đang chờ ảnh kỷ niệm 2",
-        "isPlaceholder": true
+        "src": "/images/memories/lauphan2.jpg",
+        "altText": "Lẩu Phann — ảnh kỷ niệm 2"
       }
     ],
     "description": "Và đã đến buổi bonding gần nhất của lớp rồi, thời gian trôi nhanh quá mà haizzz. Sau khi đi xuho về ai cũng háo hức để có một buổi đi ăn với nhau, thế là buổi Lẩu Phan đó đã xuất hiện như một lẽ tất yếu=)). Vẫn còn nhớ lớp mình lúc đấy còn 3 môn thi cuối kì chưa xong mà đã kéo nhau đi ăn rồi=))). Hôm đấy thực sự rất vui, mọi người lại có thêm dịp được tâm sự cùng nhau và ôn lại những kỉ niệm đã qua nữa. Mong rằng lớp mình sẽ có thêm nhiều buổi đi ăn đi chơi như thế này để tình cảm của tập thể 66D ngày càng trở nên bền chặt và gắn kết nhaa!"
