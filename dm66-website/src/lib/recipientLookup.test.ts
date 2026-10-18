@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { findWishRecipient, type WishRecipient } from "./recipientLookup";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { findWishRecipient, loadRecipients, type WishRecipient } from "./recipientLookup";
 
 const recipients: WishRecipient[] = [
   { id: "sample-01", fullName: "Mẫu Đặng Ánh", displayName: "Ánh", studentCode: "0012-AB", image: "/images/portrait-placeholder.svg", introduction: "", personality: "", wishes: [
@@ -38,5 +38,70 @@ describe("spreadsheet recipient lookup", () => {
   it("supports empty directories and recipients without wishes", () => {
     expect(findWishRecipient("Mẫu Đặng Ánh", "0012-AB", [])).toBeUndefined();
     expect(findWishRecipient("Mẫu Đặng Ánh", "0013-AB", recipients)?.wishes).toEqual([]);
+  });
+});
+
+describe("recipient data feeds", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const specialRecipient: WishRecipient = {
+    ...recipients[0], id: "anniversary-sample", fullName: "Người yêu thử", studentCode: "SPECIAL-TEST",
+    anniversary: { kind: "one-month", images: [{ src: "/test-photo.svg", altText: "Ảnh kỷ niệm thử" }] },
+  };
+
+  function mockFeeds(ordinary: unknown, special: unknown) {
+    const fetchMock = vi.fn(async (url: string) => Response.json(url === "/data/special-recipients.json" ? special : ordinary));
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  it("combines the ordinary and special feeds without changing their records", async () => {
+    const before = structuredClone([recipients, specialRecipient]);
+    const fetchMock = mockFeeds(recipients, [specialRecipient]);
+    const result = await loadRecipients();
+    expect(result).toEqual([...recipients, specialRecipient]);
+    expect(result[2].anniversary?.images[0].altText).toBe("Ảnh kỷ niệm thử");
+    expect([recipients, specialRecipient]).toEqual(before);
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual(["/data/recipient-wishes.json", "/data/special-recipients.json"]);
+  });
+
+  it("accepts an empty special feed for ordinary class wishes", async () => {
+    mockFeeds(recipients, []);
+    expect(await loadRecipients()).toEqual(recipients);
+  });
+
+  it.each(["/data/recipient-wishes.json", "/data/special-recipients.json"])("rejects an unsuccessful %s response instead of silently losing recipients", async (failedUrl) => {
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => url === failedUrl
+      ? new Response("Unavailable", { status: 503 }) : Response.json([])));
+    await expect(loadRecipients()).rejects.toThrow("Could not load wishes");
+  });
+
+  it.each([
+    { kind: "other", images: [] },
+    { kind: "one-month", images: null },
+    { kind: "one-month", images: [null] },
+    { kind: "one-month", images: [{ src: "/test.svg" }] },
+    { kind: "one-month", images: [{ src: 42, altText: "Ảnh thử" }] },
+  ])("rejects malformed anniversary metadata %#", async (anniversary) => {
+    mockFeeds(recipients, [{ ...specialRecipient, anniversary }]);
+    await expect(loadRecipients()).rejects.toThrow("Invalid wish data");
+  });
+
+  it.each([null, { recipients: [] }, [{ fullName: "Tên thử", studentCode: 123, wishes: [] }]])("rejects malformed feed records %#", async (special) => {
+    mockFeeds(recipients, special);
+    await expect(loadRecipients()).rejects.toThrow("Invalid wish data");
+  });
+
+  it("passes the same abort signal to both downloads and propagates cancellation", async () => {
+    const controller = new AbortController();
+    const fetchMock = vi.fn((_url: string, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {
+      init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    const pending = loadRecipients(controller.signal);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls.every(([, init]) => init?.signal === controller.signal)).toBe(true);
+    controller.abort();
+    await expect(pending).rejects.toMatchObject({ name: "AbortError" });
   });
 });

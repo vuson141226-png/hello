@@ -53,4 +53,6 @@ Mã sinh viên phải là văn bản để giữ số 0 đầu. Họ tên đư�
 
 Tra cứu lời chúc hoạt động với Vite, Vercel Preview hoặc bản tĩnh `prebuilt/`, chỉ cần phục vụ file JSON cùng website. Khi cập nhật `prebuilt/`, đồng bộ toàn bộ `dist/`, gồm thư mục `data/` và `downloads/`.
 
+`public/data/special-recipients.json` chứa hồ sơ thiệp kỷ niệm bổ sung, được tải cùng `recipient-wishes.json` khi tra cứu. Hồ sơ này nằm ngoài Excel của lớp nên không bị ghi đè khi nhập lại workbook. Giữ cả hai file JSON trong bản triển khai; lỗi tải dữ liệu được báo để người xem thử lại. Thiệp kỷ niệm tự mở khi khớp cả tên và mã, có hiệu ứng riêng, album ảnh với hộp xem lớn và vẫn hỗ trợ lưu PNG. Hiệu ứng chuyển sang tĩnh khi thiết bị yêu cầu giảm chuyển động.
+
 Phần gửi thư cho các bạn nam và quản trị hộp thư tiếp tục dùng API/Supabase như trước. Dữ liệu API đó không được đưa vào JSON lời chúc. Chỉ triển khai nhánh tính năng lên Preview; không merge `main` trong công việc này.

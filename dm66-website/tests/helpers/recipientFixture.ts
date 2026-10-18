@@ -29,4 +29,5 @@ export async function mockRecipients(page: Page) {
     return route.fulfill({ contentType: 'image/svg+xml', body: `<svg xmlns="http://www.w3.org/2000/svg" width="${profile.width}" height="1400"><rect width="100%" height="100%" fill="#29222b"/><circle cx="420" cy="430" r="180" fill="#f3b9c8"/></svg>` })
   })
   await page.route('**/data/recipient-wishes.json', route => route.fulfill({ json: profiles.map((_, index) => fixtureRecipient(index)) }))
+  await page.route('**/data/special-recipients.json', route => route.fulfill({ json: [] }))
 }

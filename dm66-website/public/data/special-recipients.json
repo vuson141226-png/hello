@@ -1,0 +1,91 @@
+[
+  {
+    "id": "recipient-anniversary-phuong",
+    "fullName": "múp",
+    "displayName": "Phương",
+    "studentCode": "20092026",
+    "image": "/images/anniversary-phuong/photo-11.jpg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-anniversary-phuong",
+        "title": "Một tháng yêu nhau · 20/10",
+        "senderName": "Sơn",
+        "message": "Wow hihi ngày 20/10 cũng là ngày kỉ niệm 1 tháng bọn mih iu nhau. Má nó bền quá em ơi, chưa bao giờ iu ai quá 4 tuần đây này=))) lâu rồi mới được cảm giác yêu một người và được yêu là như thế nào chả biết là miêu tả cảm như nào đây này. Hihi tuy mới được 1 tháng mà cũng có một chút chút kỉ niệm đáng yêu, cái đêm ngồi tỏ tình với em má nó siêu ngại vien=)) mãi là mới rặn ra được đấy tình yêu ơi. Rồi bọn mình được đón sinh nhật của em đầu tiên với nhau wowow bình thường là cũng xinh gái xinh gái rồi đó đến hôm đấy là shock luôn ôi cô người yêu xinh gái của Sơn ơi, em xinh gái quá!! iu em. Buổi photobooth đầu tiên của bọn mình nữa, món quà sinh nhật đầu tiên, chiếc bánh sinh nhật đầu tiênn và một bữa ăn siêu siêu ngonn luôn ý cảm ơn ngyeu anh rất nhiều. Trời ơi nhìn biểu cảm của em lúc mở qua ra siêu siêu đáng yêu. Thêm cả những đêm lén lút ra ngoài đi chơi rồi lén lút vào nhà nằm ôm em gái ngủ hihi. Nằm ôm em ngủ ngon lắm em à không muốn thức dậy luôn ấy chỉ muốn nằm đó và ôm em ngủ thêm cả những lúc mà em bẻn lẻn bẻn lẻn nữa=)) đáng yêu vcll luôn rất là thích trêu em sori my baby. Thỉnh thoảng anh cũng nói chuyện hơi khó nghe làm em khó chịu nhiều huhu những mà ko phải là mắng đâu nhá? chỉ là nói to giọng lên một chút để giọng nói cho nó đanh thép oke ko phải là quát mắng em gì đâu mò đừng hiểu lầm Sơn. Tạm viết đến đây thôi nhá còn những tâm tình khác là bí mật hihi. 1 tháng qua Sơn đã rất rất hạnh phúc, cám ơn em rất nhiều vì đã chon bên cạnh anh và yêu anh dù vẫn đang còn nhiều điều chưa tốt và thỉnh thoảng làm em buồn nhiều huhu cám ơn tình yêu tôi rất nhiều anh chỉ muốn nói là Anh iu Em rất nhiều. Cũng là nhân ngày 20/10 này muốn chúc em ngày càng xinh gái, đáng yêu hãy luôn giữ nụ cười mãi trên môi mình nhasaa, học thật giỏi hơn nữa cố gắng phấn đấu bằng anh oki và cũng hy vọng mình sẽ ở bên nhau thật lâu hơn nữa để cùng nhau đón thêm kỉ niệm đẹp nhó. Iu em rất nhiều!!",
+        "image": "/images/anniversary-phuong/photo-11.jpg"
+      }
+    ],
+    "anniversary": {
+      "kind": "one-month",
+      "images": [
+        {
+          "src": "/images/anniversary-phuong/photo-01.jpg",
+          "altText": "Ảnh kỷ niệm 01 trong album của Sơn và Phương",
+          "width": 2048,
+          "height": 1376
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-02.jpg",
+          "altText": "Ảnh kỷ niệm 02 trong album của Sơn và Phương",
+          "width": 2048,
+          "height": 1376
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-03.jpg",
+          "altText": "Ảnh kỷ niệm 03 trong album của Sơn và Phương",
+          "width": 1440,
+          "height": 2560
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-04.jpg",
+          "altText": "Ảnh kỷ niệm 04 trong album của Sơn và Phương",
+          "width": 720,
+          "height": 1280
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-05.jpg",
+          "altText": "Ảnh kỷ niệm 05 trong album của Sơn và Phương",
+          "width": 2560,
+          "height": 1920
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-06.jpg",
+          "altText": "Ảnh kỷ niệm 06 trong album của Sơn và Phương",
+          "width": 2048,
+          "height": 1376
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-07.jpg",
+          "altText": "Ảnh kỷ niệm 07 trong album của Sơn và Phương",
+          "width": 2048,
+          "height": 1376
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-08.jpg",
+          "altText": "Ảnh kỷ niệm 08 trong album của Sơn và Phương",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-09.jpg",
+          "altText": "Ảnh kỷ niệm 09 trong album của Sơn và Phương",
+          "width": 1536,
+          "height": 2048
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-10.jpg",
+          "altText": "Ảnh kỷ niệm 10 trong album của Sơn và Phương",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "src": "/images/anniversary-phuong/photo-11.jpg",
+          "altText": "Ảnh kỷ niệm 11 trong album của Sơn và Phương",
+          "width": 1284,
+          "height": 1915
+        }
+      ]
+    }
+  }
+]

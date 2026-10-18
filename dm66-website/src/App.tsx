@@ -33,6 +33,7 @@ import { siteConfig } from "./config";
 import { MemoriesPage } from "./pages/MemoriesPage";
 import { LettersPage } from "./pages/LettersPage";
 import { AdminLettersPage } from "./pages/AdminLettersPage";
+import { AnniversaryGallery, AnniversaryHero } from "./components/AnniversaryExperience";
 
 type Page = "welcome" | "our-girls" | "our-memories" | "your-wish" | "letters-to-boys" | "admin";
 const readPage = (): Page => {
@@ -297,15 +298,17 @@ function GreetingCard({
   girl,
   cardRef,
   replay,
+  anniversary = false,
 }: {
   girl: Girl;
   cardRef: React.RefObject<HTMLDivElement | null>;
   replay: number;
+  anniversary?: boolean;
 }) {
   return (
     <div className="greeting-card" ref={cardRef}>
       <div className="card-topline">
-        <span>DIGITAL MARKETING 66D</span>
+        <span>{anniversary ? "SƠN & PHƯƠNG" : "DIGITAL MARKETING 66D"}</span>
         <Heart size={15} />
         <span>20.10.2026</span>
       </div>
@@ -322,7 +325,9 @@ function GreetingCard({
         <div className="card-message">
           <span className="card-dear">Dear {girl.displayName},</span>
           <h2>
-            Chúc mừng ngày <em>20/10!</em>
+            {anniversary
+              ? <>Chúc mừng <em>1 tháng yêu nhau!</em></>
+              : <>Chúc mừng ngày <em>20/10!</em></>}
           </h2>
           <motion.div
             key={replay}
@@ -362,7 +367,9 @@ function GreetingCard({
           <div className="card-signature">
             <Heart size={18} fill="currentColor" />
             <span>{girl.senderName ? `From ${girl.senderName} — With Love` : "With Love"}</span>
-            <small>YOU MAKE OUR CLASS BRIGHTER.</small>
+            <small>{anniversary
+              ? "MỘT THÁNG BÊN NHAU · THẬT NHIỀU YÊU THƯƠNG"
+              : "YOU MAKE OUR CLASS BRIGHTER."}</small>
           </div>
         </div>
       </div>
@@ -409,6 +416,7 @@ function WishPage({
   const mounted = useRef(true);
   const reduced = useReducedMotion();
   const selectedWish = matchedRecipient?.wishes.find((wish) => wish.id === selectedWishId);
+  const anniversary = matchedRecipient?.anniversary;
   const recipient = useMemo<Girl | null>(() => matchedRecipient ? ({
     ...matchedRecipient, nicknames: [], wish: selectedWish?.message ?? "",
     senderName: selectedWish?.senderName,
@@ -496,7 +504,9 @@ function WishPage({
         return;
       }
       setMatchedRecipient(match);
-      setSelectedWishId("");
+      setSelectedWishId(match.anniversary?.kind === "one-month"
+        ? match.wishes[0]?.id ?? ""
+        : "");
       celebrate();
       window.scrollTo({ top: 0, behavior: "instant" });
     } catch {
@@ -547,16 +557,18 @@ function WishPage({
   };
   if (recipient)
     return (
-      <main className="result-page page-shell" id="main-content" tabIndex={-1}>
-        <div className="section-heading result-heading">
+      <main className={`result-page page-shell${anniversary ? " anniversary-page" : ""}`} id="main-content" tabIndex={-1}>
+        {anniversary ? (
+          <AnniversaryHero headingRef={resultRef} celebrationKey={replay} />
+        ) : <div className="section-heading result-heading">
           <div className="eyebrow">
             <Heart size={13} /> MỘT LỜI NHẮN, CHỈ DÀNH CHO CẬU
           </div>
           <h1 ref={resultRef} tabIndex={-1}>
             Cậu xứng đáng với <em>những điều thật đẹp.</em>
           </h1>
-        </div>
-        <section className={`wish-selection ${selectedWish ? "" : "wish-notice"}`} aria-label="Những lời chúc dành cho cậu">
+        </div>}
+        {!anniversary && <section className={`wish-selection ${selectedWish ? "" : "wish-notice"}`} aria-label="Những lời chúc dành cho cậu">
           <p className="wish-count" aria-live="polite">Cậu có <strong>{matchedRecipient?.wishes.length ?? 0} lời chúc</strong> dành cho mình.</p>
           {selectedWish ? <>
             <label htmlFor="selected-wish">Chọn lời chúc muốn đọc</label>
@@ -583,9 +595,12 @@ function WishPage({
             {!matchedRecipient?.wishes.length && <div className="wish-empty"><Mail size={34} /><p>Lời chúc của cậu đang được chuẩn bị.</p><p>Cậu quay lại sau một chút nhé!</p></div>}
             <button className="text-button find-another" onClick={reset}><Search size={15} />Nhập lại tên và mã sinh viên</button>
           </>}
-        </section>
+        </section>}
         {selectedWish && <div className="result-layout">
-          <GreetingCard girl={recipient} cardRef={cardRef} replay={replay} />
+          {anniversary && <p className="anniversary-letter-note">
+            Một lá thư từ Sơn, dành riêng cho Phương trong ngày 20/10.
+          </p>}
+          <GreetingCard girl={recipient} cardRef={cardRef} replay={replay} anniversary={!!anniversary} />
           <aside className="card-actions">
             <Bow className="actions-bow" />
             <span className="actions-script">
@@ -636,6 +651,7 @@ function WishPage({
               className="button button-secondary"
               onClick={() => {
                 celebrate();
+                if (anniversary) setReplay((value) => value + 1);
                 notify("Một trái tim, thật nhiều yêu thương. Cảm ơn cậu!");
               }}
             >
@@ -666,12 +682,19 @@ function WishPage({
             </p>}
           </aside>
         </div>}
-        <section className="wish-letter-transition" aria-label="Một lời nhắn gửi lại">
+        {anniversary ? <>
+          <AnniversaryGallery images={anniversary.images} />
+          <div className="anniversary-closing">
+            <Heart size={25} strokeWidth={1.2} />
+            <p>Một tháng đầu tiên, và còn thật nhiều kỷ niệm đang chờ chúng mình.</p>
+            <span>Sơn ♡ Phương</span>
+          </div>
+        </> : <section className="wish-letter-transition" aria-label="Một lời nhắn gửi lại">
           <p>Chúng tớ đã gửi những lời chúc của mình rồi. Còn cậu, có điều gì muốn nhắn gửi đến những chàng trai DM66D không? 💗</p>
           <button className="button button-primary" onClick={() => onWriteLetter(recipient.fullName)}>
             <Mail size={18} /> 💌 Gửi lời nhắn đến các bạn nam
           </button>
-        </section>
+        </section>}
         <dialog
           ref={saveDialogRef}
           className="save-image-dialog"
