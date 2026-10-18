@@ -9,6 +9,18 @@ export interface RecipientWish {
   imageFile?: string;
 }
 
+export interface AnniversaryPhoto {
+  src: string;
+  altText: string;
+  width?: number;
+  height?: number;
+}
+
+export interface AnniversaryExperience {
+  kind: "one-month";
+  images: AnniversaryPhoto[];
+}
+
 export interface WishRecipient {
   id: string;
   fullName: string;
@@ -19,6 +31,7 @@ export interface WishRecipient {
   personality: string;
   memory?: string;
   wishes: RecipientWish[];
+  anniversary?: AnniversaryExperience;
 }
 
 /** Look up both fields from the spreadsheet; student codes remain strings. */
@@ -32,11 +45,21 @@ export function findWishRecipient(fullName: string, studentCode: string, recipie
 }
 
 export async function loadRecipients(signal?: AbortSignal): Promise<WishRecipient[]> {
-  const response = await fetch("/data/recipient-wishes.json", { signal });
-  if (!response.ok) throw new Error("Could not load wishes");
-  const recipients: unknown = await response.json();
-  if (!Array.isArray(recipients) || recipients.some((recipient) =>
-    !recipient || typeof recipient.fullName !== "string" || typeof recipient.studentCode !== "string" || !Array.isArray(recipient.wishes),
-  )) throw new Error("Invalid wish data");
-  return recipients as WishRecipient[];
+  const directories = await Promise.all([
+    "/data/recipient-wishes.json",
+    "/data/special-recipients.json",
+  ].map(async (url) => {
+    const response = await fetch(url, { signal });
+    if (!response.ok) throw new Error("Could not load wishes");
+    const recipients: unknown = await response.json();
+    if (!Array.isArray(recipients) || recipients.some((recipient) =>
+      !recipient || typeof recipient.fullName !== "string" || typeof recipient.studentCode !== "string" || !Array.isArray(recipient.wishes) ||
+      (recipient.anniversary !== undefined && (
+        recipient.anniversary?.kind !== "one-month" || !Array.isArray(recipient.anniversary.images) ||
+        recipient.anniversary.images.some((photo: AnniversaryPhoto) => !photo || typeof photo.src !== "string" || typeof photo.altText !== "string")
+      )),
+    )) throw new Error("Invalid wish data");
+    return recipients as WishRecipient[];
+  }));
+  return directories.flat();
 }
