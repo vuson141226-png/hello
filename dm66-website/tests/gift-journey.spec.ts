@@ -611,12 +611,13 @@ test('keeps saving disabled during preparation and can retry a failed PNG encode
   await expect(page.locator('[data-card-export="true"]')).toHaveCount(0)
 })
 
-test('supports four public routes, legacy memory links, navigation history and music explanation', async ({ page }) => {
+test('supports five public routes, legacy memory links, navigation history and music explanation', async ({ page }) => {
   for (const [route, title] of [
     ['/#/', 'Gửi cậu'],
     ['/#/our-memories', 'Kỷ niệm của chúng mình'],
     ['/#/your-wish', 'Lời chúc dành riêng cho cậu'],
     ['/#/letters-to-boys', 'Thư gửi các bạn nam'],
+    ['/#/photobooth', 'Photobooth'],
   ]) {
     await page.goto(route)
     await expect(page).toHaveTitle(new RegExp(title))
@@ -645,7 +646,7 @@ test('supports four public routes, legacy memory links, navigation history and m
 test('fits every mobile route, swipes memories and keeps errors and personalized card usable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.route('**/api/admin/session', route => route.fulfill({ status: 401, json: { error: 'unauthorized' } }))
-  for (const route of ['/#/', '/#/our-memories', '/#/your-wish', '/#/letters-to-boys', '/#/admin']) {
+  for (const route of ['/#/', '/#/our-memories', '/#/your-wish', '/#/letters-to-boys', '/#/photobooth', '/#/admin']) {
     await page.goto(route)
     await expect(page.locator('main')).toBeVisible()
     await expectNoHorizontalOverflow(page)

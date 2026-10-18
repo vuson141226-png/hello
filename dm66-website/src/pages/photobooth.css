@@ -1,0 +1,193 @@
+.photobooth-page {
+  padding-top: 47px;
+  padding-bottom: 64px;
+}
+
+.photobooth-heading {
+  margin: 0 auto 38px;
+  max-width: 760px;
+  text-align: center;
+}
+
+.photobooth-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  color: #ae7990;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.7px;
+}
+
+.photobooth-eyebrow > span { width: 25px; height: 1px; background: #dfb7c6; }
+
+.photobooth-heading h1 {
+  margin: 0 0 17px;
+  color: #ae5f81;
+  font-family: var(--font-script);
+  font-size: clamp(38px, 4.2vw, 57px);
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.photobooth-heading h1 > svg { display: inline; vertical-align: middle; margin-left: 3px; color: #ca8aa7; }
+.photobooth-heading > p:last-child { max-width: 550px; margin: 0 auto; color: #a07c8b; font-size: 12px; line-height: 1.95; }
+
+.photobooth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 50px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.photobooth-camera-panel {
+  min-width: 0;
+  background: #fffdf9c9;
+  border: 1px solid #ead2db;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 9px 25px #b7819608;
+}
+
+.photobooth-panel-topline { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 17px; }
+.photobooth-panel-topline h2 { display: flex; align-items: center; gap: 8px; margin: 0; color: #9c6a82; font-size: 13px; line-height: 1.6; font-weight: 500; }
+.photobooth-panel-topline h2 svg { flex-shrink: 0; color: #ba7b99; }
+.photobooth-camera-indicator { display: flex; align-items: center; gap: 6px; flex-shrink: 0; color: #ae8b9c; font-size: 9px; }
+.photobooth-camera-indicator i { width: 5px; height: 5px; border-radius: 50%; background: #d6b4c4; }
+.photobooth-camera-indicator.is-on i { background: #8ca78b; box-shadow: 0 0 0 3px #a1b79b20; }
+
+.photobooth-camera-view {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid #eddae1;
+  border-radius: 10px;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 40% 35%, #fcf4f0, #f5e7ec);
+}
+
+.photobooth-camera-view video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); visibility: hidden; display: block; }
+.photobooth-camera-view video.is-ready { visibility: visible; }
+.photobooth-camera-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; color: #c397ab; }
+.photobooth-camera-empty > svg { margin-bottom: 19px; }
+.photobooth-camera-empty > strong { font-family: var(--font-script); font-size: 29px; line-height: 1.3; font-weight: 500; color: #b78199; }
+.photobooth-camera-empty > span { margin-top: 12px; color: #b997a7; font-size: 10px; line-height: 1.8; }
+.photobooth-view-corner { position: absolute; width: 21px; height: 21px; border-color: #d4a4baab; border-style: solid; border-width: 0; border-radius: 2px; pointer-events: none; }
+.photobooth-view-corner-tl { top: 13px; left: 13px; border-top-width: 1px; border-left-width: 1px; }
+.photobooth-view-corner-tr { top: 13px; right: 13px; border-top-width: 1px; border-right-width: 1px; }
+.photobooth-view-corner-bl { bottom: 13px; left: 13px; border-bottom-width: 1px; border-left-width: 1px; }
+.photobooth-view-corner-br { bottom: 13px; right: 13px; border-bottom-width: 1px; border-right-width: 1px; }
+.photobooth-view-caption { position: absolute; bottom: 12px; left: 0; width: 100%; text-align: center; color: #b48d9e; font-family: var(--font-script); font-size: 14px; pointer-events: none; text-shadow: 0 1px 3px #fff8; }
+.photobooth-camera-view:has(video.is-ready) .photobooth-view-caption { color: #fff7fa; text-shadow: 0 1px 4px #3b182b; }
+.photobooth-countdown { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #47283e1c; color: #fff9fc; text-shadow: 0 3px 20px #64384766; pointer-events: none; }
+.photobooth-countdown > span { font-family: var(--font-display); font-size: 96px; font-weight: 500; line-height: 1; }
+.photobooth-countdown > small { font-size: 11px; letter-spacing: 2px; margin-top: 11px; }
+.photobooth-flash { position: absolute; inset: 0; pointer-events: none; background: #fff; opacity: 0; animation: photobooth-flash 350ms ease-out; }
+
+.photobooth-progress { display: flex; align-items: center; gap: 6px; margin: 20px 0 19px; min-height: 30px; }
+.photobooth-progress > span { flex: 0 0 23px; width: 23px; height: 23px; display: grid; place-items: center; background: #fcf2f4; border: 1px solid #ecd5df; border-radius: 50%; color: #c69bb0; font-size: 10px; }
+.photobooth-progress > span.is-current { border-color: #bd7a9a; background: #fae7ee; color: #a9567c; }
+.photobooth-progress > span.is-complete { border-color: #b87a98; background: #bd7d9c; color: #fffafc; }
+.photobooth-progress > p { flex: 1; min-width: 0; margin: 0 0 0 6px; color: #a07b8e; font-size: 10px; line-height: 1.8; }
+.photobooth-error { padding: 12px 14px; margin: 0 0 18px; border: 1px solid #efbdce; border-radius: 7px; color: #ac456c; background: #fff2f5; font-size: 11px; line-height: 1.85; overflow-wrap: anywhere; }
+
+.photobooth-camera-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 20px; }
+.photobooth-page .button { justify-content: center; font-size: 11px; padding: 15px 21px; min-height: 48px; }
+.photobooth-page .button-primary::after { content: "✧" / ""; }
+.photobooth-text-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 4px; min-height: 42px; background: transparent; border: 0; color: #b17b95; font-size: 10px; line-height: 1.7; border-radius: 5px; }
+.photobooth-text-button:hover:not(:disabled) { color: #984666; }
+.photobooth-page button:focus-visible, .photobooth-page a:focus-visible { outline: 2px solid #bb6c95; outline-offset: 4px; }
+.photobooth-page button:disabled { cursor: default; transform: none; }
+.photobooth-upload { margin-top: 23px; text-align: center; }
+.photobooth-or { display: flex; align-items: center; justify-content: center; gap: 13px; margin-bottom: 11px; color: #c8a7b5; font-size: 9px; }
+.photobooth-or::before, .photobooth-or::after { content: ""; width: 44px; height: 1px; background: #efdee5; }
+.photobooth-file-input { display: none; }
+.photobooth-upload-button { display: inline-flex; justify-content: center; align-items: center; gap: 9px; padding: 10px 12px; min-height: 44px; max-width: 100%; border: 0; border-radius: 5px; background: none; color: #ad7490; font-size: 11px; }
+.photobooth-upload-button:hover:not(:disabled) { background: #faedf2; }
+.photobooth-upload > p { margin: 3px 0 0; color: #b799a7; font-size: 9px; line-height: 1.8; }
+.photobooth-tip { display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 19px; margin-top: 22px; border-top: 1px dashed #ead5de; color: #b99580; }
+.photobooth-tip > svg { flex: 0 0 auto; }
+.photobooth-tip > p { margin: 0; color: #b18c9c; font-size: 10px; line-height: 1.85; }
+
+.photobooth-preview-panel { min-width: 0; text-align: center; }
+.photobooth-preview-heading { display: flex; align-items: center; justify-content: center; gap: 9px; margin: 0 0 21px; color: #c091a4; }
+.photobooth-preview-heading h2 { margin: 0; color: #aa738d; font-family: var(--font-script); font-size: 25px; font-weight: 500; line-height: 1.3; }
+.photobooth-preview-heading > span { font-size: 14px; }
+.photobooth-strip-wrap { position: relative; width: min(100%, 250px); margin: 0 auto; transform: rotate(2deg); filter: drop-shadow(0 10px 14px #875d731b); }
+.photobooth-preview-image { width: 100%; height: auto; display: block; border: 1px solid #edd4de; }
+.photobooth-tape { position: absolute; z-index: 1; top: -9px; left: 50%; width: 74px; height: 23px; background: repeating-linear-gradient(90deg, #e8bbcbbb 0 8px, #f4d8e1ba 8px 16px); border: 1px solid #e6b8ca55; clip-path: polygon(3% 0, 97% 3%, 100% 18%, 98% 32%, 100% 51%, 98% 72%, 100% 97%, 0 100%, 2% 81%, 0 64%, 2% 42%, 0 21%); transform: translateX(-50%) rotate(-6deg); pointer-events: none; }
+.photobooth-strip-placeholder { padding: 23px 20px 16px; border: 1px solid #ebd5dd; background: #fff6f1; aspect-ratio: 1080 / 2544; color: #b97996; display: flex; flex-direction: column; gap: 9px; align-items: center; }
+.photobooth-strip-placeholder > strong { font-family: var(--font-script); font-size: 30px; font-weight: 500; }
+.photobooth-strip-placeholder > span { font-size: 8px; margin-bottom: 5px; }
+.photobooth-strip-placeholder > div { width: 100%; aspect-ratio: 4 / 3; background: #f5e7e8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #c9a1b0; border: 1px solid #e9d1da; }
+.photobooth-strip-placeholder > div > span { font-size: 9px; }
+.photobooth-strip-placeholder > small { font-family: var(--font-script); font-size: 16px; margin-top: auto; }
+.photobooth-preview-note { color: #bd96a7; font-family: var(--font-script); font-size: 18px; margin: 18px 0 12px; line-height: 1.5; }
+.photobooth-result-actions { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.photobooth-page .photobooth-save-button { padding-left: 27px; padding-right: 27px; }
+.photobooth-save-help { margin: 10px auto 0; max-width: 255px; color: #b798a6; font-size: 9px; line-height: 1.9; }
+.photobooth-image-error { margin-top: 17px; color: #ac456c; font-size: 11px; line-height: 1.8; }
+.photobooth-image-error p { margin: 0; }
+.photobooth-save-dialog .save-image-full { max-width: 330px; margin-left: auto; margin-right: auto; }
+.photobooth-spinning { animation: photobooth-spin 1.4s linear infinite; }
+
+@keyframes photobooth-spin { to { transform: rotate(360deg); } }
+@keyframes photobooth-flash { from { opacity: 0.75; } to { opacity: 0; } }
+
+@media (max-width: 1050px) {
+  .photobooth-layout { gap: 32px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+  .photobooth-camera-panel { padding: 20px; }
+  .photobooth-strip-wrap { width: min(100%, 230px); }
+  .photobooth-camera-indicator { display: none; }
+}
+
+@media (max-width: 740px) {
+  .photobooth-page { padding-top: 34px; padding-bottom: 42px; }
+  .photobooth-heading { margin-bottom: 29px; }
+  .photobooth-eyebrow { font-size: 7px; gap: 9px; letter-spacing: 1.2px; margin-bottom: 14px; }
+  .photobooth-eyebrow > span { width: 15px; }
+  .photobooth-heading h1 { font-size: 40px; line-height: 1.25; margin-bottom: 15px; }
+  .photobooth-heading h1 > svg { width: 22px; height: 22px; }
+  .photobooth-heading > p:last-child { font-size: 11px; padding: 0 6px; max-width: 430px; }
+  .photobooth-layout { grid-template-columns: minmax(0, 1fr); gap: 34px; max-width: 530px; }
+  .photobooth-camera-panel { padding: 20px; border-radius: 13px; }
+  .photobooth-panel-topline h2 { font-size: 12px; }
+  .photobooth-camera-indicator { display: flex; }
+  .photobooth-camera-empty > strong { font-size: 28px; }
+  .photobooth-preview-heading { margin-bottom: 23px; }
+  .photobooth-preview-heading h2 { font-size: 27px; }
+  .photobooth-strip-wrap { width: min(76%, 265px); }
+  .photobooth-preview-note { margin-top: 22px; }
+}
+
+@media (max-width: 400px) {
+  .photobooth-heading h1 { font-size: 35px; }
+  .photobooth-heading h1 > svg { width: 19px; height: 19px; }
+  .photobooth-eyebrow { font-size: 6px; gap: 6px; letter-spacing: 1px; }
+  .photobooth-eyebrow > span { width: 12px; }
+  .photobooth-camera-panel { padding: 15px; }
+  .photobooth-panel-topline { margin-bottom: 13px; }
+  .photobooth-panel-topline h2 { font-size: 11px; }
+  .photobooth-camera-indicator { font-size: 8px; gap: 5px; }
+  .photobooth-camera-empty { padding: 12px; }
+  .photobooth-camera-empty > svg { width: 34px; height: 34px; margin-bottom: 11px; }
+  .photobooth-camera-empty > strong { font-size: 25px; }
+  .photobooth-camera-empty > span { font-size: 9px; margin-top: 8px; }
+  .photobooth-view-caption { font-size: 12px; }
+  .photobooth-progress { gap: 5px; margin: 17px 0; }
+  .photobooth-progress > span { flex-basis: 21px; width: 21px; height: 21px; font-size: 9px; }
+  .photobooth-progress > p { font-size: 9px; margin-left: 4px; }
+  .photobooth-page .button { font-size: 10px; padding-left: 16px; padding-right: 16px; }
+  .photobooth-tip > p { font-size: 9px; }
+  .photobooth-tip { gap: 8px; }
+  .photobooth-camera-actions { gap: 9px 13px; }
+  .photobooth-countdown > span { font-size: 76px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photobooth-spinning, .photobooth-flash { animation: none; }
+}
