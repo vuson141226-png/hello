@@ -2,9 +2,11 @@
 
 Chỉ triển khai nhánh `feat/dm66d-memories-and-letters` vào Vercel **Preview**. Không merge vào `main` và không dùng project dữ liệu thật để thử. Mã sinh viên và nội dung lời chúc được nhập trực tiếp từ máy tin cậy vào Supabase; không biên dịch thành JavaScript, JSON công khai hoặc lưu trong Git.
 
+Người nhận chỉ nhập tên và mã sinh viên. Điều kiện mở lời chúc là tên đã chuẩn hóa đúng **và** mã khớp với cùng một người nhận; sai một trong hai thì báo lỗi chung. Điều kiện được thực hiện phía máy chủ để danh sách mã và nội dung riêng được giữ trong cơ sở dữ liệu. Khi mở thành công, trang hiển thị số lượng và cho chọn từng lời chúc.
+
 ## Excel mẫu
 
-Tải `/downloads/DM66D-private-wishes-template.xlsx` từ website. Đây là file trống với đúng hai sheet **Người nhận** và **Lời chúc**; dòng 4 là tiêu đề, điền dữ liệu từ dòng 5. Các ghi chú ở tiêu đề cột mô tả cách điền. Có thể thêm dòng sau vùng được tô màu; giới hạn 1.000 người nhận và 10.000 lời chúc mỗi lần nhập.
+Trong trang quản trị `/#/admin`, sau khi đăng nhập, chọn **Tải Excel mẫu: Người nhận và Lời chúc**. File cũng có tại `/downloads/DM66D-private-wishes-template.xlsx`. Đây là file trống với đúng hai sheet **Người nhận** và **Lời chúc**; dòng 4 là tiêu đề, điền dữ liệu từ dòng 5. Các ghi chú ở tiêu đề cột mô tả cách điền. Có thể thêm dòng sau vùng được tô màu; giới hạn 1.000 người nhận và 10.000 lời chúc mỗi lần nhập.
 
 - **Người nhận:** `ID người nhận *`, `Họ và tên *`, `Mã sinh viên *`, `Tên hiển thị`, `Ảnh (URL hoặc đường dẫn)`, `Giới thiệu`, `Tính cách`, `Kỷ niệm`.
 - **Lời chúc:** `ID lời chúc *`, `ID người nhận *`, `Tiêu đề`, `Người gửi`, `Nội dung lời chúc *`, `Thứ tự`.

@@ -44,7 +44,7 @@ function localApi(): Plugin {
 
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, process.cwd(), "SUPABASE_");
-  for (const name of ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"]) {
+  for (const name of ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_KEY_FORMAT"]) {
     if (!process.env[name] && environment[name]) process.env[name] = environment[name];
   }
   return {
