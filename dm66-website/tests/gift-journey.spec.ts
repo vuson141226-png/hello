@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { expect, test as base } from '@playwright/test'
 import type { Download, Page } from '@playwright/test'
+import { mockRecipients, profiles, testStudentCode } from './helpers/recipientFixture'
 
 const test = base.extend<{ runtimeErrors: void }>({
   runtimeErrors: [async ({ page }, use) => {
@@ -11,9 +12,12 @@ const test = base.extend<{ runtimeErrors: void }>({
   }, { auto: true }],
 })
 
-async function openWish(page: Page, query = 'ABE') {
+test.beforeEach(async ({ page }) => { await mockRecipients(page) })
+
+async function openWish(page: Page, query = profiles[0].fullName) {
   await page.goto('/#/your-wish')
   await page.getByLabel('Tên của cậu là gì?').fill(query)
+  await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.locator('main .greeting-card')).toBeVisible()
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
@@ -47,7 +51,7 @@ async function readySaveButton(page: Page) {
 }
 
 async function downloadedPng(download: Download) {
-  expect(download.suggestedFilename()).toBe('DM66D-20-10-dm66-002.png')
+  expect(download.suggestedFilename()).toBe('DM66D-20-10-fixture-01.png')
   expect(await download.failure()).toBeNull()
   const path = await download.path()
   expect(path).not.toBeNull()
@@ -178,7 +182,7 @@ async function nativeSaveProbe(page: Page) {
 }
 
 function expectNativePng(file: NativeSaveProbe['files'][number]) {
-  expect(file.name).toBe('DM66D-20-10-dm66-002.png')
+  expect(file.name).toBe('DM66D-20-10-fixture-01.png')
   expect(file.type).toBe('image/png')
   expect(file.signature).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
   expect(file.size).toBeGreaterThan(10_000)
@@ -212,81 +216,49 @@ test('opens the unchanged gift into a single-photo memory album and the next cha
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
 })
 
-test('validates names accessibly and finds one exact normalized recipient', async ({ page }) => {
+test('validates name and student code accessibly before checking credentials on the server', async ({ page }) => {
   await page.goto('/#/your-wish')
   const input = page.getByLabel('Tên của cậu là gì?')
+  const code = page.getByLabel('Mã sinh viên của cậu', { exact: true })
   const submit = page.getByRole('button', { name: 'Nhận lời chúc của mình' })
   await submit.click()
   await expect(input).toHaveAttribute('aria-invalid', 'true')
   await expect(input).toHaveAttribute('aria-describedby', 'name-error')
   await expect(input).toBeFocused()
   await expect(page.getByRole('alert')).toContainText('biết tên trước')
-  await input.fill('Người chưa có trong danh sách')
-  await expect(input).toHaveAttribute('aria-invalid', 'false')
+  await input.fill(profiles[0].fullName)
   await submit.click()
-  await expect(page.getByRole('alert')).toContainText('chưa tìm thấy tên')
+  await expect(code).toBeFocused()
+  await expect(page.getByRole('alert')).toContainText('nhập mã sinh viên')
+  await code.fill('WRONG-TEST-CODE')
+  await submit.click()
+  await expect(page.getByRole('alert')).toContainText('Tên hoặc mã sinh viên chưa đúng')
+  await expect(code).toHaveValue('')
   await expect(page.locator('main .greeting-card')).toHaveCount(0)
-  await input.fill('AB')
+  await code.fill(testStudentCode)
   await submit.click()
-  await expect(page.getByRole('alert')).toContainText('chưa tìm thấy tên')
-  for (const excludedExample of ['ABC', 'VI DU', 'Trần Thu Phương']) {
-    await input.fill(excludedExample)
-    await submit.click()
-    await expect(page.getByRole('alert')).toContainText('chưa tìm thấy tên')
-    await expect(page.locator('main .greeting-card')).toHaveCount(0)
-  }
-  await input.fill('  aBE  ')
-  await submit.click()
-  await expect(page.locator('main .greeting-card')).toBeVisible()
-  await expect(page.locator('main .card-dear')).toHaveText('Dear 1,')
-  await expect(page.locator('main .card-letter')).toHaveText('cảm ớndsa')
-  await expect(page.locator('main .greeting-card')).not.toContainText('Lời chúc riêng của cậu đang được chuẩn bị.')
+  await expect(page.locator('main .card-dear')).toHaveText('Dear Bạn mẫu 1,')
+  await expect(page.locator('main .card-letter')).toHaveText('Lời chúc kiểm thử số 1.')
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
 })
 
-test('opens the only supplied profile named 1 and excludes the row without a photo', async ({ page }) => {
-  await page.goto('/#/your-wish')
-  const input = page.getByLabel('Tên của cậu là gì?')
-  const submit = page.getByRole('button', { name: 'Nhận lời chúc của mình' })
-  await input.fill('1')
-  await submit.click()
-  await expect(page.locator('main .card-dear')).toHaveText('Dear 1,')
-  await expect(page.locator('main .card-letter')).toHaveText('cảm ớndsa')
-  await expect(page.locator('main .card-photo img')).toHaveAttribute('src', '/images/girls/ban1.png')
-  await expect(page.locator('.match-list')).toHaveCount(0)
-  await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
-  await expect(input).toHaveValue('')
-  await expect(input).toBeFocused()
-  await input.fill('ABC')
-  await submit.click()
-  await expect(page.getByRole('alert')).toContainText('chưa tìm thấy tên')
-  await expect(page.locator('main .greeting-card')).toHaveCount(0)
-  await expect(page.locator('.match-list')).toHaveCount(0)
-})
-
-test('pairs all five supplied photos with their original names and literal workbook wishes', async ({ page }) => {
-  const expectedProfiles = [
-    { name: 'ABE', shortName: '1', image: '/images/girls/ban1.png', width: 853, wish: 'cảm ớndsa' },
-    { name: 'ABA', shortName: '3', image: '/images/girls/ban2.jpg', width: 1381, wish: 'ádsvfdffds' },
-    { name: 'ABZ', shortName: '4', image: '/images/girls/ban3.jpg', width: 1276, wish: 'ádsssssssssssssssss' },
-    { name: 'ABQ', shortName: '5', image: '/images/girls/ban4.jpg', width: 1627, wish: 'dấdaasdada' },
-    { name: 'ABD', shortName: '6', image: '/images/girls/ban5.png', width: 853, wish: 'ffffffffffffffffffffffff' },
-  ]
-  for (const profile of expectedProfiles) {
-    await openWish(page, profile.name)
+test('pairs synthetic authenticated profiles with the right portraits and wishes', async ({ page }) => {
+  for (const profile of profiles) {
+    await openWish(page, profile.fullName)
     const image = page.locator('main .greeting-card .card-photo img')
-    await expect(image).toHaveAttribute('alt', `Ảnh ${profile.name}`)
+    await expect(image).toHaveAttribute('alt', `Ảnh ${profile.fullName}`)
     const naturalWidth = await image.evaluate(async element => {
       const photo = element as HTMLImageElement
       await photo.decode()
       return photo.naturalWidth
     })
     await expect(image).toHaveAttribute('src', profile.image)
-    expect(naturalWidth, `${profile.name} should display the expected photo instead of a fallback`).toBe(profile.width)
-    await expect(page.locator('main .card-dear')).toHaveText(`Dear ${profile.shortName},`)
+    expect(naturalWidth).toBe(profile.width)
+    await expect(page.locator('main .card-dear')).toHaveText(`Dear ${profile.displayName},`)
     await expect(page.locator('main .card-letter')).toHaveText(profile.wish)
     await expect(page.locator('.sample-sticker,.card-placeholder-note,.demo-hint')).toHaveCount(0)
-    await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
+    await page.getByRole('button', { name: 'Đăng xuất và đổi người nhận' }).click()
+    await expect(page.getByLabel('Tên của cậu là gì?')).toBeEnabled()
     await expect(page.getByLabel('Tên của cậu là gì?')).toHaveValue('')
   }
 })
@@ -301,18 +273,19 @@ test('replays the letter, sends a heart, dismisses the toast and starts another 
   await expect(page.getByRole('status')).toContainText('Cảm ơn cậu!')
   await page.getByRole('button', { name: 'Đóng thông báo' }).click()
   await expect(page.getByRole('status')).toHaveCount(0)
-  await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
+  await page.getByRole('button', { name: 'Đăng xuất và đổi người nhận' }).click()
   const input = page.getByLabel('Tên của cậu là gì?')
   await expect(input).toHaveValue('')
   await expect(input).toBeFocused()
   await expect(input).toHaveAttribute('aria-invalid', 'false')
   await expect(page.locator('main .greeting-card')).toHaveCount(0)
   await expect(page.locator('.demo-hint')).toHaveCount(0)
-  await input.fill('ABA')
-  await expect(input).toHaveValue('ABA')
+  await input.fill(profiles[1].fullName)
+  await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
+  await expect(input).toHaveValue(profiles[1].fullName)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
-  await expect(page.locator('main .card-dear')).toHaveText('Dear 3,')
-  await expect(page.locator('main .card-letter')).toHaveText('ádsvfdffds')
+  await expect(page.locator('main .card-dear')).toHaveText('Dear Bạn mẫu 2,')
+  await expect(page.locator('main .card-letter')).toHaveText('Lời chúc kiểm thử số 2.')
 })
 
 test('downloads a real, high resolution PNG for the selected recipient', async ({ page }) => {
@@ -327,7 +300,7 @@ test('downloads a real, high resolution PNG for the selected recipient', async (
     page.waitForEvent('download'),
     save.click(),
   ])
-  expect(download.suggestedFilename()).toBe('DM66D-20-10-dm66-002.png')
+  expect(download.suggestedFilename()).toBe('DM66D-20-10-fixture-01.png')
   expect(await download.failure()).toBeNull()
   const path = await download.path()
   expect(path).not.toBeNull()
@@ -339,7 +312,7 @@ test('downloads a real, high resolution PNG for the selected recipient', async (
   expect(png.readUInt32BE(16) / png.readUInt32BE(20)).toBeGreaterThan(1.2)
   expect(png.length).toBeGreaterThan(10_000)
   const pixels = await inspectPngPixels(page, png)
-  expect(pixels.darkPhotoPixels, 'The saved PNG must include the supplied photo, including its dark redaction blocks').toBeGreaterThan(1_000)
+  expect(pixels.darkPhotoPixels, 'The saved PNG must include the supplied photo, including its dark synthetic background').toBeGreaterThan(1_000)
 })
 
 test('uses a large left portrait on wide screens, stacks on phones and always exports a landscape card', async ({ page }) => {
@@ -350,9 +323,9 @@ test('uses a large left portrait on wide screens, stacks on phones and always ex
   const photo = card.locator('.card-body > .card-portrait-panel > .card-photo')
   const message = card.locator('.card-body > .card-message')
   await expect(photo).toBeVisible()
-  await expect(message.locator('.card-dear')).toHaveText('Dear 1,')
+  await expect(message.locator('.card-dear')).toHaveText('Dear Bạn mẫu 1,')
   await expect(message.locator('h2')).toBeVisible()
-  await expect(message.locator('.card-letter')).toHaveText('cảm ớndsa')
+  await expect(message.locator('.card-letter')).toHaveText('Lời chúc kiểm thử số 1.')
   await expect(message.locator('.card-signature')).toContainText('DM66D Boys')
   await expect(card.locator('.card-topline')).toContainText('DIGITAL MARKETING 66D')
   let photoBox = (await photo.boundingBox())!
@@ -383,7 +356,7 @@ test('uses a large left portrait on wide screens, stacks on phones and always ex
     save.click(),
   ])
   expect(await download.failure()).toBeNull()
-  expect(download.suggestedFilename()).toBe('DM66D-20-10-dm66-002.png')
+  expect(download.suggestedFilename()).toBe('DM66D-20-10-fixture-01.png')
   const path = await download.path()
   const png = await readFile(path!)
   expect(png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))).toBe(true)
@@ -399,12 +372,12 @@ test('prepares the full letter and reuses the identical cached PNG after replay'
   await disableSavePicker(page)
   await openWish(page)
   const save = await readySaveButton(page)
-  await expect(page.locator('main .card-letter')).toHaveText('cảm ớndsa')
+  await expect(page.locator('main .card-letter')).toHaveText('Lời chúc kiểm thử số 1.')
   await expect(page.locator('[data-card-export="true"]')).toHaveCount(0)
   const [firstDownload] = await Promise.all([page.waitForEvent('download'), save.click()])
   const firstPng = await downloadedPng(firstDownload)
   await page.getByRole('button', { name: 'Đọc lại lời chúc' }).click()
-  await expect(page.locator('main .card-letter')).toHaveText('cảm ớndsa')
+  await expect(page.locator('main .card-letter')).toHaveText('Lời chúc kiểm thử số 1.')
   await expect(page.locator('main .card-letter p')).toHaveCSS('opacity', '1')
   await expect(save).toBeEnabled()
   const [secondDownload] = await Promise.all([page.waitForEvent('download'), save.click()])
@@ -420,7 +393,7 @@ test('keeps every edge of portrait and landscape photos visible in the phone PNG
     ['portrait', 180, 360], ['landscape', 360, 180],
   ] as const) {
     const fixture = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" fill="#e9e1d8"/><path fill="rgb(220,0,0)" d="M0 8h8v84H0z"/><path fill="rgb(0,0,220)" d="M92 8h8v84h-8z"/><path fill="rgb(0,170,0)" d="M0 0h100v8H0z"/><path fill="rgb(230,180,0)" d="M0 92h100v8H0z"/></svg>`
-    await page.route('**/images/girls/ban1.png', route => route.fulfill({ contentType: 'image/svg+xml', body: fixture }))
+    await page.route('**/test-portraits/recipient-01.svg', route => route.fulfill({ contentType: 'image/svg+xml', body: fixture }))
     await openWish(page)
     const save = await readySaveButton(page)
     const [download] = await Promise.all([page.waitForEvent('download'), save.click()])
@@ -435,8 +408,8 @@ test('keeps every edge of portrait and landscape photos visible in the phone PNG
     const proofPath = testInfo.outputPath(`phone-${orientation}-whole-photo.png`)
     await writeFile(proofPath, png)
     await testInfo.attach(`phone-${orientation}-whole-photo.png`, { path: proofPath, contentType: 'image/png' })
-    await page.unroute('**/images/girls/ban1.png')
-    await page.getByRole('button', { name: 'Tìm một lời chúc khác' }).click()
+    await page.unroute('**/test-portraits/recipient-01.svg')
+    await page.getByRole('button', { name: 'Đăng xuất và đổi người nhận' }).click()
   }
 })
 
@@ -519,7 +492,7 @@ test('opens the desktop file picker during the click and writes and closes a val
   expect(probe.calls).toBe(1)
   expect(probe.activeGestures).toEqual([true])
   expect(probe.invokedDuringClick).toEqual([true])
-  expect(probe.pickerOptions).toMatchObject([{ suggestedName: 'DM66D-20-10-dm66-002.png', types: [{ accept: { 'image/png': ['.png'] } }] }])
+  expect(probe.pickerOptions).toMatchObject([{ suggestedName: 'DM66D-20-10-fixture-01.png', types: [{ accept: { 'image/png': ['.png'] } }] }])
   expect(probe.files).toHaveLength(1)
   expectNativePng(probe.files[0])
   await expect(page.getByRole('dialog', { name: 'Lưu thiệp vào máy' })).not.toBeVisible()
@@ -684,14 +657,15 @@ test('fits every mobile route, swipes memories and keeps errors and personalized
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.getByRole('alert')).toBeVisible()
   await expectNoHorizontalOverflow(page)
-  await page.getByLabel('Tên của cậu là gì?').fill('  abe  ')
+  await page.getByLabel('Tên của cậu là gì?').fill(profiles[0].fullName)
+  await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.locator('main .greeting-card')).toBeVisible()
   await expectNoHorizontalOverflow(page)
   await readySaveButton(page)
   await page.getByRole('button', { name: /Gửi lời nhắn đến các bạn nam/ }).click()
   await expect(page).toHaveURL(/#\/letters-to-boys$/)
-  await expect(page.getByLabel(/Tên của cậu là gì/)).toHaveValue('ABE')
+  await expect(page.getByLabel(/Tên của cậu là gì/)).toHaveValue(profiles[0].fullName)
   await expectNoHorizontalOverflow(page)
 })
 
@@ -704,9 +678,10 @@ test('honors reduced motion while retaining the complete gift interaction', asyn
   await expect(page.locator('.heart-burst > span')).toHaveCount(0)
   await expect(page.locator('.memories-floating-heart')).toHaveCSS('animation-name', 'none')
   await page.getByRole('button', { name: /Khám phá lời chúc dành riêng cho cậu/ }).click()
-  await page.getByLabel('Tên của cậu là gì?').fill('ABE')
+  await page.getByLabel('Tên của cậu là gì?').fill(profiles[0].fullName)
+  await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
-  await expect(page.locator('main .card-dear')).toHaveText('Dear 1,')
+  await expect(page.locator('main .card-dear')).toHaveText('Dear Bạn mẫu 1,')
   await expect(page.locator('.heart-burst > span')).toHaveCount(0)
   await page.getByRole('button', { name: 'Gửi một trái tim' }).click()
   await expect(page.getByRole('status')).toContainText('Cảm ơn cậu!')

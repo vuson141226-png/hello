@@ -98,14 +98,8 @@ describe("findRecipients", () => {
     expect(samples).toEqual(snapshot);
   });
 
-  it("keeps configured recipients uniquely identified and discoverable", () => {
-    expect(girls.length).toBeGreaterThan(0);
-    expect(new Set(girls.map((girl) => girl.id)).size).toBe(girls.length);
-    girls.forEach((girl) => {
-      expect(girl.id.trim()).not.toBe("");
-      expect(girl.fullName.trim()).not.toBe("");
-      expect(findRecipients(girl.fullName, girls)).toContain(girl);
-    });
+  it("ships no public recipient directory or private wishes", () => {
+    expect(girls).toEqual([]);
   });
 
   it("returns every recipient sharing the same display name", () => {

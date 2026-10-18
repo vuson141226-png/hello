@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, PointerEvent } from "react";
 import {
   AnimatePresence,
@@ -23,9 +23,9 @@ import {
   VolumeX,
   X,
 } from "lucide-react";
-import { girls } from "./data/girls";
 import type { Girl } from "./data/girls";
-import { findRecipients } from "./lib/recipients";
+import { loginRecipient, logoutRecipient, recipientSession, RecipientApiError } from "./lib/recipientApi";
+import type { RecipientSession } from "./lib/recipientApi";
 import { createCardImage } from "./lib/cardImage";
 import { downloadImage, isMobileDevice, saveImage } from "./lib/saveImage";
 import { Envelope } from "./components/Envelope";
@@ -361,7 +361,7 @@ function GreetingCard({
           )}
           <div className="card-signature">
             <Heart size={18} fill="currentColor" />
-            <span>From DM66D Boys — With Love</span>
+            <span>{girl.senderName ? `From ${girl.senderName} — With Love` : "With Love"}</span>
             <small>YOU MAKE OUR CLASS BRIGHTER.</small>
           </div>
         </div>
@@ -384,15 +384,18 @@ function WishPage({
 }) {
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
-  const [matches, setMatches] = useState<Girl[]>([]);
-  const [recipientId, setRecipientId] = useState<string | null>(null);
+  const [studentCode, setStudentCode] = useState("");
+  const [session, setSession] = useState<RecipientSession | null>(null);
+  const [selectedWishId, setSelectedWishId] = useState("");
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [logoutRequired, setLogoutRequired] = useState(false);
   const [opening, setOpening] = useState(false);
   const [saving, setSaving] = useState(false);
   const [preparingImage, setPreparingImage] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageAttempt, setImageAttempt] = useState(0);
   const [cardImage, setCardImage] = useState<{
-    recipientId: string;
+    imageKey: string;
     file: File;
   } | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -401,33 +404,83 @@ function WishPage({
   const cardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLHeadingElement>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requestController = useRef<AbortController | null>(null);
+  const requestVersion = useRef(0);
   const saveDialogRef = useRef<HTMLDialogElement>(null);
   const mounted = useRef(true);
   const reduced = useReducedMotion();
-  const recipient = girls.find((girl) => girl.id === recipientId);
-  const preparedImage = cardImage?.recipientId === recipientId ? cardImage : null;
+  const selectedWish = session?.wishes.find((wish) => wish.id === selectedWishId) ?? session?.wishes[0];
+  const recipient = useMemo<Girl | null>(() => session ? ({
+    ...session.recipient, nicknames: [], wish: selectedWish?.message ?? "",
+    senderName: selectedWish?.senderName,
+  }) : null, [session, selectedWish]);
+  const imageKey = recipient ? `${recipient.id}/${selectedWish?.id ?? "empty"}` : null;
+  const preparedImage = cardImage?.imageKey === imageKey ? cardImage : null;
   const mobile = isMobileDevice();
   useEffect(() => {
     mounted.current = true;
+    const controller = new AbortController();
+    requestController.current = controller;
+    const version = ++requestVersion.current;
+    recipientSession(controller.signal).then((value) => {
+      if (mounted.current && requestVersion.current === version) setSession(value);
+    }).catch((cause: unknown) => {
+      if (!mounted.current || requestVersion.current !== version || controller.signal.aborted) return;
+      setSession(null);
+      if (!(cause instanceof RecipientApiError && cause.status === 401))
+        setError("Chưa thể kết nối để mở lời nhắn. Cậu thử lại sau nhé!");
+    }).finally(() => {
+      if (mounted.current && requestVersion.current === version) setCheckingSession(false);
+    });
     return () => {
       mounted.current = false;
+      ++requestVersion.current;
+      requestController.current?.abort();
     };
   }, []);
+  useEffect(() => {
+    if (!session || opening || logoutRequired) return;
+    const revalidate = () => {
+      if (document.visibilityState !== "visible") return;
+      requestController.current?.abort();
+      const controller = new AbortController();
+      requestController.current = controller;
+      const version = ++requestVersion.current;
+      recipientSession(controller.signal).then((value) => {
+        if (mounted.current && requestVersion.current === version)
+          setSession((current) => JSON.stringify(current) === JSON.stringify(value) ? current : value);
+      }).catch((cause: unknown) => {
+        if (!mounted.current || requestVersion.current !== version || controller.signal.aborted) return;
+        if (cause instanceof RecipientApiError && cause.status === 401) {
+          setSession(null);
+          setSelectedWishId("");
+          setCardImage(null);
+          setPreviewOpen(false);
+          setError("Phiên đăng nhập đã hết hạn. Cậu đăng nhập lại để đọc lời chúc nhé!");
+        }
+      });
+    };
+    window.addEventListener("focus", revalidate);
+    document.addEventListener("visibilitychange", revalidate);
+    return () => {
+      window.removeEventListener("focus", revalidate);
+      document.removeEventListener("visibilitychange", revalidate);
+    };
+  }, [session, opening, logoutRequired]);
   useEffect(() => {
     let cancelled = false;
     setCardImage(null);
     setImageError(false);
     setPreviewOpen(false);
     const source = cardRef.current;
-    if (!source || !recipient) {
+    if (!source || !recipient || !imageKey) {
       setPreparingImage(false);
       return;
     }
     setPreparingImage(true);
     createCardImage(source, recipient.id)
       .then((file) => {
-        if (!cancelled) setCardImage({ recipientId: recipient.id, file });
+        if (!cancelled) setCardImage({ imageKey, file });
       })
       .catch(() => {
         if (!cancelled) setImageError(true);
@@ -438,7 +491,7 @@ function WishPage({
     return () => {
       cancelled = true;
     };
-  }, [recipient, imageAttempt]);
+  }, [recipient, imageKey, imageAttempt]);
   useEffect(() => {
     if (!preparedImage) {
       setPreviewUrl(null);
@@ -454,54 +507,72 @@ function WishPage({
     if (previewOpen && previewUrl && !dialog.open) dialog.showModal();
     else if (!previewOpen && dialog.open) dialog.close();
   }, [previewOpen, previewUrl]);
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current);
-    },
-    [],
-  );
   useEffect(() => {
-    if (recipientId) resultRef.current?.focus({ preventScroll: true });
-  }, [recipientId]);
-  const reveal = (girl: Girl) => {
-    if (opening) return;
-    setMatches([]);
-    setOpening(true);
-    celebrate();
-    timer.current = setTimeout(
-      () => {
-        setRecipientId(girl.id);
-        setOpening(false);
-        window.scrollTo({ top: 0, behavior: "instant" });
-      },
-      reduced ? 100 : 1000,
-    );
-  };
-  const submit = (event: FormEvent) => {
+    if (recipient) resultRef.current?.focus({ preventScroll: true });
+  }, [recipient]);
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (opening) return;
+    if (opening || checkingSession || logoutRequired) return;
     setError("");
-    setMatches([]);
     if (!query.trim()) {
       setError("Cậu cho chúng tớ biết tên trước nhé!");
       inputRef.current?.focus();
       return;
     }
-    const found = findRecipients(query, girls);
-    if (found.length === 1) reveal(found[0]);
-    else if (found.length > 1) setMatches(found);
-    else
-      setError(
-        "Ối, hình như chúng tớ chưa tìm thấy tên cậu 🥺 Thử nhập tên đầy đủ hoặc biệt danh khác nhé!",
-      );
+    if (!studentCode.trim()) {
+      setError("Cậu nhập mã sinh viên để mở lời nhắn riêng nhé!");
+      document.getElementById("recipient-code")?.focus();
+      return;
+    }
+    const code = studentCode;
+    setStudentCode("");
+    setOpening(true);
+    requestController.current?.abort();
+    const controller = new AbortController();
+    requestController.current = controller;
+    const version = ++requestVersion.current;
+    try {
+      await loginRecipient(query.trim(), code, controller.signal);
+      const value = await recipientSession(controller.signal);
+      if (!mounted.current || requestVersion.current !== version) return;
+      setSession(value);
+      setQuery("");
+      setSelectedWishId("");
+      celebrate();
+      window.scrollTo({ top: 0, behavior: "instant" });
+    } catch (cause) {
+      if (!mounted.current || requestVersion.current !== version || controller.signal.aborted) return;
+      setSession(null);
+      setError(cause instanceof RecipientApiError ? cause.message : "Chưa thể kết nối để mở lời nhắn. Cậu thử lại sau nhé!");
+    } finally {
+      if (mounted.current && requestVersion.current === version) setOpening(false);
+    }
   };
-  const reset = () => {
-    setRecipientId(null);
+  const reset = async () => {
+    requestController.current?.abort();
+    const controller = new AbortController();
+    requestController.current = controller;
+    const version = ++requestVersion.current;
+    setSession(null);
+    setStudentCode("");
     setQuery("");
-    setMatches([]);
+    setCardImage(null);
+    setPreviewOpen(false);
     setError("");
     setReplay(0);
-    setTimeout(() => inputRef.current?.focus(), 50);
+    setLogoutRequired(true);
+    setOpening(true);
+    try {
+      await logoutRecipient();
+      if (!mounted.current || requestVersion.current !== version) return;
+      setLogoutRequired(false);
+      setTimeout(() => { if (mounted.current) inputRef.current?.focus(); }, 0);
+    } catch {
+      if (mounted.current && requestVersion.current === version && !controller.signal.aborted)
+        setError("Chưa thể đăng xuất an toàn. Cậu thử đăng xuất lại trước khi đổi người nhận nhé!");
+    } finally {
+      if (mounted.current && requestVersion.current === version) setOpening(false);
+    }
   };
   const saveCard = async () => {
     if (!preparedImage || saving) return;
@@ -533,8 +604,25 @@ function WishPage({
             Cậu xứng đáng với <em>những điều thật đẹp.</em>
           </h1>
         </div>
+        <section className="wish-selection" aria-label="Những lời chúc dành cho cậu">
+          <p aria-live="polite">Cậu có <strong>{session?.wishes.length ?? 0} lời chúc</strong> dành riêng cho mình.</p>
+          {!!session?.wishes.length && <>
+            <label htmlFor="selected-wish">Chọn lời chúc muốn đọc</label>
+            <select id="selected-wish" value={selectedWish?.id ?? ""} onChange={(event) => {
+              setSelectedWishId(event.target.value);
+              setCardImage(null);
+              setPreviewOpen(false);
+              setReplay((value) => value + 1);
+            }}>
+              {session.wishes.map((wish, index) => <option key={wish.id} value={wish.id}>
+                {index + 1}. {wish.title || "Một lời chúc dành cho cậu"}{wish.senderName ? ` · ${wish.senderName}` : ""}
+              </option>)}
+            </select>
+          </>}
+        </section>
         <div className="result-layout">
-          <GreetingCard girl={recipient} cardRef={cardRef} replay={replay} />
+          {selectedWish ? <GreetingCard girl={recipient} cardRef={cardRef} replay={replay} /> :
+            <div className="wish-empty"><Mail size={34} /><p>Lời chúc riêng của cậu đang được chuẩn bị.</p><p>Cậu quay lại sau một chút nhé!</p></div>}
           <aside className="card-actions">
             <Bow className="actions-bow" />
             <span className="actions-script">
@@ -542,6 +630,7 @@ function WishPage({
               <br />
               cậu mang về nhé.
             </span>
+            {selectedWish && <>
             <button
               className="button button-primary"
               onClick={
@@ -579,6 +668,7 @@ function WishPage({
               <RotateCcw size={17} />
               Đọc lại lời chúc
             </button>
+            </>}
             <button
               className="button button-secondary"
               onClick={() => {
@@ -589,7 +679,7 @@ function WishPage({
               <Heart size={18} />
               Gửi một trái tim
             </button>
-            {mobile && (
+            {mobile && selectedWish && (
               <button
                 className="text-button save-image-preview"
                 disabled={!preparedImage || saving}
@@ -604,13 +694,13 @@ function WishPage({
               disabled={saving}
             >
               <Search size={15} />
-              Tìm một lời chúc khác
+              Đăng xuất và đổi người nhận
             </button>
-            <p className="actions-footnote">
+            {selectedWish && <p className="actions-footnote">
               {mobile
                 ? "Chọn Lưu hình ảnh trong bảng chia sẻ, hoặc mở ảnh và nhấn giữ để lưu."
                 : "Chọn nơi lưu ảnh PNG. Nếu trình duyệt tự tải, cậu kiểm tra thư mục Tải xuống nhé."}
-            </p>
+            </p>}
           </aside>
         </div>
         <section className="wish-letter-transition" aria-label="Một lời nhắn gửi lại">
@@ -710,8 +800,8 @@ function WishPage({
         </div>
         <span className="form-script">Someone has a message for you</span>
         <h2>Mở lời nhắn của cậu</h2>
-        <p>Chỉ cần cho chúng tớ biết tên của cậu nhé.</p>
-        <form onSubmit={submit} noValidate>
+        <p>Nhập tên và mã sinh viên để mở những lời chúc riêng của cậu nhé.</p>
+        <form onSubmit={submit} noValidate autoComplete="off">
           <label htmlFor="recipient-name">Tên của cậu là gì?</label>
           <div className={`name-input-wrap ${error ? "input-error" : ""}`}>
             <Heart size={18} />
@@ -724,18 +814,27 @@ function WishPage({
               onChange={(event) => {
                 setQuery(event.target.value);
                 setError("");
-                setMatches([]);
               }}
               autoComplete="off"
               maxLength={150}
               aria-invalid={!!error}
               aria-describedby={error ? "name-error" : "name-hint"}
-              disabled={opening}
+              disabled={opening || checkingSession || logoutRequired}
             />
           </div>
           <p className="input-hint" id="name-hint">
-            Tên đầy đủ hoặc biệt danh, có dấu hay không dấu đều được.
+            Dùng tên đầy đủ của cậu trong danh sách người nhận.
           </p>
+          <label htmlFor="recipient-code">Mã sinh viên của cậu</label>
+          <div className={`name-input-wrap ${error ? "input-error" : ""}`}>
+            <Heart size={18} />
+            <input id="recipient-code" type="password" value={studentCode}
+              onChange={(event) => { setStudentCode(event.target.value); setError(""); }}
+              placeholder="Nhập mã sinh viên" autoComplete="off" maxLength={100}
+              aria-invalid={!!error} aria-describedby={error ? "name-error" : "code-hint"}
+              disabled={opening || checkingSession || logoutRequired} />
+          </div>
+          <p className="input-hint" id="code-hint">Mã sinh viên chỉ dùng để xác nhận người nhận.</p>
           <AnimatePresence>
             {error && (
               <motion.p
@@ -750,67 +849,19 @@ function WishPage({
               </motion.p>
             )}
           </AnimatePresence>
-          {matches.length > 1 && (
-            <div className="match-list" aria-label="Chọn đúng người nhận">
-              <p>Có vài bạn cùng tên. Cậu là ai trong những cô gái này?</p>
-              {matches.map((girl) => (
-                <button
-                  type="button"
-                  key={girl.id}
-                  onClick={() => reveal(girl)}
-                >
-                  <Portrait girl={girl} />
-                  <span>
-                    <strong>{girl.fullName}</strong>
-                    <small>
-                      {girl.displayName} · Mã: {girl.id}
-                    </small>
-                  </span>
-                  <ArrowRight size={16} />
-                </button>
-              ))}
-            </div>
-          )}
           <button
             className="button button-primary"
             type="submit"
-            disabled={opening}
+            disabled={opening || checkingSession || logoutRequired}
           >
             <Mail size={18} />
-            {opening ? "Đang mở lời nhắn..." : "Nhận lời chúc của mình"}
+            {checkingSession ? "Đang kiểm tra phiên..." : opening ? "Đang mở lời nhắn..." : "Nhận lời chúc của mình"}
             <ArrowRight size={17} />
           </button>
         </form>
-        {girls.some((girl) => girl.isPlaceholder) && (
-          <div className="demo-hint">
-            <span>
-              <Sparkles size={13} /> Bạn đang khám phá bản mẫu
-            </span>
-            <p>
-              Thử với{" "}
-              {girls
-                .filter((girl) => girl.isPlaceholder)
-                .slice(0, 3)
-                .map((girl, index) => (
-                  <span key={girl.id}>
-                    {index > 0 ? ", " : ""}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setQuery(girl.fullName);
-                        setError("");
-                        setMatches([]);
-                        inputRef.current?.focus();
-                      }}
-                    >
-                      {girl.fullName}
-                    </button>
-                  </span>
-                ))}
-              .
-            </p>
-          </div>
-        )}
+        {logoutRequired && <button type="button" className="text-button" onClick={reset} disabled={opening}>
+          {opening ? "Đang đăng xuất..." : "Thử đăng xuất lại"}
+        </button>}
       </div>
     </main>
   );

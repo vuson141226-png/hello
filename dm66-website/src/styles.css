@@ -2974,3 +2974,38 @@ h1 em {
     animation: none !important;
   }
 }
+
+
+.wish-selection {
+  max-width: 700px;
+  margin: 0 auto 28px;
+  padding: 19px 24px;
+  color: #754458;
+  border: 1px solid #e7ced9;
+  border-radius: 8px;
+  background: #fffaf7;
+  text-align: center;
+}
+.wish-selection p { margin: 0 0 13px; font-size: 13px; line-height: 1.8; }
+.wish-selection label { display: block; margin-bottom: 9px; font-size: 12px; }
+.wish-selection select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e7ced9;
+  border-radius: 5px;
+  background: #fffaf7;
+  color: #754458;
+  font: inherit;
+  font-size: 13px;
+  text-overflow: ellipsis;
+}
+.wish-selection select:focus-visible { outline: 2px solid #bb7193; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .wish-selection { padding: 16px; margin-bottom: 22px; }
+  .wish-selection select { font-size: 12px; }
+}
+
+.wish-empty { display: grid; place-content: center; gap: 16px; min-height: 320px; padding: 36px; border: 1px solid #e7ced9; border-radius: 8px; background: #fffaf7; color: #754458; text-align: center; }
+.wish-empty > svg { justify-self: center; color: #bb7193; }
+.wish-empty p { margin: 0; line-height: 1.9; }
