@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { expect, test as base } from '@playwright/test'
 import type { Download, Page } from '@playwright/test'
 import { mockRecipients, profiles, testStudentCode } from './helpers/recipientFixture'
+import { memories } from '../src/data/memories'
 
 const test = base.extend<{ runtimeErrors: void }>({
   runtimeErrors: [async ({ page }, use) => {
@@ -191,27 +192,31 @@ function expectNativePng(file: NativeSaveProbe['files'][number]) {
   expect(file.width / file.height).toBeGreaterThan(1.2)
 }
 
-test('opens the unchanged gift into a single-photo memory album and the next chapter', async ({ page }) => {
+test('opens the unchanged gift into the class photo-pair album and the next chapter', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Gửi cậu')
   await page.getByRole('button', { name: /Mở món quà của chúng tớ/ }).click()
   await expect(page.getByRole('button', { name: /Đang mở điều bất ngờ/ })).toBeDisabled()
   await expect(page).toHaveURL(/#\/our-memories$/)
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Our Little Memories')
-  await expect(page.locator('.memories-count')).toHaveText('01/03')
+  await expect(page.locator('.memories-count')).toHaveText('01/15')
   await expect(page.locator('.memories-slide')).toHaveCount(1)
-  await expect(page.locator('.memories-slide img')).toHaveAttribute('src', '/images/memories-placeholder.svg')
-  await expect(page.locator('.memories-placeholder-label')).toContainText('TRANG MẪU')
+  await expect(page.locator('.memories-paper')).toHaveCount(2)
+  await expect(page.locator('.memories-slide img')).toHaveCount(2)
+  await expect(page.locator('.memories-slide img').first()).toHaveAttribute('src', memories[0].images[0].src)
+  await expect(page.locator('.memories-caption h2')).toHaveText('Gặp gỡ đầu năm')
   await expect(page.locator('.gallery,.girl-introduction')).toHaveCount(0)
   await page.getByRole('button', { name: /Xem kỷ niệm tiếp theo/ }).click()
-  await expect(page.locator('.memories-caption h2')).toHaveText('Một khoảnh khắc đang chờ được kể')
-  await expect(page.locator('.memories-count')).toHaveText('02/03')
+  await expect(page.locator('.memories-caption h2')).toHaveText('First 20/10')
+  await expect(page.locator('.memories-count')).toHaveText('02/15')
   await page.getByRole('button', { name: /Xem kỷ niệm 3:/ }).click()
-  await expect(page.locator('.memories-caption h2')).toHaveText('Còn nhiều điều đẹp đẽ để lưu giữ')
-  await expect(page.locator('.memories-description')).toContainText('Đây vẫn là trang mẫu')
+  await expect(page.locator('.memories-caption h2')).toHaveText('Ngày hội vui vẻ')
+  await expect(page.locator('.memories-description')).toContainText('giải Tập Thể Lớp Xuất Sắc Nhất')
   await expect(page.getByRole('button', { name: /Xem kỷ niệm 3:/ })).toHaveAttribute('aria-current', 'true')
+  await page.getByRole('button', { name: /Xem kỷ niệm 15:/ }).click()
+  await expect(page.locator('.memories-count')).toHaveText('15/15')
   await page.getByRole('button', { name: /Xem kỷ niệm tiếp theo/ }).click()
-  await expect(page.locator('.memories-count')).toHaveText('01/03')
+  await expect(page.locator('.memories-count')).toHaveText('01/15')
   await page.getByRole('button', { name: /Khám phá lời chúc dành riêng cho cậu/ }).click()
   await expect(page).toHaveURL(/#\/your-wish$/)
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
@@ -625,7 +630,7 @@ test('supports four public routes, legacy memory links, navigation history and m
   await page.locator('nav a[href="#/your-wish"]').click()
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
   await page.goBack()
-  await expect(page.locator('.memories-count')).toHaveText('01/03')
+  await expect(page.locator('.memories-count')).toHaveText('01/15')
   await page.goForward()
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
   const music = page.getByRole('button', { name: 'Bật nhạc', exact: true })
@@ -649,13 +654,13 @@ test('fits every mobile route, swipes memories and keeps errors and personalized
   const album = page.locator('.memories-scrapbook')
   await album.dispatchEvent('touchstart', { touches: [{ identifier: 1, clientX: 290, clientY: 450 }] })
   await album.dispatchEvent('touchend', { changedTouches: [{ identifier: 1, clientX: 90, clientY: 450 }] })
-  await expect(page.locator('.memories-count')).toHaveText('02/03')
-  await expect(page.locator('.memories-caption h2')).toHaveText('Một khoảnh khắc đang chờ được kể')
+  await expect(page.locator('.memories-count')).toHaveText('02/15')
+  await expect(page.locator('.memories-caption h2')).toHaveText('First 20/10')
   await expectNoHorizontalOverflow(page)
   // A mostly vertical gesture must scroll instead of changing the memory.
   await album.dispatchEvent('touchstart', { touches: [{ identifier: 2, clientX: 240, clientY: 350 }] })
   await album.dispatchEvent('touchend', { changedTouches: [{ identifier: 2, clientX: 200, clientY: 550 }] })
-  await expect(page.locator('.memories-count')).toHaveText('02/03')
+  await expect(page.locator('.memories-count')).toHaveText('02/15')
   await page.getByRole('button', { name: /Khám phá lời chúc dành riêng cho cậu/ }).click()
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
   await expect(page.getByRole('alert')).toBeVisible()

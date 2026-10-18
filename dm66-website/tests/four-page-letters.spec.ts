@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test as base } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { memories } from '../src/data/memories'
 
 // These mocked responses verify UI behavior and protocol handling only.
 // Database persistence and authorization are covered by backend integration tests.
@@ -35,42 +36,132 @@ async function mockAdminSession(page: Page, authenticated = true) {
   }))
 }
 
-test('keeps one landscape memory and synchronized captions with arrows, dots and keyboard', async ({ page }, testInfo) => {
+async function expectMemory(page: Page, index: number) {
+  const memory = memories[index]
+  await expect(page.locator('.memories-count')).toHaveText(`${String(index + 1).padStart(2, '0')}/15`)
+  await expect(page.locator('.memories-slide')).toHaveCount(1)
+  await expect(page.locator('.memories-caption h2')).toHaveText(memory.title)
+  const description = page.locator('.memories-description')
+  if (memory.description) await expect(description).toHaveText(memory.description)
+  else await expect(description).toHaveCount(0)
+  await expect(page.locator('.memories-live')).toHaveText(`Kỷ niệm ${index + 1} trên 15: ${memory.title}`)
+  await expect(page.locator('.memories-dots button').nth(index)).toHaveAttribute('aria-current', 'true')
+}
+
+async function expectMemoryPhotos(page: Page, index: number) {
+  const images = memories[index].images.filter(image => !image.isPlaceholder)
+  const photos = page.locator('.memories-image-frame img')
+  await expect(page.locator('.memories-paper')).toHaveCount(2)
+  await expect(photos).toHaveCount(images.length)
+  await expect(page.locator('.memories-photo-unavailable')).toHaveCount(2 - images.length)
+  for (const [imageIndex, image] of images.entries()) {
+    const photo = photos.nth(imageIndex)
+    await expect(photo).toHaveAttribute('src', image.src)
+    await expect(photo).toHaveAttribute('alt', image.altText)
+    await expect(photo).toHaveCSS('object-fit', 'contain')
+    await expect.poll(() => photo.evaluate(element => {
+      const image = element as HTMLImageElement
+      return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
+    }), { message: `The uploaded photo should load: ${image.src}` }).toBe(true)
+  }
+}
+
+async function expectCaptionUnclipped(page: Page) {
+  for (const copy of await page.locator('.memories-caption h2, .memories-description').all()) {
+    await expect(copy).toBeVisible()
+    expect(await copy.evaluate(element => ({
+      fits: element.scrollHeight <= element.clientHeight + 1,
+      ellipsis: getComputedStyle(element).textOverflow === 'ellipsis',
+    }))).toEqual({ fits: true, ellipsis: false })
+  }
+}
+
+test('keeps real event titles, full captions and both photos synchronized with arrows, dots and keyboard', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/#/our-memories')
   const carousel = page.getByRole('region', { name: 'Album kỷ niệm lớp Digital Marketing 66D' })
-  const photo = page.locator('.memories-image-frame img')
-  await expect(photo).toHaveCSS('object-fit', 'contain')
-  const frame = (await page.locator('.memories-image-frame').boundingBox())!
-  const content = (await page.locator('main').boundingBox())!
-  expect(frame.width / frame.height).toBeCloseTo(16 / 9, 1)
-  expect(frame.width / content.width).toBeGreaterThan(0.78)
-  expect(frame.width / content.width).toBeLessThan(0.9)
-  await expect(page.locator('.memories-slide')).toHaveCount(1)
-  const ribbon = page.locator('.memories-image-frame .memories-date')
-  await expect(ribbon).toContainText('đang chờ cập nhật')
-  const ribbonBox = (await ribbon.boundingBox())!
-  expect(ribbonBox.x).toBeCloseTo(frame.x, 0)
-  expect(ribbonBox.y).toBeGreaterThanOrEqual(frame.y)
-  expect(ribbonBox.y + ribbonBox.height).toBeLessThan(frame.y + frame.height)
-  await expect(page.locator('.memories-placeholder-label')).toHaveText(/ĐANG CHỜ KỶ NIỆM THẬT/)
+  expect(memories).toHaveLength(15)
+  await expect(page.locator('.memories-dots button')).toHaveCount(15)
+  await expect(page.locator('.memories-caption h2')).toHaveText('Gặp gỡ đầu năm')
+  await expect(page.locator('.memories-description')).toContainText('Đây là lần gặp chính thức đầu tiên của lớp mình')
+  await expectMemory(page, 0)
+  await expectMemoryPhotos(page, 0)
   await carousel.focus()
   await page.keyboard.press('ArrowLeft')
-  await expect(page.locator('.memories-count')).toHaveText('03/03')
-  await expect(page.locator('.memories-caption h2')).toHaveText('Còn nhiều điều đẹp đẽ để lưu giữ')
+  await expectMemory(page, 14)
+  await expect(page.locator('.memories-caption h2')).toHaveText('Lẩu Phann')
+  await expectMemoryPhotos(page, 14)
   await page.keyboard.press('Home')
-  await expect(page.locator('.memories-count')).toHaveText('01/03')
+  await expectMemory(page, 0)
   await page.keyboard.press('ArrowRight')
-  await expect(page.locator('.memories-description')).toContainText('Trang album này đang chờ một hình ảnh')
-  await expect(page.locator('.memories-live')).toContainText('Kỷ niệm 2 trên 3: Một khoảnh khắc đang chờ được kể')
+  await expectMemory(page, 1)
+  await expect(page.locator('.memories-caption h2')).toHaveText('First 20/10')
   await page.keyboard.press('End')
-  await expect(page.locator('.memories-count')).toHaveText('03/03')
+  await expectMemory(page, 14)
   await page.getByRole('button', { name: /Xem kỷ niệm trước/ }).click()
-  await expect(page.locator('.memories-count')).toHaveText('02/03')
+  await expectMemory(page, 13)
   await page.getByRole('button', { name: /Xem kỷ niệm 1:/ }).click()
-  await expect(page.locator('.memories-slide')).toHaveCount(1)
-  await expect(page.locator('.memories-caption h2')).toHaveText('Một trang dành cho kỷ niệm của chúng mình')
+  await expectMemory(page, 0)
   await expectFitsViewport(page)
-  await page.screenshot({ path: testInfo.outputPath('memories-desktop.png'), fullPage: true })
+})
+
+for (const width of [320, 390, 1440]) {
+  test(`slightly overlaps both uploaded photos and shows unclipped event copy at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: width < 600 ? 844 : 1000 })
+    await page.goto('/#/our-memories')
+    await expectMemory(page, 0)
+    await expectMemoryPhotos(page, 0)
+    await expect(page.locator('.memories-slide')).toHaveCSS('opacity', '1')
+    const [first, second] = await page.locator('.memories-paper').all()
+    const firstBox = (await first.boundingBox())!
+    const secondBox = (await second.boundingBox())!
+    const intersectionWidth = Math.min(firstBox.x + firstBox.width, secondBox.x + secondBox.width) - Math.max(firstBox.x, secondBox.x)
+    const intersectionHeight = Math.min(firstBox.y + firstBox.height, secondBox.y + secondBox.height) - Math.max(firstBox.y, secondBox.y)
+    expect(intersectionWidth, 'The two photo papers should slightly overlap').toBeGreaterThan(0)
+    expect(intersectionHeight).toBeGreaterThan(0)
+    const overlapRatio = intersectionWidth * intersectionHeight / Math.min(firstBox.width * firstBox.height, secondBox.width * secondBox.height)
+    expect(overlapRatio, 'Both photos should remain mostly visible').toBeLessThan(0.6)
+    await expectCaptionUnclipped(page)
+    await expectFitsViewport(page)
+    await page.screenshot({ path: testInfo.outputPath(`memories-${width}px.png`), fullPage: true })
+    const longestTitle = memories.reduce((longest, memory, index) => memory.title.length > memories[longest].title.length ? index : longest, 0)
+    const longestDescription = memories.reduce((longest, memory, index) => memory.description.length > memories[longest].description.length ? index : longest, 0)
+    for (const index of new Set([longestTitle, longestDescription])) {
+      await page.locator('.memories-dots button').nth(index).click()
+      await expectMemory(page, index)
+      await expectCaptionUnclipped(page)
+      await expectFitsViewport(page)
+    }
+  })
+}
+
+test('loads every uploaded event photo and preserves events whose images or descriptions are missing', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/#/our-memories')
+  expect(memories.flatMap(memory => memory.images).filter(image => !image.isPlaceholder)).toHaveLength(28)
+  for (const [index] of memories.entries()) {
+    await page.locator('.memories-dots button').nth(index).click()
+    await expectMemory(page, index)
+    await expectMemoryPhotos(page, index)
+    await expectFitsViewport(page)
+  }
+  await expect(page.locator('.memories-photo-unavailable')).toHaveCount(2)
+  await expect(page.locator('.memories-caption h2')).toHaveText('Lẩu Phann')
+})
+
+test('keeps the other photo and complete event caption when an uploaded photo fails to load', async ({ page }) => {
+  await page.route(`**${memories[0].images[0].src}`, route => route.abort('failed'))
+  await page.goto('/#/our-memories')
+  await expectMemory(page, 0)
+  await expect(page.locator('.memories-paper')).toHaveCount(2)
+  await expect(page.locator('.memories-photo-unavailable')).toHaveCount(1)
+  const remainingPhoto = page.locator('.memories-image-frame img')
+  await expect(remainingPhoto).toHaveCount(1)
+  await expect(remainingPhoto).toHaveAttribute('src', memories[0].images[1].src)
+  await expect.poll(() => remainingPhoto.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+  await page.getByRole('button', { name: /Xem kỷ niệm tiếp theo/ }).click()
+  await expectMemory(page, 1)
+  await expectMemoryPhotos(page, 1)
 })
 
 test('validates letter limits, counts Unicode characters and expands the paper on a phone', async ({ page }, testInfo) => {

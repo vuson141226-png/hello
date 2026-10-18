@@ -54,7 +54,7 @@
 
 .memories-photo-area {
   position: relative;
-  width: 82%;
+  width: 88%;
   max-width: 1080px;
   margin: 0 auto;
 }
@@ -62,11 +62,6 @@
 .memories-scrapbook {
   position: relative;
   z-index: 1;
-  background: #fffdfa;
-  border: 1px solid #efdee2;
-  padding: 8px 8px 24px;
-  border-radius: 11px;
-  box-shadow: 0 12px 37px #9f6a7d0d, 0 2px 6px #86576806;
   touch-action: pan-y pinch-zoom;
 }
 
@@ -76,25 +71,71 @@
 
 .memories-photo {
   position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding: 25px 15px 42px;
+  isolation: isolate;
+}
+
+.memories-paper {
+  position: relative;
+  flex: 0 0 53%;
+  min-width: 0;
+  padding: 9px 9px 29px;
+  background: #fffefa;
+  border: 1px solid #eaded8;
+  box-shadow: 0 12px 24px #80596c16, 0 2px 5px #70505d0c;
+  transform: rotate(-3deg);
+}
+
+.memories-paper + .memories-paper {
+  z-index: 1;
+  margin-top: 31px;
+  margin-left: -6%;
+  transform: rotate(3deg);
+}
+
+.memories-paper-heart {
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  width: 100%;
+  color: #c694a6;
+  font-family: var(--font-script);
+  font-size: 20px;
+  line-height: 1;
 }
 
 .memories-image-frame {
   position: relative;
   width: 100%;
-  background: #fff5f3;
-  border-radius: 5px;
+  aspect-ratio: 4 / 3;
+  background: #f6f1ed;
   overflow: hidden;
 }
 
 .memories-image-frame img {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: auto 16 / 9;
+  height: 100%;
   object-fit: contain;
   object-position: center;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.memories-photo-unavailable {
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  color: #aa8292;
+  font-size: 11px;
+  line-height: 1.8;
+  background: radial-gradient(ellipse at center, #fffaf7, #f6ece9);
 }
 
 .memories-tape {
@@ -110,8 +151,8 @@
 }
 
 .memories-tape-left {
-  left: 35px;
-  top: -10px;
+  left: 65px;
+  top: 7px;
   transform: rotate(-9deg);
 }
 
@@ -119,8 +160,8 @@
   position: absolute;
   z-index: 2;
   pointer-events: none;
-  right: -23px;
-  top: -31px;
+  right: -8px;
+  top: 23px;
   width: 78px;
   height: 64px;
   color: #c481a2;
@@ -135,7 +176,7 @@
 }
 
 .memories-note {
-  left: -132px;
+  left: -101px;
   top: 28px;
   width: 116px;
   min-height: 95px;
@@ -165,7 +206,7 @@
 }
 
 .memories-doodle {
-  right: -144px;
+  right: -117px;
   top: 133px;
   width: 130px;
   transform: rotate(7deg);
@@ -203,7 +244,7 @@
 }
 
 .memories-forever {
-  right: -100px;
+  right: -74px;
   bottom: 17px;
   font-family: var(--font-script);
   font-size: 21px;
@@ -212,48 +253,38 @@
 }
 
 .memories-caption {
-  padding: 23px 23px 1px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 10px 24px 17px;
 }
 
-.memories-placeholder-label {
-  display: inline-block;
-  padding: 5px 9px;
-  border: 1px solid #eed9df;
-  border-radius: 4px;
-  font-size: 7px;
-  letter-spacing: 1px;
-  color: #a9768b;
+.memories-caption-kicker {
+  display: block;
   margin-bottom: 10px;
+  color: #bc8ca0;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
 .memories-caption h2 {
   font-family: var(--font-display);
   font-weight: 500;
   color: #815068;
-  font-size: clamp(25px, 2.2vw, 32px);
-  line-height: 1.25;
-  margin: 0 0 12px;
+  font-size: clamp(28px, 2.7vw, 38px);
+  line-height: 1.35;
+  margin: 0 0 15px;
   overflow-wrap: anywhere;
 }
 
 .memories-date {
-  position: absolute;
-  z-index: 1;
-  top: 20px;
-  left: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  max-width: min(78%, 430px);
-  padding: 11px 28px 11px 16px;
-  color: #fff9f5;
-  background: #a83f70f0;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%);
-  filter: drop-shadow(0 3px 5px #6e294d24);
+  margin-bottom: 11px;
+  color: #a3768b;
   font-size: 11px;
-  font-weight: 500;
   line-height: 1.6;
-  text-align: left;
   overflow-wrap: anywhere;
   pointer-events: none;
 }
@@ -263,20 +294,17 @@
 }
 
 .memories-description {
-  color: #947983;
-  font-size: 11px;
+  color: #8e737e;
+  font-size: 12px;
   line-height: 1.95;
-  max-width: 630px;
+  max-width: 700px;
   margin: 0 auto;
   overflow-wrap: anywhere;
   white-space: pre-line;
 }
 
 .memories-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
+  position: relative;
   display: grid;
   place-items: center;
   border: 1px solid #e8ced7;
@@ -292,24 +320,28 @@
 .memories-arrow:hover {
   background: #fae7ee;
   color: var(--rose);
-  transform: translateY(-50%) scale(1.06);
+  transform: scale(1.06);
 }
 
 .memories-arrow-prev {
-  left: -66px;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .memories-arrow-next {
-  right: -66px;
+  grid-column: 3;
+  grid-row: 1;
 }
 
 .memories-controls {
-  display: flex;
+  display: grid;
+  grid-template-columns: 47px minmax(0, 1fr) 47px;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 0 15px;
+  width: min(580px, 100%);
   min-height: 50px;
-  margin-top: 13px;
+  margin: 6px auto 4px;
 }
 
 .memories-dots {
@@ -317,7 +349,8 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  max-width: 70%;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .memories-dots button {
@@ -354,6 +387,10 @@
   font-family: var(--font-display);
   font-size: 17px;
   margin: 0;
+  grid-column: 2;
+  grid-row: 2;
+  justify-content: center;
+  padding: 5px 0 9px;
 }
 
 .memories-count strong {
@@ -449,62 +486,56 @@
 }
 
 @media (max-width: 1150px) {
-  .memories-photo-area { width: 84%; }
-  .memories-note { left: -99px; top: 14px; width: 88px; font-size: 17px; min-height: 83px; }
+  .memories-photo-area { width: 88%; }
+  .memories-note { left: -74px; top: 14px; width: 88px; font-size: 17px; min-height: 83px; }
   .memories-note::before { left: 26px; }
-  .memories-doodle { right: -109px; width: 97px; font-size: 20px; }
-  .memories-forever { right: -68px; bottom: 14px; font-size: 18px; }
-  .memories-flower { left: -49px; bottom: 0; width: 49px; }
-  .memories-floating-heart { left: -46px; top: 128px; width: 17px; }
-  .memories-arrow-prev { left: -54px; }
-  .memories-arrow-next { right: -54px; }
-  .memories-arrow { width: 42px; height: 44px; }
+  .memories-doodle { right: -88px; width: 97px; font-size: 20px; }
+  .memories-forever { right: -44px; bottom: 35px; font-size: 18px; }
+  .memories-flower { left: -37px; bottom: 30px; width: 49px; }
+  .memories-floating-heart { left: -35px; top: 145px; width: 17px; }
+  .memories-sparkle { right: -30px; }
 }
 
 @media (max-width: 850px) {
   .memories-heading { margin-bottom: 39px; }
-  .memories-photo-area { width: 90%; }
+  .memories-photo-area { width: 96%; }
   .memories-note, .memories-doodle, .memories-forever, .memories-floating-heart { display: none; }
-  .memories-flower { left: -35px; bottom: 10px; width: 40px; }
-  .memories-sparkle { right: -26px; top: 66px; width: 20px; }
-  .memories-bow { right: -17px; top: -29px; width: 65px; }
-  .memories-arrow-prev { left: -44px; }
-  .memories-arrow-next { right: -44px; }
-  .memories-arrow { width: 39px; height: 44px; }
-  .memories-caption { padding: 20px 9px 0; }
-  .memories-description { font-size: 10px; }
+  .memories-flower { left: -16px; bottom: 10px; width: 40px; }
+  .memories-sparkle { right: -14px; top: 66px; width: 20px; }
+  .memories-bow { right: -7px; top: 20px; width: 65px; }
+  .memories-photo { padding-left: 9px; padding-right: 9px; }
+  .memories-paper { padding: 7px 7px 26px; }
+  .memories-caption { padding: 10px 14px 14px; }
 }
 
 @media (max-width: 600px) {
   .memories-page { padding-top: 34px; padding-bottom: 36px; }
-  .memories-heading { margin-bottom: 36px; }
+  .memories-heading { margin-bottom: 25px; }
   .memories-heading h1 { font-size: 37px; margin-bottom: 14px; }
   .memories-eyebrow { font-size: 6px; letter-spacing: 1.7px; margin-bottom: 13px; }
-  .memories-subtitle { font-size: 10px; line-height: 1.9; padding: 0 5px; }
+  .memories-subtitle { font-size: 11px; line-height: 1.9; padding: 0 5px; }
   .memories-photo-area { width: 100%; }
-  .memories-scrapbook { padding: 5px 5px 21px; border-radius: 8px; }
-  .memories-image-frame { border-radius: 4px; }
-  .memories-tape-left { left: 21px; width: 68px; height: 19px; top: -8px; }
-  .memories-bow { right: -5px; top: -27px; width: 55px; height: 49px; }
+  .memories-photo { flex-direction: column; padding: 16px 9px 27px; }
+  .memories-paper { flex: 0 0 auto; width: 89%; padding: 7px 7px 25px; }
+  .memories-paper + .memories-paper { align-self: flex-end; margin-left: 0; margin-top: -28px; }
+  .memories-tape-left { left: 28px; width: 68px; height: 19px; top: 3px; }
+  .memories-bow { right: -3px; top: 53%; width: 55px; height: 49px; }
   .memories-sparkle { display: none; }
   .memories-flower { left: -12px; bottom: -10px; width: 33px; height: 38px; opacity: 0.75; }
   .memories-arrow {
-    width: 36px;
+    width: 44px;
     height: 44px;
-    border-radius: 10px;
-    background: #fffaf7f2;
-    box-shadow: 0 2px 9px #81506814;
   }
   .memories-arrow svg { width: 20px; }
-  .memories-arrow-prev { left: -10px; }
-  .memories-arrow-next { right: -10px; }
-  .memories-caption { padding: 19px 9px 0; }
-  .memories-placeholder-label { padding: 5px 6px; font-size: 6px; letter-spacing: 0.7px; margin-bottom: 12px; }
-  .memories-caption h2 { font-size: 25px; margin-bottom: 11px; }
-  .memories-date { top: 12px; max-width: 82%; padding: 8px 22px 8px 11px; gap: 6px; font-size: 9px; }
-  .memories-description { font-size: 10px; line-height: 1.95; }
-  .memories-controls { margin-top: 10px; gap: 15px; }
+  .memories-caption { padding: 8px 3px 12px; }
+  .memories-caption-kicker { margin-bottom: 10px; font-size: 7px; }
+  .memories-caption h2 { font-size: 29px; margin-bottom: 12px; }
+  .memories-description { font-size: 12px; line-height: 1.95; }
+  .memories-photo-unavailable { font-size: 10px; gap: 10px; padding: 15px; }
+  .memories-controls { grid-template-columns: 44px minmax(0, 1fr) 44px; margin-top: 4px; gap: 4px 8px; }
+  .memories-dots { grid-column: 1 / -1; max-width: 232px; justify-self: center; }
   .memories-dots button { width: 29px; }
+  .memories-arrow-prev, .memories-arrow-next { grid-row: 2; }
   .memories-count { font-size: 15px; }
   .memories-count strong { font-size: 22px; }
   .memories-swipe-hint { font-size: 17px; }
@@ -517,8 +548,7 @@
 
 @media (max-width: 360px) {
   .memories-heading h1 { font-size: 32px; }
-  .memories-caption { padding-right: 5px; padding-left: 5px; }
-  .memories-caption h2 { font-size: 23px; }
+  .memories-caption h2 { font-size: 27px; }
   .memories-continue-button { padding-left: 10px; padding-right: 10px; font-size: 9px; }
 }
 

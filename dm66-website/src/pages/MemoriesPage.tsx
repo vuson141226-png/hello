@@ -19,6 +19,26 @@ function MemoryBow() {
   );
 }
 
+function MemoryPhoto({ src, altText, isPlaceholder = false }: { src: string; altText: string; isPlaceholder?: boolean }) {
+  const [hasError, setHasError] = useState(false);
+
+  return (
+    <div className="memories-paper">
+      <div className="memories-image-frame">
+        {isPlaceholder || hasError ? (
+          <div className="memories-photo-unavailable" role="img" aria-label={altText}>
+            <Flower2 size={35} strokeWidth={1} aria-hidden="true" />
+            <span>{hasError ? "Ảnh này chưa tải được" : "Ảnh kỷ niệm đang chờ bổ sung"}</span>
+          </div>
+        ) : (
+          <img src={src} alt={altText} draggable={false} decoding="async" onError={() => setHasError(true)} />
+        )}
+      </div>
+      <span className="memories-paper-heart" aria-hidden="true">♡</span>
+    </div>
+  );
+}
+
 export function MemoriesPage({ onContinue }: MemoriesPageProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -130,42 +150,13 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
                   aria-label={`${activeIndex + 1} trên ${memories.length}`}
                 >
                   <div className="memories-photo">
-                    <div className="memories-image-frame">
-                      {currentMemory.date && (
-                        <span className="memories-date">
-                          <Heart size={12} aria-hidden="true" />
-                          <span>{currentMemory.date}</span>
-                        </span>
-                      )}
-                      <img
-                        src={currentMemory.image}
-                        alt={currentMemory.altText}
-                        draggable={false}
-                        decoding="async"
-                        onError={(event) => {
-                          const image = event.currentTarget;
-                          if (!image.src.endsWith("/images/memories-placeholder.svg")) {
-                            image.src = "/images/memories-placeholder.svg";
-                            image.alt = "Khung ảnh minh họa; ảnh kỷ niệm này chưa tải được";
-                          }
-                        }}
-                      />
-                    </div>
-                    {hasMultiple && (
-                      <>
-                        <button className="memories-arrow memories-arrow-prev" type="button" aria-label="Xem kỷ niệm trước" onClick={() => goToMemory(activeIndex - 1, -1)}>
-                          <ChevronLeft size={23} />
-                        </button>
-                        <button className="memories-arrow memories-arrow-next" type="button" aria-label="Xem kỷ niệm tiếp theo" onClick={() => goToMemory(activeIndex + 1, 1)}>
-                          <ChevronRight size={23} />
-                        </button>
-                      </>
-                    )}
+                    {currentMemory.images.map((image, index) => <MemoryPhoto key={`${currentMemory.id}-${index}`} {...image} />)}
                   </div>
                   <figcaption className="memories-caption">
-                    {currentMemory.isPlaceholder && <span className="memories-placeholder-label">TRANG MẪU · ĐANG CHỜ KỶ NIỆM THẬT</span>}
+                    <span className="memories-caption-kicker">Kỷ niệm của chúng mình</span>
+                    {currentMemory.date && <span className="memories-date"><Heart size={12} aria-hidden="true" />{currentMemory.date}</span>}
                     <h2>{currentMemory.title}</h2>
-                    <p className="memories-description">{currentMemory.description}</p>
+                    {currentMemory.description && <p className="memories-description">{currentMemory.description}</p>}
                   </figcaption>
                 </motion.figure>
               </AnimatePresence>
@@ -173,10 +164,12 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
           </div>
 
           <div className="memories-controls">
+            {hasMultiple && <button className="memories-arrow memories-arrow-prev" type="button" aria-label="Xem kỷ niệm trước" onClick={() => goToMemory(activeIndex - 1, -1)}><ChevronLeft size={23} /></button>}
             <div className="memories-dots" role="group" aria-label="Chọn kỷ niệm">
               {memories.map((memory, index) => (
                 <button
                   key={memory.id}
+                  className="memories-dot"
                   type="button"
                   aria-label={`Xem kỷ niệm ${index + 1}: ${memory.title}`}
                   aria-current={index === activeIndex ? "true" : undefined}
@@ -186,7 +179,8 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
                 </button>
               ))}
             </div>
-            <p className="memories-count" aria-hidden="true">
+            {hasMultiple && <button className="memories-arrow memories-arrow-next" type="button" aria-label="Xem kỷ niệm tiếp theo" onClick={() => goToMemory(activeIndex + 1, 1)}><ChevronRight size={23} /></button>}
+            <p className="memories-count memories-counter" aria-hidden="true">
               <strong>{String(activeIndex + 1).padStart(2, "0")}</strong>
               <span>/</span>
               {String(memories.length).padStart(2, "0")}
