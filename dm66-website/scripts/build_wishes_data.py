@@ -8,6 +8,7 @@ needed at runtime. Diagnostics contain cell locations and counts only.
 
 import argparse
 from collections import Counter
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -42,9 +43,20 @@ DETAIL_HEADERS = (
     "STT trong danh sách", "Bạn nữ nhận lời chúc", "MSV", "Người viết",
     "Nội dung lời chúc đầy đủ", "Tệp PDF nguồn", "Trang PDF",
 )
+FINAL_ROSTER_SHEET = "Danh sách 44 bạn"
+FINAL_DETAIL_SHEET = "Mỗi lời chúc 1 dòng"
+FINAL_ROSTER_HEADERS = (
+    "STT", "Họ và tên", "MSV", "Lời chúc 1", "File ảnh 1",
+    "Lời chúc 2", "File ảnh 2", "Lời chúc 3", "File ảnh 3", "Số lời chúc",
+)
+FINAL_DETAIL_HEADERS = (
+    "STT", "Họ và tên", "MSV", "Lời chúc số", "Nội dung lời chúc", "File ảnh", "Ghi chú ảnh",
+)
 PLACEHOLDER_IMAGE = "/images/portrait-placeholder.svg"
 ID_PATTERN = re.compile(r"[A-Za-z0-9_-]{1,80}\Z", re.ASCII)
 CODE_PATTERN = re.compile(r"[A-Za-z0-9._-]{3,64}\Z", re.ASCII)
+PHOTO_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+PUBLIC_PHOTO_PATH = re.compile(r"/images/recipients/[A-Za-z0-9_-]+\.(?:jpg|jpeg|png|webp)\Z", re.ASCII)
 
 
 class WorkbookProblem(ValueError):
@@ -132,6 +144,157 @@ def check_unique_recipients(recipients):
             raise WorkbookProblem("ID hoặc cặp họ tên/mã sinh viên người nhận bị lặp.")
         seen_ids.add(recipient["id"])
         seen_pairs.add(pair)
+
+
+def canonical_photo_filename(filename):
+    """Match exact source basenames, allowing only Unicode normalization.
+
+    Case, accents, spaces, and the entire basename remain significant. In
+    particular, a recipient's name is never used to guess a photo association.
+    """
+    if (not isinstance(filename, str) or not filename.strip() or len(filename) > 250
+            or any(character in filename for character in "/\\:\x00")
+            or filename in {".", ".."}
+            or any(ord(character) < 32 for character in filename)
+            or Path(filename).suffix.lower() not in PHOTO_SUFFIXES):
+        raise WorkbookProblem("Tên tệp ảnh phải là tên tệp JPG, JPEG, PNG hoặc WebP, không chứa đường dẫn.")
+    return unicodedata.normalize("NFC", filename)
+
+
+def photo_asset_name(filename, suffix=None):
+    """A stable ASCII output name for a photo importer; never a person-name guess."""
+    canonical = canonical_photo_filename(filename)
+    extension = suffix or Path(canonical).suffix.lower()
+    if extension not in PHOTO_SUFFIXES:
+        raise WorkbookProblem("Định dạng ảnh đầu ra không được hỗ trợ.")
+    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:20]
+    return f"recipient-photo-{digest}{extension}"
+
+
+def photo_filename(cell):
+    value = text(cell, preserve=True, maximum=250)
+    if value:
+        try:
+            canonical_photo_filename(value)
+        except WorkbookProblem as error:
+            raise WorkbookProblem(f"{location(cell)}: {error}") from error
+    return value
+
+
+def read_final(workbook):
+    """Cross-check both final data sheets; ancillary sheets are not instructions."""
+    recipients, roster, roster_wishes = [], {}, {}
+    for cells in rows(workbook[FINAL_ROSTER_SHEET], FINAL_ROSTER_HEADERS, 5, 1000):
+        number = positive_number(cells[0])
+        if number in roster:
+            raise WorkbookProblem(f"{location(cells[0])}: STT bị lặp.")
+        recipient = new_recipient(
+            f"recipient-{number:03d}", text(cells[1], required=True, maximum=120), student_code(cells[2]),
+        )
+        if not recipient["studentCode"]:
+            raise WorkbookProblem(f"{location(cells[2])}: danh sách cuối cùng cần mã sinh viên.")
+        recipients.append(recipient)
+        roster[number] = recipient
+        count = 0
+        for wish_number, message_column in enumerate((3, 5, 7), 1):
+            message = text(cells[message_column], preserve=True)
+            image_file = photo_filename(cells[message_column + 1])
+            if message.strip():
+                roster_wishes[(number, wish_number)] = (message, image_file)
+                count += 1
+            elif image_file:
+                raise WorkbookProblem(f"{location(cells[message_column])}: có ảnh nhưng thiếu nội dung lời chúc.")
+        declared_count = cells[9]
+        # Formula caches are never evaluated or trusted. The literal message
+        # cells and the independently checked detail sheet determine the count.
+        if declared_count.data_type != "f":
+            if type(declared_count.value) is not int or declared_count.value != count:
+                raise WorkbookProblem(f"{location(declared_count)}: số lời chúc không khớp nội dung trong dòng.")
+    check_unique_recipients(recipients)
+
+    seen_wishes = set()
+    for cells in rows(workbook[FINAL_DETAIL_SHEET], FINAL_DETAIL_HEADERS, 5, 10000):
+        number = positive_number(cells[0])
+        recipient = roster.get(number)
+        if recipient is None:
+            raise WorkbookProblem(f"{location(cells[0])}: STT chưa có trong danh sách người nhận.")
+        if text(cells[1], required=True, maximum=120) != recipient["fullName"]:
+            raise WorkbookProblem(f"{location(cells[1])}: họ tên không khớp người nhận có cùng STT.")
+        if student_code(cells[2]) != recipient["studentCode"]:
+            raise WorkbookProblem(f"{location(cells[2])}: mã sinh viên không khớp danh sách người nhận.")
+        wish_number = positive_number(cells[3])
+        key = (number, wish_number)
+        if key in seen_wishes:
+            raise WorkbookProblem(f"{location(cells[3])}: số lời chúc của người nhận bị lặp.")
+        message = text(cells[4], required=True, preserve=True)
+        image_file = photo_filename(cells[5])
+        expected = roster_wishes.get(key)
+        if expected is None or expected[0] != message:
+            raise WorkbookProblem(f"{location(cells[4])}: nội dung không khớp danh sách chính.")
+        if expected[1] != image_file:
+            raise WorkbookProblem(f"{location(cells[5])}: tên ảnh không khớp danh sách chính.")
+        wish = {
+            "id": f"wish-{number:03d}-{wish_number}", "title": f"Lời chúc {wish_number}",
+            "senderName": "", "message": message, "image": PLACEHOLDER_IMAGE,
+        }
+        if image_file:
+            wish["imageFile"] = image_file
+        recipient["wishes"].append((wish_number, wish))
+        seen_wishes.add(key)
+    if seen_wishes != set(roster_wishes):
+        raise WorkbookProblem("Số lượng lời chúc giữa danh sách chính và sheet chi tiết không khớp.")
+    for recipient in recipients:
+        recipient["wishes"] = [wish for _, wish in sorted(recipient["wishes"], key=lambda entry: entry[0])]
+    return recipients, {"blankDetailCodes": 0, "sourceFormat": "final"}
+
+
+def attach_photos(recipients, manifest=None, public_directory=None):
+    """Apply only explicit, existing local photo mappings; return aggregate counts."""
+    mappings = {}
+    if manifest is not None:
+        if not isinstance(manifest, dict):
+            raise WorkbookProblem("Danh sách ánh xạ ảnh phải là một JSON object.")
+        if public_directory is None:
+            raise WorkbookProblem("Cần thư mục public để kiểm tra tệp ảnh đã nhập.")
+        public_directory = Path(public_directory).resolve(strict=True)
+        for filename, image in manifest.items():
+            canonical = canonical_photo_filename(filename)
+            if canonical in mappings:
+                raise WorkbookProblem("Danh sách ánh xạ có tên ảnh trùng sau chuẩn hóa Unicode.")
+            if not isinstance(image, str) or not PUBLIC_PHOTO_PATH.fullmatch(image):
+                raise WorkbookProblem("Ảnh đã nhập phải có đường dẫn /images/recipients/ và tên tệp ASCII hợp lệ.")
+            destination = (public_directory / image.lstrip("/")).resolve()
+            if not destination.is_relative_to(public_directory) or not destination.is_file():
+                raise WorkbookProblem("Tệp ảnh đã nhập không tồn tại trong thư mục public.")
+            mappings[canonical] = image
+    expected, resolved = set(), set()
+    references, matched, without_photo = 0, 0, 0
+    for recipient in recipients:
+        for wish in recipient["wishes"]:
+            # Final-format wishes explicitly own their photo. Reset it on each
+            # application so missing photos cannot fall through to a different
+            # wish's resolved portrait, including when reusing this helper.
+            if "image" in wish:
+                wish["image"] = PLACEHOLDER_IMAGE
+            filename = wish.get("imageFile")
+            if not filename:
+                without_photo += 1
+                continue
+            canonical = canonical_photo_filename(filename)
+            expected.add(canonical)
+            references += 1
+            image = mappings.get(canonical)
+            if image:
+                wish["image"] = image
+                if recipient["image"] == PLACEHOLDER_IMAGE:
+                    recipient["image"] = image
+                resolved.add(canonical)
+                matched += 1
+    return {
+        "photoReferences": references, "expectedPhotoFiles": len(expected),
+        "resolvedPhotoReferences": matched, "resolvedPhotoFiles": len(resolved),
+        "missingPhotoFiles": len(expected - resolved), "wishesWithoutPhoto": without_photo,
+    }
 
 
 def read_original(workbook):
@@ -243,22 +406,26 @@ def validate_archive(path):
             raise WorkbookProblem("Không nhận macro hoặc liên kết workbook ngoài.")
 
 
-def build_data(path):
+def build_data(path, photo_manifest=None, public_directory=None):
     validate_archive(path)
     workbook = load_workbook(path, read_only=False, data_only=False, keep_links=False)
     try:
         if set(workbook.sheetnames) == {"Người nhận", "Lời chúc"}:
             recipients, notes = read_template(workbook)
+        elif {FINAL_ROSTER_SHEET, FINAL_DETAIL_SHEET}.issubset(workbook.sheetnames):
+            recipients, notes = read_final(workbook)
         elif {ROSTER_SHEET, DETAIL_SHEET}.issubset(workbook.sheetnames):
             recipients, notes = read_original(workbook)
         else:
             raise WorkbookProblem("Cần mẫu hai sheet Người nhận/Lời chúc hoặc workbook tổng hợp có danh sách và sheet chi tiết.")
+        photo_summary = attach_photos(recipients, photo_manifest, public_directory)
         distribution = Counter(len(recipient["wishes"]) for recipient in recipients)
         summary = {
             "recipients": len(recipients),
             "wishes": sum(len(recipient["wishes"]) for recipient in recipients),
             "missingStudentCodes": sum(not recipient["studentCode"] for recipient in recipients),
             "wishCountDistribution": dict(sorted(distribution.items())),
+            **photo_summary,
             **notes,
         }
         return recipients, summary
@@ -276,7 +443,10 @@ def report_markdown(summary):
         "", "| Số lời chúc mỗi người | Số người nhận |", "| --- | --- |",
     ]
     lines.extend(f"| {count} | {total} |" for count, total in summary["wishCountDistribution"].items())
-    lines += ["", "Các người nhận chưa có lời chúc vẫn nằm trong danh sách để giao diện hiển thị đúng số lượng 0."]
+    if summary["wishCountDistribution"].get(0):
+        lines += ["", "Các người nhận chưa có lời chúc vẫn nằm trong danh sách để giao diện hiển thị đúng số lượng 0."]
+    elif summary["recipients"]:
+        lines += ["", "Tất cả người nhận trong danh sách đều đã có lời chúc."]
     if summary["sourceFormat"] == "original":
         lines += [
             "",
@@ -287,6 +457,22 @@ def report_markdown(summary):
             "Ghi chú về mã sinh viên ở sheet nguồn không còn đồng nhất với các ô dữ liệu đã điền; chương trình sử dụng các ô của danh sách chính và không áp dụng ghi chú cũ để xóa mã hiện có.",
             "",
             "Workbook không cung cấp ảnh chân dung tương ứng, nên toàn bộ người nhận dùng ảnh minh họa trung tính. Không gán ảnh từ danh sách cũ.",
+        ]
+    elif summary["sourceFormat"] == "final":
+        lines += [
+            "",
+            "Hai sheet dữ liệu cuối cùng được đối chiếu theo STT, họ tên, mã sinh viên và số thứ tự lời chúc. Từng nội dung và tên tệp ảnh phải trùng khớp giữa hai sheet; số lượng được tính từ nội dung thực tế, không chạy công thức Excel.",
+            "",
+            "Workbook không có cột người gửi. Tiêu đề dùng số thứ tự lời chúc; không suy đoán người viết từ lời văn hoặc dữ liệu cũ. Sheet kiểm tra tên ảnh chỉ là thông tin bổ sung và không được dùng để tự đoán ảnh cho người nhận.",
+            "",
+            f"- Lời chúc có tên tệp ảnh trong nguồn: {summary['photoReferences']}.",
+            f"- Tên tệp ảnh riêng biệt được tham chiếu: {summary['expectedPhotoFiles']}.",
+            f"- Lời chúc không có tên tệp ảnh: {summary['wishesWithoutPhoto']}.",
+            f"- Tệp ảnh đã nhập và kiểm tra tồn tại: {summary['resolvedPhotoFiles']}.",
+            f"- Lời chúc đã gắn được ảnh: {summary['resolvedPhotoReferences']}.",
+            f"- Tệp ảnh còn thiếu: {summary['missingPhotoFiles']}.",
+            "",
+            "Tên tệp nguồn được giữ trong trường imageFile của từng lời chúc. Chỉ gắn đường dẫn ảnh khi có ánh xạ tên tệp chính xác (cho phép chuẩn hóa Unicode) và tệp đích thực sự tồn tại trong public; không ghép ảnh theo tên gần giống. Khi chưa có ảnh, giao diện tiếp tục dùng ảnh minh họa trung tính.",
         ]
     lines += [
         "",
@@ -300,9 +486,16 @@ def main(argv=None):
     parser.add_argument("workbook", type=Path)
     parser.add_argument("--output", type=Path, default=Path("public/data/recipient-wishes.json"))
     parser.add_argument("--report", type=Path, default=Path("docs/wishes-data-report.md"))
+    parser.add_argument("--photo-manifest", type=Path, help="JSON ánh xạ tên tệp nguồn chính xác tới ảnh đã nhập trong public/images/recipients.")
+    parser.add_argument("--public-directory", type=Path, default=Path("public"))
     arguments = parser.parse_args(argv)
     try:
-        recipients, summary = build_data(arguments.workbook.resolve(strict=True))
+        manifest = None
+        if arguments.photo_manifest:
+            manifest = json.loads(arguments.photo_manifest.read_text(encoding="utf-8"))
+        recipients, summary = build_data(
+            arguments.workbook.resolve(strict=True), manifest, arguments.public_directory,
+        )
         arguments.output.parent.mkdir(parents=True, exist_ok=True)
         arguments.output.write_text(json.dumps(recipients, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         arguments.report.parent.mkdir(parents=True, exist_ok=True)

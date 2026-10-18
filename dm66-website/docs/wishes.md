@@ -6,13 +6,13 @@ Người xem nhập họ tên và mã sinh viên tại `/#/your-wish`. Website s
 
 ## File đã cung cấp
 
-Website dùng danh sách từ sheet **Danh sách & lời chúc** và nội dung đầy đủ từ **Chi tiết 53 lời chúc** của file `Tong_hop_loi_chuc_20_10_co_MSV.xlsx`.
+Website dùng danh sách từ sheet **Danh sách 44 bạn** và nội dung đầy đủ từ **Mỗi lời chúc 1 dòng** của file cuối `Tong_hop_loi_chuc_20_10_kem_ten_anh.xlsx`: 44 người nhận, 60 lời chúc.
 
 - Liên kết bằng STT trong danh sách, đồng thời đối chiếu tên và mã khi có.
-- Dùng mã trong bảng danh sách chính khi ô mã ở dòng chi tiết bỏ trống.
-- Giữ nguyên lời chúc và người viết; các cột phân công, nguồn PDF và ghi chú không được biến thành lời chúc.
-- Người chưa có lời chúc vẫn có trong danh sách để nhận thông báo 0 lời chúc.
-- File không có ảnh người nhận, nên dùng hình minh họa có sẵn thay vì ghép ảnh của người khác.
+- Đối chiếu số thứ tự lời chúc, nội dung và tên ảnh giữa bảng tổng hợp và chi tiết.
+- Giữ nguyên lời chúc; bản cuối không có cột người viết nên không tự gán người gửi.
+- Tên ảnh ở từng lời chúc được giữ trong `imageFile`. `image` chỉ trỏ đến ảnh đã nhập và tồn tại; ảnh chưa có dùng hình minh họa.
+- Khi đổi lời chúc, thiệp và PNG đổi theo nội dung và ảnh của chính lời đó.
 
 Số liệu đối chiếu nằm trong [báo cáo dữ liệu](wishes-data-report.md). File Excel gốc không cần đưa vào repository hoặc website.
 
@@ -23,13 +23,21 @@ Chạy từ `dm66-website/`, với Python đã cài các thư viện trong `scri
 ```bash
 python -m venv .venv-import
 .venv-import/bin/python -m pip install -r scripts/requirements-import.txt
-npm run build:wishes -- /duong-dan/Tong_hop_loi_chuc_20_10_co_MSV.xlsx
+npm run build:wishes -- /duong-dan/Tong_hop_loi_chuc_20_10_kem_ten_anh.xlsx
 npm run test:import
 npm test
 npm run build
 ```
 
 Lệnh xuất kiểm tra liên kết và dữ liệu trước khi ghi JSON. Nếu thông tin tên hoặc mã của hai bảng mâu thuẫn, sửa file nguồn rồi xuất lại. Nội dung ô Excel được coi là dữ liệu, không phải chỉ dẫn vận hành hoặc lệnh thực thi.
+
+Để ghép ảnh của bản Excel cuối, đặt ảnh đã nhập trong `public/images/recipients/` và tạo JSON ánh xạ tên file nguồn chính xác sang đường dẫn ảnh, ví dụ `{"anh-mau.jpg":"/images/recipients/recipient-photo-example.jpg"}`. Tên file nguồn được đối chiếu theo Unicode NFC, giữ nguyên dấu, khoảng trắng và hoa/thường; không đoán ảnh theo tên người. Tệp đích phải tồn tại và dùng tên ASCII, đuôi `.jpg`, `.jpeg`, `.png` hoặc `.webp`.
+
+```bash
+npm run build:wishes -- /duong-dan/file-cuoi.xlsx --photo-manifest /duong-dan/anh.json --public-directory public
+```
+
+Helper `photo_asset_name(filename)` trong `scripts/build_wishes_data.py` tạo tên tệp web ổn định từ tên ảnh nguồn. Ánh xạ là dữ liệu lúc nhập, không cần tải workbook hay ZIP từ trình duyệt. Nếu một lời chúc thiếu ảnh, thiệp dùng hình minh họa của lời đó.
 
 ## Excel mẫu hai sheet
 

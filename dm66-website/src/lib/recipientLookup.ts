@@ -5,6 +5,8 @@ export interface RecipientWish {
   title: string;
   senderName: string;
   message: string;
+  image?: string;
+  imageFile?: string;
 }
 
 export interface WishRecipient {

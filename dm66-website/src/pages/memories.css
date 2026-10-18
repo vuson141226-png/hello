@@ -11,7 +11,7 @@
 
 .memories-eyebrow {
   color: #ad7890;
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 500;
   letter-spacing: 2.2px;
   margin: 0 0 14px;
@@ -21,7 +21,7 @@
   color: #b66488;
   font-family: var(--font-script);
   font-weight: 500;
-  font-size: clamp(39px, 4.4vw, 61px);
+  font-size: clamp(40px, calc(4.4vw + 1px), 62px);
   line-height: 1.2;
   margin: 0 0 17px;
 }
@@ -35,7 +35,7 @@
 
 .memories-subtitle {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.95;
   max-width: 630px;
   margin: 0 auto;
@@ -55,7 +55,7 @@
 .memories-photo-area {
   position: relative;
   width: 88%;
-  max-width: 1080px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -81,7 +81,7 @@
   position: relative;
   flex: 0 0 53%;
   min-width: 0;
-  padding: 9px 9px 29px;
+  padding: 6px 6px 22px;
   background: #fffefa;
   border: 1px solid #eaded8;
   box-shadow: 0 12px 24px #80596c16, 0 2px 5px #70505d0c;
@@ -109,7 +109,6 @@
 .memories-image-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
   background: #f6f1ed;
   overflow: hidden;
 }
@@ -117,7 +116,8 @@
 .memories-image-frame img {
   display: block;
   width: 100%;
-  height: 100%;
+  /* Fill the smaller paper with the whole photo in its original proportions. */
+  height: auto;
   object-fit: contain;
   object-position: center;
   user-select: none;
@@ -125,7 +125,7 @@
 }
 
 .memories-photo-unavailable {
-  height: 100%;
+  aspect-ratio: 4 / 3;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -133,7 +133,7 @@
   flex-direction: column;
   gap: 16px;
   color: #aa8292;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
   background: radial-gradient(ellipse at center, #fffaf7, #f6ece9);
 }
@@ -190,7 +190,7 @@
   flex-direction: column;
   gap: 9px;
   font-family: var(--font-script);
-  font-size: 20px;
+  font-size: 21px;
   color: #ba7d8d;
 }
 
@@ -211,7 +211,7 @@
   width: 130px;
   transform: rotate(7deg);
   font-family: var(--font-script);
-  font-size: 23px;
+  font-size: 24px;
 }
 
 .memories-doodle svg {
@@ -247,7 +247,7 @@
   right: -74px;
   bottom: 17px;
   font-family: var(--font-script);
-  font-size: 21px;
+  font-size: 22px;
   transform: rotate(-9deg);
   color: #bc8599;
 }
@@ -262,7 +262,7 @@
   display: block;
   margin-bottom: 10px;
   color: #bc8ca0;
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
@@ -271,7 +271,7 @@
   font-family: var(--font-display);
   font-weight: 500;
   color: #815068;
-  font-size: clamp(28px, 2.7vw, 38px);
+  font-size: clamp(29px, calc(2.7vw + 1px), 39px);
   line-height: 1.35;
   margin: 0 0 15px;
   overflow-wrap: anywhere;
@@ -283,7 +283,7 @@
   gap: 8px;
   margin-bottom: 11px;
   color: #a3768b;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   overflow-wrap: anywhere;
   pointer-events: none;
@@ -295,7 +295,7 @@
 
 .memories-description {
   color: #8e737e;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.95;
   max-width: 700px;
   margin: 0 auto;
@@ -385,7 +385,7 @@
   gap: 9px;
   color: #b597a5;
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 18px;
   margin: 0;
   grid-column: 2;
   grid-row: 2;
@@ -396,11 +396,11 @@
 .memories-count strong {
   color: #a96b88;
   font-weight: 500;
-  font-size: 25px;
+  font-size: 26px;
 }
 
 .memories-count span {
-  font-size: 16px;
+  font-size: 17px;
   color: #d1b8c2;
 }
 
@@ -408,7 +408,7 @@
   margin: 0;
   color: #b292a1;
   font-family: var(--font-script);
-  font-size: 19px;
+  font-size: 20px;
 }
 
 .memories-swipe-hint span {
@@ -450,15 +450,15 @@
 
 .memories-continue p {
   color: #9e7c8c;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.9;
   margin: 18px 0 21px;
 }
 
-.memories-continue-button {
+.memories-page .memories-continue-button {
   margin: 0 auto;
   justify-content: center;
-  font-size: 11px;
+  font-size: 12px;
   max-width: 100%;
 }
 
@@ -467,7 +467,7 @@
   line-height: 1.9;
   max-width: 580px;
   margin: 70px auto;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 @keyframes memories-float {
@@ -485,12 +485,16 @@
   45%, 58% { opacity: 0.95; transform: scale(1.08); }
 }
 
+@media (min-width: 1500px) {
+  .memories-page .memories-continue-button { font-size: 13px; }
+}
+
 @media (max-width: 1150px) {
   .memories-photo-area { width: 88%; }
-  .memories-note { left: -74px; top: 14px; width: 88px; font-size: 17px; min-height: 83px; }
+  .memories-note { left: -74px; top: 14px; width: 88px; font-size: 18px; min-height: 83px; }
   .memories-note::before { left: 26px; }
-  .memories-doodle { right: -88px; width: 97px; font-size: 20px; }
-  .memories-forever { right: -44px; bottom: 35px; font-size: 18px; }
+  .memories-doodle { right: -88px; width: 97px; font-size: 21px; }
+  .memories-forever { right: -44px; bottom: 35px; font-size: 19px; }
   .memories-flower { left: -37px; bottom: 30px; width: 49px; }
   .memories-floating-heart { left: -35px; top: 145px; width: 17px; }
   .memories-sparkle { right: -30px; }
@@ -498,25 +502,25 @@
 
 @media (max-width: 850px) {
   .memories-heading { margin-bottom: 39px; }
-  .memories-photo-area { width: 96%; }
+  .memories-photo-area { width: 88%; }
   .memories-note, .memories-doodle, .memories-forever, .memories-floating-heart { display: none; }
   .memories-flower { left: -16px; bottom: 10px; width: 40px; }
   .memories-sparkle { right: -14px; top: 66px; width: 20px; }
   .memories-bow { right: -7px; top: 20px; width: 65px; }
   .memories-photo { padding-left: 9px; padding-right: 9px; }
-  .memories-paper { padding: 7px 7px 26px; }
+  .memories-paper { padding: 6px 6px 22px; }
   .memories-caption { padding: 10px 14px 14px; }
 }
 
 @media (max-width: 600px) {
   .memories-page { padding-top: 34px; padding-bottom: 36px; }
   .memories-heading { margin-bottom: 25px; }
-  .memories-heading h1 { font-size: 37px; margin-bottom: 14px; }
-  .memories-eyebrow { font-size: 6px; letter-spacing: 1.7px; margin-bottom: 13px; }
-  .memories-subtitle { font-size: 11px; line-height: 1.9; padding: 0 5px; }
+  .memories-heading h1 { font-size: 38px; margin-bottom: 14px; }
+  .memories-eyebrow { font-size: 7px; letter-spacing: 1.7px; margin-bottom: 13px; }
+  .memories-subtitle { font-size: 12px; line-height: 1.9; padding: 0 5px; }
   .memories-photo-area { width: 100%; }
   .memories-photo { flex-direction: column; padding: 16px 9px 27px; }
-  .memories-paper { flex: 0 0 auto; width: 89%; padding: 7px 7px 25px; }
+  .memories-paper { flex: 0 0 auto; width: 78%; padding: 5px 5px 22px; }
   .memories-paper + .memories-paper { align-self: flex-end; margin-left: 0; margin-top: -28px; }
   .memories-tape-left { left: 28px; width: 68px; height: 19px; top: 3px; }
   .memories-bow { right: -3px; top: 53%; width: 55px; height: 49px; }
@@ -528,28 +532,28 @@
   }
   .memories-arrow svg { width: 20px; }
   .memories-caption { padding: 8px 3px 12px; }
-  .memories-caption-kicker { margin-bottom: 10px; font-size: 7px; }
-  .memories-caption h2 { font-size: 29px; margin-bottom: 12px; }
-  .memories-description { font-size: 12px; line-height: 1.95; }
-  .memories-photo-unavailable { font-size: 10px; gap: 10px; padding: 15px; }
+  .memories-caption-kicker { margin-bottom: 10px; font-size: 8px; }
+  .memories-caption h2 { font-size: 30px; margin-bottom: 12px; }
+  .memories-description { font-size: 13px; line-height: 1.95; }
+  .memories-photo-unavailable { font-size: 11px; gap: 10px; padding: 15px; }
   .memories-controls { grid-template-columns: 44px minmax(0, 1fr) 44px; margin-top: 4px; gap: 4px 8px; }
   .memories-dots { grid-column: 1 / -1; max-width: 232px; justify-self: center; }
   .memories-dots button { width: 29px; }
   .memories-arrow-prev, .memories-arrow-next { grid-row: 2; }
-  .memories-count { font-size: 15px; }
-  .memories-count strong { font-size: 22px; }
-  .memories-swipe-hint { font-size: 17px; }
+  .memories-count { font-size: 16px; }
+  .memories-count strong { font-size: 23px; }
+  .memories-swipe-hint { font-size: 18px; }
   .memories-continue { margin-top: 27px; }
-  .memories-continue p { font-size: 10px; margin: 17px 7px 18px; }
-  .memories-continue-button { font-size: 10px; padding: 15px 15px; gap: 8px; }
+  .memories-continue p { font-size: 11px; margin: 17px 7px 18px; }
+  .memories-continue-button { padding: 15px 15px; gap: 8px; }
   .memories-continue-button > span { line-height: 1.7; }
   .memories-continue-button > svg { width: 14px; }
 }
 
 @media (max-width: 360px) {
-  .memories-heading h1 { font-size: 32px; }
-  .memories-caption h2 { font-size: 27px; }
-  .memories-continue-button { padding-left: 10px; padding-right: 10px; font-size: 9px; }
+  .memories-heading h1 { font-size: 33px; }
+  .memories-caption h2 { font-size: 28px; }
+  .memories-continue-button { padding-left: 10px; padding-right: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -21,6 +21,8 @@ HEADERS = (
     "STT (thứ tự)", "id *", "title – Tên kỷ niệm *", "date – Thời gian / dịp",
     "image – Tên file ảnh *", "description – Mô tả kỷ niệm *",
 )
+HEADERS_WITHOUT_DATE = tuple(header for header in HEADERS if header != "date – Thời gian / dịp")
+ALT_TEXT_HEADER = "altText – Mô tả ảnh"
 PLACEHOLDER = "/images/memories-placeholder.svg"
 ALIASES = {"cnxkh1.jpg": "cnxhkh1.jpg"}
 SAFE_FILENAME = re.compile(r"[a-z0-9_-]+\.jpe?g\Z", re.ASCII)
@@ -91,9 +93,21 @@ def build_data(workbook_path, zip_path):
         # The supplied workbook has no dimension metadata; styled empty rows
         # must not be mistaken for actual memories or stop iteration early.
         sheet.reset_dimensions()
-        iterator = sheet.iter_rows(max_col=6)
-        if tuple(cell.value for cell in next(iterator)) != HEADERS:
+        # Accept the final five-column workbook as well as the previous dated
+        # workbook and the published template's optional image-description column.
+        # Match complete known headers instead of guessing columns by position.
+        iterator = sheet.iter_rows(max_col=8)
+        header_cells = next(iterator, ())
+        headers = tuple(cell.value for cell in header_cells)
+        while headers and headers[-1] is None:
+            headers = headers[:-1]
+        if headers not in (HEADERS_WITHOUT_DATE, HEADERS, HEADERS + (ALT_TEXT_HEADER,)):
             raise ImportProblem("The memories header does not match the template.")
+        columns = {header: index for index, header in enumerate(headers)}
+        title_column = columns["title – Tên kỷ niệm *"]
+        image_column = columns["image – Tên file ảnh *"]
+        description_column = columns["description – Mô tả kỷ niệm *"]
+        date_column = columns.get("date – Thời gian / dịp")
         records, ids, orders = [], set(), set()
         missing, renamed, title_fallbacks, used = [], [], [], set()
         for row_number, cells in enumerate(iterator, 2):
@@ -109,16 +123,17 @@ def build_data(workbook_path, zip_path):
             identifier = cell_text(cells[1])
             if not SAFE_ID.fullmatch(identifier) or identifier in ids:
                 raise ImportProblem(f"B{row_number}: invalid or duplicate memory ID.")
-            title, description = cell_text(cells[2]), cell_text(cells[5])
+            title = cell_text(cells[title_column])
+            description = cell_text(cells[description_column])
             if not title:
                 if identifier == "ky-niem-13" and "Boy Day 2026" in description:
                     title = "Boy Day 2026"
                     title_fallbacks.append(identifier)
                 else:
                     raise ImportProblem(f"C{row_number}: missing event title.")
-            image_names = [line.strip().lower() for line in cell_text(cells[4]).splitlines() if line.strip()]
+            image_names = [line.strip().lower() for line in cell_text(cells[image_column]).splitlines() if line.strip()]
             if len(image_names) != 2 or any(not SAFE_FILENAME.fullmatch(name) for name in image_names):
-                raise ImportProblem(f"E{row_number}: expected two JPEG filenames on separate lines.")
+                raise ImportProblem(f"{cells[image_column].coordinate}: expected two JPEG filenames on separate lines.")
             images = []
             for index, original_name in enumerate(image_names, 1):
                 name = ALIASES.get(original_name, original_name)
@@ -131,13 +146,14 @@ def build_data(workbook_path, zip_path):
                     images.append({"src": PLACEHOLDER, "altText": f"{title} — đang chờ ảnh kỷ niệm {index}", "isPlaceholder": True})
                     missing.append({"id": identifier, "file": original_name})
             record = {"id": identifier, "title": title, "images": images, "description": description}
-            date_cell = cells[3]
-            if isinstance(date_cell.value, (date, datetime)):
-                record["date"] = date_cell.value.strftime("%d/%m/%Y")
-            else:
-                date_text = cell_text(date_cell)
-                if date_text:
-                    record["date"] = date_text
+            if date_column is not None:
+                date_cell = cells[date_column]
+                if isinstance(date_cell.value, (date, datetime)):
+                    record["date"] = date_cell.value.strftime("%d/%m/%Y")
+                else:
+                    date_text = cell_text(date_cell)
+                    if date_text:
+                        record["date"] = date_text
             records.append((order, record))
             ids.add(identifier)
             orders.add(order)
@@ -179,7 +195,8 @@ def report_markdown(memories, assets, diagnostics, workbook_name, zip_name):
         f"Nguồn: `{workbook_name}` và `{zip_name}` do người dùng cung cấp.", "",
         f"- Đã nhập **{len(memories)} sự kiện**, mỗi sự kiện có hai vị trí ảnh.",
         f"- Đã sử dụng **{len(assets)} ảnh JPEG gốc**, giữ nguyên từng byte; chỉ chuẩn hóa tên file về chữ thường.",
-        f"- Có **{len(diagnostics['missing'])} ảnh thiếu** dùng hình khung trống trung tính, không lấy ảnh sự kiện khác thay vào.",
+        f"- Có **{len(diagnostics['missing'])} ảnh thiếu**; những ảnh chưa có mới dùng khung trống trung tính, không lấy ảnh sự kiện khác thay vào.",
+        f"- Có **{len(diagnostics['blankDescriptions'])} mô tả trống** trong dữ liệu đã nhập.",
         "- Chỉ đọc sheet `Du_lieu_ky_niem`; không nhập ví dụ hoặc diễn giải ghi chú thành dữ liệu.",
         "- Giữ đầy đủ tiêu đề và mô tả nguyên văn, chỉ bỏ khoảng trắng ở hai đầu ô.",
         "- Không sao chép workbook hoặc ZIP gốc vào thư mục công khai.", "",
@@ -194,7 +211,7 @@ def report_markdown(memories, assets, diagnostics, workbook_name, zip_name):
     for missing in diagnostics["missing"]:
         lines.append(f"- `{missing['id']}`: ZIP không có `{missing['file']}`; giữ sự kiện và hiển thị trạng thái đang chờ ảnh.")
     if all("date" not in memory for memory in memories):
-        lines.append("- Toàn bộ ô thời gian trong Excel trống; không tự gán ngày hoặc năm.")
+        lines.append("- Excel không cung cấp thời gian riêng cho các sự kiện; không tự gán ngày hoặc năm.")
     lines.extend(["", "## Danh sách sự kiện", "", "| ID | Tên đầy đủ | Ảnh thật |", "| --- | --- | ---: |"])
     for memory in memories:
         title = memory["title"].replace("|", "\\|").replace("\n", "<br>")
@@ -220,7 +237,9 @@ def main(argv=None):
             raise ImportProblem(f"Refusing to overwrite a different existing photo: {name}.")
     directory.mkdir(parents=True, exist_ok=True)
     for name, content in assets.items():
-        (directory / name).write_bytes(content)
+        path = directory / name
+        if not path.exists():
+            path.write_bytes(content)
     data_file.parent.mkdir(parents=True, exist_ok=True)
     data_file.write_text(typescript(memories), encoding="utf-8")
     report_file = args.root / "docs/memories-import-report.md"

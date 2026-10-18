@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { fixtureRecipient, mockRecipients, profiles, testStudentCode } from './helpers/recipientFixture'
@@ -89,6 +90,65 @@ test('requires full name and code together and preserves text codes', async ({ p
   await expect(page.getByRole('alert')).toContainText('Tên hoặc mã sinh viên chưa đúng')
   await lookup(page)
   await expect(page.locator('.wish-notice')).toContainText('2 lời chúc')
+})
+
+test('shows each wish photo and exports the photo belonging to the selected wish', async ({ page }) => {
+  const firstPhoto = '/test-portraits/wish-first.svg'
+  const secondPhoto = '/test-portraits/wish-second.svg'
+  const recipient = fixtureRecipient()
+  await page.route('**/data/recipient-wishes.json', route => route.fulfill({ json: [{
+    ...recipient,
+    wishes: recipient.wishes.map((wish, index) => ({ ...wish, image: index === 0 ? firstPhoto : secondPhoto })),
+  }] }))
+  for (const [path, color] of [[firstPhoto, '#0f5bab'], [secondPhoto, '#12ab40']]) {
+    await page.route(`**${path}`, route => route.fulfill({
+      contentType: 'image/svg+xml',
+      body: `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="400" height="600" fill="${color}"/></svg>`,
+    }))
+  }
+  await page.addInitScript(() => Object.defineProperty(window, 'showSaveFilePicker', { configurable: true, value: undefined }))
+  await page.goto('/#/your-wish')
+  await openFirstWish(page)
+  const photo = page.locator('.card-photo img')
+  await expect(photo).toHaveAttribute('src', firstPhoto)
+  const save = page.getByRole('button', { name: 'Lưu thiệp của mình' })
+  await expect(save).toBeEnabled()
+  await page.getByLabel('Chọn lời chúc muốn đọc').selectOption('wish-0-2')
+  await expect(photo).toHaveAttribute('src', secondPhoto)
+  await expect(page.locator('.card-letter')).toHaveText(recipient.wishes[1].message)
+  await expect(save).toBeEnabled()
+  const downloadPromise = page.waitForEvent('download')
+  await save.click()
+  const download = await downloadPromise
+  expect(await download.failure()).toBeNull()
+  const path = await download.path()
+  expect(path).not.toBeNull()
+  const png = await readFile(path!)
+  const pixels = await page.evaluate(async base64 => {
+    const image = new Image()
+    image.src = `data:image/png;base64,${base64}`
+    await image.decode()
+    const canvas = document.createElement('canvas')
+    canvas.width = image.naturalWidth
+    canvas.height = image.naturalHeight
+    const context = canvas.getContext('2d')!
+    context.drawImage(image, 0, 0)
+    const data = context.getImageData(0, 0, canvas.width, canvas.height).data
+    const counts = { first: 0, second: 0 }
+    for (let y = 0; y < canvas.height; y += 8) {
+      for (let x = 0; x < canvas.width; x += 8) {
+        const offset = (y * canvas.width + x) * 4
+        if (data[offset] === 15 && data[offset + 1] === 91 && data[offset + 2] === 171) counts.first += 1
+        if (data[offset] === 18 && data[offset + 1] === 171 && data[offset + 2] === 64) counts.second += 1
+      }
+    }
+    return counts
+  }, png.toString('base64'))
+  expect(pixels.first).toBe(0)
+  expect(pixels.second).toBeGreaterThan(500)
+  await page.getByLabel('Chọn lời chúc muốn đọc').selectOption('wish-0-1')
+  await expect(photo).toHaveAttribute('src', firstPhoto)
+  await expect(page.locator('.card-letter')).toHaveText(recipient.wishes[0].message)
 })
 
 test('resets locally and starts with empty fields after reload', async ({ page }) => {
