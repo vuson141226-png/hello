@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="paper" x1="200" y1="0" x2="1400" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FAECEF"/><stop offset="1" stop-color="#FFF6ED"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="440" y1="130" x2="1150" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFCF8"/><stop offset="1" stop-color="#FFF7F5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#paper)"/>
+  <path d="M0 728C237 632 372 826 649 758s610-137 951-12v154H0Z" fill="#F5DEE4" opacity=".5"/>
+  <circle cx="1283" cy="167" r="105" fill="#F9E3E7"/>
+  <circle cx="237" cy="694" r="127" fill="#F7E4E2"/>
+  <g transform="rotate(-4 800 420)">
+    <rect x="444" y="133" width="720" height="589" rx="10" fill="#D5ACB6" opacity=".1" transform="translate(6 12)"/>
+    <rect x="444" y="133" width="720" height="589" rx="10" fill="url(#frame)" stroke="#E4C5CE" stroke-width="2"/>
+    <rect x="466" y="156" width="676" height="473" rx="4" fill="#F7EAEB" stroke="#E8D2D7" stroke-width="2" stroke-dasharray="10 11"/>
+    <g stroke="#C18A9F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M756 323h96l17 25h30c9 0 16 7 16 16v106c0 9-7 16-16 16H709c-9 0-16-7-16-16V364c0-9 7-16 16-16h30l17-25Z"/>
+      <circle cx="804" cy="411" r="44"/>
+      <path d="M881 371h9"/>
+    </g>
+    <text x="804" y="548" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" letter-spacing="4" fill="#A7758A">ẢNH KỶ NIỆM SẼ Ở ĐÂY</text>
+    <text x="804" y="679" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="28" fill="#BD8B9E">A little space for our memories.</text>
+  </g>
+  <g transform="rotate(6 800 139)" opacity=".8">
+    <path d="M713 103h178l-3 12 4 15-4 18 3 15H712l3-16-4-16 3-14Z" fill="#E6C4CE"/>
+    <path d="M728 105v57m20-57v57m20-57v57m20-57v57m20-57v57m20-57v57m20-57v57m20-57v57" stroke="#F6E3E6" stroke-width="9" opacity=".7"/>
+  </g>
+  <g stroke="#B5879B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1265 687c-13-65-39-115-42-160m40 158c16-52 45-100 58-143"/>
+    <path d="M1247 624c-45-2-54-25-60-52 36 2 58 19 60 52Zm24 12c42-11 48-38 48-60-35 12-50 29-48 60Z" fill="#CDD3B9" stroke="#A6B596"/>
+    <path d="M1224 541c-29-8-45-31-40-61l19 11 5-30 18 23 18-20 3 29 17-10c0 32-15 54-40 58Z" fill="#DBA7BC" stroke="#CB91AB"/>
+    <path d="M1321 554c-26-12-38-38-27-66l16 14 11-28 12 26 22-15-4 29 18-6c-7 31-25 48-48 46Z" fill="#E8BDCC" stroke="#D5A1B6"/>
+  </g>
+  <g fill="#D7A4B9">
+    <path d="M312 246c-22-30-53-6-32 15l32 29 32-29c21-21-10-45-32-15Z"/>
+    <path d="M1272 329c-13-18-32-4-19 9l19 17 19-17c13-13-6-27-19-9Z"/>
+  </g>
+  <g stroke="#CFAD87" stroke-width="2.5" stroke-linecap="round">
+    <path d="M353 527v30m-15-15h30M1237 245v24m-12-12h24M1303 404v20m-10-10h20"/>
+  </g>
+  <path d="m294 391 5 14 14 5-14 5-5 14-5-14-14-5 14-5 5-14Z" fill="#DDBB9D"/>
+  <text x="800" y="836" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" letter-spacing="3" fill="#AA7B8D">DM66D · ẢNH MINH HỌA · CHƯA CÓ ẢNH THẬT</text>
+</svg>
