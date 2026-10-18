@@ -1,6 +1,6 @@
 # Chúc mừng 20/10 · Digital Marketing 66D
 
-Website lời chúc dành riêng cho lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Hành trình hiện có 4 trang: Welcome → Our Memories → Your Special Wish → Letters To DM66D Boys. Giữ nguyên trang Welcome và các chức năng tìm tên, thiệp PNG, gửi trái tim, nhạc nền; bổ sung album kỷ niệm và thư gửi lại được lưu tập trung bằng Supabase.
+Website lời chúc dành riêng cho lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Hành trình hiện có 4 trang: Welcome → Our Memories → Your Special Wish → Letters To DM66D Boys. Giữ nguyên trang Welcome và các chức năng thiệp PNG, gửi trái tim, nhạc nền; bổ sung album kỷ niệm, đăng nhập người nhận bằng tên và mã sinh viên, nhiều lời chúc riêng và thư gửi lại được lưu tập trung bằng Supabase.
 
 Thiệp cá nhân hóa đặt ảnh lớn bên trái, tiêu đề và lời chúc bên phải trên màn hình rộng; trên điện thoại, các phần xếp dọc để dễ đọc. Thiệp PNG được xuất theo bố cục ngang từ mọi thiết bị.
 
@@ -44,34 +44,20 @@ Quản trị đăng nhập tại `/#/admin` để xem tổng số, sắp xếp v
 
 ```sh
 npm run test:database # Cần Docker; kiểm tra PostgreSQL thật, restart, retry, rate limit và quyền
+npm run test:recipients:database # Đăng nhập, phiên riêng, nhập nguyên tử và cách ly người nhận
 ```
 
-## Dữ liệu và ảnh
+## Người nhận và nhiều lời chúc riêng
 
-Dữ liệu trong `src/data/girls.ts` gồm **5 hồ sơ thử có ảnh** từ sheet `DANH SACH` của file Excel do người dùng cung cấp. Dòng ABC không được hiển thị vì chưa có ảnh; không nhập sheet `VI DU` hoặc `HUONG DAN`. Các ảnh được ghép như sau:
+Trang `/#/your-wish` yêu cầu tên đầy đủ và mã sinh viên; kiểm tra diễn ra trên máy chủ. Mỗi người nhận có nhiều lời chúc, được đếm và chọn xem từng lời. Thiệp và PNG dùng nội dung, chữ ký người gửi của lời đang chọn. Tài khoản chưa có lời chúc hiển thị trạng thái đang chuẩn bị.
 
-| Họ tên trong Excel | Tên hiển thị | Ảnh trong `public/images/girls/` |
-| --- | --- | --- |
-| ABE | 1 | `ban1.png` |
-| ABA | 3 | `ban2.jpg` |
-| ABZ | 4 | `ban3.jpg` |
-| ABQ | 5 | `ban4.jpg` |
-| ABD | 6 | `ban5.png` |
+Không còn danh sách người nhận, mã sinh viên hoặc nội dung lời chúc riêng nhúng trong JavaScript. Nội dung chỉ được trả về sau khi máy chủ xác thực phiên của đúng người nhận. Mã sinh viên lưu trong PostgreSQL dưới dạng bcrypt; cookie phiên HttpOnly, SameSite=Strict và Secure trên HTTPS. Đăng xuất thu hồi phiên phía máy chủ. Kiểm thử chỉ dùng dữ liệu giả lập.
 
-Có thể thử tìm `abe` hoặc `1`; tên hiển thị `1` hiện chỉ ứng với ABE. Các gợi ý trên trang tra cứu lấy trực tiếp từ danh sách hiện tại.
+- [Excel mẫu: Người nhận và Lời chúc](public/downloads/DM66D-private-wishes-template.xlsx) là mẫu trống, không chứa dữ liệu cá nhân.
+- [Hướng dẫn nhập riêng tư và cấu hình Preview](docs/private-wishes.md) mô tả các cột, migration, nhập Excel qua máy chủ và kiểm tra quyền.
+- Lưu Excel đã điền ngoài checkout hoặc trong `.private/` được Git bỏ qua. Không đưa file đã điền, mã sinh viên hoặc bản xuất dữ liệu vào Git, `src/`, `public/` hay `prebuilt/`.
 
-Nội dung giữ nguyên cách viết và xuống dòng trong Excel. Biệt danh, tính cách và kỷ niệm chưa được điền nên giữ trống. Cả 5 hồ sơ dùng ảnh được cung cấp (ban1 và ban5 là bản PNG đã che thông tin theo yêu cầu, không lưu bản gốc) và đặt `isPlaceholder: false`; dữ liệu vẫn phục vụ thử nghiệm, cần kiểm tra lại trước khi chia sẻ món quà hoàn chỉnh.
-
-1. Thêm ảnh vào `public/images/`, ví dụ `public/images/minh-anh.jpg`.
-2. Sửa hoặc thêm đối tượng trong mảng `girls` của `src/data/girls.ts` theo kiểu `Girl` có sẵn: `id`, `fullName`, `displayName`, `nicknames`, `image`, `introduction`, `personality`, `wish`, cùng `memory` nếu có.
-3. Đặt `image` thành đường dẫn từ gốc như `/images/minh-anh.jpg`, không thêm `public/`. Dùng tên tệp chữ thường, không dấu và không có khoảng trắng để tránh lỗi đường dẫn khi deploy.
-4. Dùng `id` riêng cho từng người. Nhập đúng họ tên, tên hiển thị và các biệt danh; không tự tạo thông tin cá nhân. Đặt `isPlaceholder: false` sau khi đã thay nội dung mẫu.
-
-Tìm kiếm chạy ngay trên trình duyệt, đối chiếu tên và biệt danh sau khi chuẩn hóa dấu, chữ hoa/thường và khoảng trắng; không đoán gần đúng. Nếu nhiều người có cùng tên hoặc biệt danh, người dùng chọn đúng người từ danh sách kết quả. Nên dùng tên và biệt danh đủ phân biệt để giảm nhầm lẫn.
-
-**Dữ liệu tĩnh có thể được mọi khách truy cập đọc.** Trang lời chúc không phải khu vực bảo mật, dù khách cần tìm tên để mở thiệp. Không đưa bí mật, số điện thoại, địa chỉ hoặc nội dung riêng tư vào mã nguồn.
-
-Ảnh trong `public/images/` được khuyến nghị cho chức năng tải PNG. Ảnh từ dịch vụ bên ngoài cần cho phép CORS; ảnh vẫn có thể hiển thị trên trang nhưng bị chặn khi xuất thiệp. Kiểm tra tải PNG trên bản đã deploy sau khi thay ảnh.
+Ảnh dùng đường dẫn tĩnh trong `public/images/` có thể được khách truy cập đọc. Chỉ dùng ảnh đã có sự đồng ý cho phép công khai; ảnh riêng cần kho lưu trữ có kiểm soát truy cập. Các đường dẫn ảnh hiện có vẫn được giữ để tương thích. Ảnh ngoài miền cần CORS để xuất PNG.
 
 ## Dữ liệu album kỷ niệm
 
@@ -104,6 +90,8 @@ Dự án dùng đường dẫn gốc `/`, phù hợp khi deploy ở tên miền 
 Trước khi chia sẻ, chạy `npm test` và `npm run build`, rồi kiểm tra trên bản Preview:
 
 - Cả bốn trang, CTA và đường dẫn chia sẻ trực tiếp hoạt động trên máy tính, điện thoại.
-- Tìm bằng họ tên có dấu, không dấu và biệt danh; thử tên không tồn tại và tên trùng.
+- Đăng nhập bằng tên có dấu/không dấu và mã sinh viên; thử mã sai, hết phiên và đổi tài khoản.
+- Xác nhận số lượng lời chúc, chọn từng lời và kiểm tra PNG khớp lời đang xem.
+- Tài khoản A không đọc được lời chúc của B; khách chưa đăng nhập không nhận danh sách hoặc nội dung riêng.
 - Ảnh và lời chúc đúng người, nội dung không còn là dữ liệu mẫu.
 - Thiệp PNG tải được, đủ chữ tiếng Việt và ảnh; nhạc bật/tắt được nếu đã cấu hình.

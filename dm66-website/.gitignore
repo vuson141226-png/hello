@@ -8,3 +8,11 @@ playwright-report/
 .env.*
 !.env.example
 *.tsbuildinfo
+
+# Filled recipients/wishes workbooks contain private student codes and messages.
+.private/
+*.private.xlsx
+*-filled.xlsx
+~$*.xlsx
+__pycache__/
+.venv-import/

@@ -19,11 +19,15 @@ export class ProviderError extends Error {
 export async function provider(path: string, options: RequestInit = {}, privileged = true): Promise<{ data: unknown; headers: Headers }> {
   const config = configuration();
   const key = privileged ? config.serviceKey : config.anonKey;
+  // Proxy-bound keys are opaque locally. An explicit format allows a legacy JWT
+  // binding to populate both headers without trying to inspect its secret value.
+  const legacyKey = process.env.SUPABASE_KEY_FORMAT === 'legacy'
+    || (process.env.SUPABASE_KEY_FORMAT !== 'modern' && key.split('.').length === 3);
   const response = await fetch(`${config.url}${path}`, {
     ...options,
     // Legacy keys are JWTs; modern sb_secret_/sb_publishable_ keys belong only
     // in apikey. Actual user access tokens explicitly override Authorization.
-    headers: { apikey: key, ...(key.split('.').length === 3 ? { Authorization: `Bearer ${key}` } : {}), 'Content-Type': 'application/json', ...options.headers },
+    headers: { apikey: key, ...(legacyKey ? { Authorization: `Bearer ${key}` } : {}), 'Content-Type': 'application/json', ...options.headers },
     signal: AbortSignal.timeout(15_000),
   });
   const text = await response.text();
