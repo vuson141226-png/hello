@@ -36,7 +36,7 @@ Bốn trang dùng hash route: `/#/`, `/#/our-memories`, `/#/your-wish`, `/#/lett
 
 ## Album kỷ niệm và hộp thư
 
-`src/data/memories.ts` là nguồn dữ liệu album: `id`, `title`, `date` tùy chọn, `image`, `description`, `altText`. Thêm ảnh thật vào `public/images/`, rồi thay đường dẫn và câu chuyện trong file dữ liệu. Ba khung hiện tại ghi rõ **mẫu/chờ nội dung**; không dùng ảnh hồ sơ hoặc bịa chuyện thành kỷ niệm thật. Album hiển thị một ảnh ngang giữ nguyên tỷ lệ, hỗ trợ mũi tên, chấm, bàn phím và vuốt.
+`src/data/memories.ts` lưu 15 sự kiện từ Excel được cung cấp, mỗi sự kiện gồm tên đầy đủ, mô tả và hai ảnh. Album dùng hai khung ảnh hơi nghiêng, chồng nhẹ lên nhau; giữ tỷ lệ ảnh gốc và hỗ trợ mũi tên, chấm, bàn phím, vuốt trên điện thoại. 28 ảnh thật nằm trong `public/images/memories/`. Cặp ảnh Lẩu Phann chưa có trong ZIP nên dùng khung chờ ảnh; ba sự kiện chưa có mô tả được giữ trống, không thêm câu chuyện tự tạo. Xem [báo cáo nhập dữ liệu](docs/memories-import-report.md).
 
 Trang viết thư chỉ báo thành công sau khi API xác nhận đã lưu PostgreSQL. Hướng dẫn tạo bảng, cấu hình Supabase, tài khoản quản trị và quyền truy cập nằm ở [supabase/README.md](supabase/README.md). Copy `.env.example` sang `.env.local` cho local, nhập ba biến server; `npm run dev` chạy cùng bộ API với Vercel. Chưa cấu hình thì API trả `503 NOT_CONFIGURED`, nội dung đang viết được giữ nguyên để thử lại.
 
@@ -60,7 +60,17 @@ File Excel gốc được giữ ngoài repository; bản JSON cần cho website 
 
 ## Dữ liệu album kỷ niệm
 
-Mẫu Excel: [DM66D-memories-template.xlsx](public/downloads/DM66D-memories-template.xlsx). Điền sheet `Du_lieu_ky_niem`, mỗi dòng là một kỷ niệm; gửi kèm `anh-ky-niem.zip` với tên ảnh khớp cột `image`. Cột `date` là chữ hiển thị trên dải nhãn góc trái ảnh, chấp nhận ngày, tháng/năm hoặc tên dịp. Sheet `Vi_du_minh_hoa` chỉ để tham khảo. Dữ liệu website được quản lý trong `src/data/memories.ts`; file mẫu dùng để chuẩn bị dữ liệu gửi lại, không phải chức năng tự nhập Excel trên website.
+Mẫu Excel: [DM66D-memories-template.xlsx](public/downloads/DM66D-memories-template.xlsx). Điền sheet `Du_lieu_ky_niem`, mỗi dòng là một sự kiện; cột `image` nhận hai tên ảnh, mỗi tên một dòng, cùng ảnh trong ZIP. Cột `title` hiển thị toàn bộ tên sự kiện và `description` hiển thị đầy đủ mô tả. Cột `date` tùy chọn; để trống thì không thêm ngày tự đoán. Sheet hướng dẫn và ví dụ không được nhập thành kỷ niệm thật.
+
+Chạy từ `dm66-website/` để nhập lại file nguồn:
+
+```sh
+npm run import:memories -- /duong-dan/ky-niem.xlsx /duong-dan/anh-ky-niem.zip
+npm run test:import
+npm run build
+```
+
+Công cụ kiểm tra file và ánh xạ ảnh trước khi tạo `src/data/memories.ts`, sao chép ảnh gốc vào `public/images/memories/` và ghi báo cáo tổng hợp. File Excel/ZIP gốc không cần đưa vào repository. Khi đồng bộ `prebuilt/`, sao chép toàn bộ `dist/` để giữ đủ ảnh.
 
 ## Lưu thiệp PNG
 
