@@ -21,9 +21,9 @@ Workbook không có cột người gửi. Tiêu đề dùng số thứ tự lờ
 - Lời chúc có tên tệp ảnh trong nguồn: 59.
 - Tên tệp ảnh riêng biệt được tham chiếu: 55.
 - Lời chúc không có tên tệp ảnh: 1.
-- Tệp ảnh đã nhập và kiểm tra tồn tại: 0.
-- Lời chúc đã gắn được ảnh: 0.
-- Tệp ảnh còn thiếu: 55.
+- Tệp ảnh đã nhập và kiểm tra tồn tại: 55.
+- Lời chúc đã gắn được ảnh: 59.
+- Tệp ảnh còn thiếu: 0.
 
 Tên tệp nguồn được giữ trong trường imageFile của từng lời chúc. Chỉ gắn đường dẫn ảnh khi có ánh xạ tên tệp chính xác (cho phép chuẩn hóa Unicode) và tệp đích thực sự tồn tại trong public; không ghép ảnh theo tên gần giống. Khi chưa có ảnh, giao diện tiếp tục dùng ảnh minh họa trung tính.
 

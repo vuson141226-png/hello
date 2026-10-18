@@ -23,7 +23,7 @@ Chạy từ `dm66-website/`, với Python đã cài các thư viện trong `scri
 ```bash
 python -m venv .venv-import
 .venv-import/bin/python -m pip install -r scripts/requirements-import.txt
-npm run build:wishes -- /duong-dan/Tong_hop_loi_chuc_20_10_kem_ten_anh.xlsx
+npm run build:wishes -- /duong-dan/Tong_hop_loi_chuc_20_10_kem_ten_anh.xlsx --photo-manifest scripts/recipient-photo-manifest.json
 npm run test:import
 npm test
 npm run build
@@ -31,7 +31,9 @@ npm run build
 
 Lệnh xuất kiểm tra liên kết và dữ liệu trước khi ghi JSON. Nếu thông tin tên hoặc mã của hai bảng mâu thuẫn, sửa file nguồn rồi xuất lại. Nội dung ô Excel được coi là dữ liệu, không phải chỉ dẫn vận hành hoặc lệnh thực thi.
 
-Để ghép ảnh của bản Excel cuối, đặt ảnh đã nhập trong `public/images/recipients/` và tạo JSON ánh xạ tên file nguồn chính xác sang đường dẫn ảnh, ví dụ `{"anh-mau.jpg":"/images/recipients/recipient-photo-example.jpg"}`. Tên file nguồn được đối chiếu theo Unicode NFC, giữ nguyên dấu, khoảng trắng và hoa/thường; không đoán ảnh theo tên người. Tệp đích phải tồn tại và dùng tên ASCII, đuôi `.jpg`, `.jpeg`, `.png` hoặc `.webp`.
+55 ảnh gốc từ hai ZIP cuối đã được nhập trong `public/images/recipients/`, gắn vào đủ 59 lời chúc có tên ảnh. Một lời chúc không ghi tên ảnh trong Excel giữ hình minh họa; ba ảnh không được Excel tham chiếu không được tự ghép. Ánh xạ hiện tại nằm trong `scripts/recipient-photo-manifest.json`; giữ tham số này khi xuất lại dữ liệu để giữ ảnh đã ghép.
+
+Để bổ sung ảnh của bản Excel cuối, đặt ảnh đã nhập trong `public/images/recipients/` và cập nhật JSON ánh xạ tên file nguồn chính xác sang đường dẫn ảnh, ví dụ `{"anh-mau.jpg":"/images/recipients/recipient-photo-example.jpg"}`. Tên file nguồn được đối chiếu theo Unicode NFC, giữ nguyên dấu, khoảng trắng và hoa/thường; không đoán ảnh theo tên người. Tệp đích phải tồn tại và dùng tên ASCII, đuôi `.jpg`, `.jpeg`, `.png` hoặc `.webp`. Ảnh giữ nguyên byte gốc; đuôi tệp web được chọn đúng định dạng ảnh thực tế khi đuôi trong ZIP không khớp.
 
 ```bash
 npm run build:wishes -- /duong-dan/file-cuoi.xlsx --photo-manifest /duong-dan/anh.json --public-directory public
