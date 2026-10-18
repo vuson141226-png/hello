@@ -3009,3 +3009,26 @@ h1 em {
 .wish-empty { display: grid; place-content: center; gap: 16px; min-height: 320px; padding: 36px; border: 1px solid #e7ced9; border-radius: 8px; background: #fffaf7; color: #754458; text-align: center; }
 .wish-empty > svg { justify-self: center; color: #bb7193; }
 .wish-empty p { margin: 0; line-height: 1.9; }
+
+.wish-notice { padding: 32px; }
+.wish-notice .wish-count { margin-bottom: 12px; font-size: 20px; }
+.wish-notice .wish-count strong { color: #a24f71; }
+.wish-notice-name { display: block; margin-bottom: 8px; font-family: "Dancing Script", cursive; font-size: 27px; }
+.wish-choice-list { display: grid; gap: 12px; margin: 24px 0; padding: 0; list-style: none; }
+.wish-choice { display: flex; align-items: center; gap: 14px; width: 100%; padding: 16px; border: 1px solid #e7ced9; border-radius: 8px; background: #fff; color: #754458; font: inherit; text-align: left; cursor: pointer; transition: background .2s, border-color .2s; }
+.wish-choice:hover { border-color: #bb7193; background: #fff2f5; }
+.wish-choice:focus-visible { outline: 2px solid #bb7193; outline-offset: 3px; }
+.wish-choice-icon { display: grid; flex: 0 0 44px; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #bb7193; background: #fff2f5; }
+.wish-choice > span:nth-child(2) { display: grid; flex: 1; gap: 5px; min-width: 0; }
+.wish-choice strong { font-size: 14px; }
+.wish-choice > span > span { overflow-wrap: anywhere; font-size: 12px; line-height: 1.7; }
+.wish-choice > svg { flex: 0 0 auto; }
+.wish-list-back { margin-top: 13px; }
+.wish-notice .find-another { margin-top: 12px; }
+.wish-notice .wish-empty { min-height: 180px; border: 0; }
+@media (max-width: 600px) {
+  .wish-notice { padding: 24px 16px; }
+  .wish-notice .wish-count { font-size: 18px; }
+  .wish-choice { padding: 13px 11px; gap: 10px; }
+  .wish-choice-icon { flex-basis: 36px; width: 36px; height: 36px; }
+}

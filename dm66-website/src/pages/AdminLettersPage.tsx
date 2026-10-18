@@ -169,6 +169,9 @@ export function AdminLettersPage({ onHome }: { onHome: () => void }) {
             <div className="admin-inbox-total"><Mail size={24} strokeWidth={1.2} /><span><strong>{total.toLocaleString("vi-VN")}</strong> lời nhắn<small>{adminEmail || "Quản trị viên"}</small></span></div>
             <button type="button" className="text-button" onClick={() => void logout()}><LogOut size={15} /> Đăng xuất</button>
           </div>
+          <a className="text-button admin-template-download" href="/downloads/DM66D-wishes-template.xlsx" download="DM66D-wishes-template.xlsx">
+            <Download size={15} /> Tải Excel mẫu: Người nhận và Lời chúc
+          </a>
           <div className="admin-inbox-controls">
             <label htmlFor="letters-sort">Sắp xếp <select id="letters-sort" value={order} onChange={(event) => setOrder(event.target.value as "newest" | "oldest")}><option value="newest">Mới nhất trước</option><option value="oldest">Cũ nhất trước</option></select></label>
             <button type="button" className="button button-secondary" onClick={() => void refreshLetters()} disabled={loading}><RefreshCw size={15} className={loading ? "admin-refresh-spinning" : ""} /> {loading ? "Đang tải..." : "Tải lại"}</button>

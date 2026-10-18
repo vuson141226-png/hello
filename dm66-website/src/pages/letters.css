@@ -136,6 +136,7 @@
 .admin-inbox-total strong { font-family: var(--font-display); font-weight: 500; font-size: 34px; color: #a14e73; margin-right: 2px; }
 .admin-inbox-total small { display: block; font-size: 9px; color: #a48895; margin-top: 2px; overflow-wrap: anywhere; }
 .admin-inbox-toolbar .text-button { font-size: 11px; }
+.admin-template-download { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 11px; line-height: 1.8; }
 .admin-inbox-controls { display: flex; align-items: center; gap: 12px; margin-block: 23px; flex-wrap: wrap; }
 .admin-inbox-controls > label { font-size: 10px; color: #947282; display: flex; align-items: center; gap: 9px; }
 .admin-inbox-controls select { font: inherit; color: #82556c; padding: 10px 13px; background: #fffaf7; border: 1px solid #e8cad7; border-radius: 9px; max-width: 100%; }
