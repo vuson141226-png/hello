@@ -12,5 +12,5 @@ export interface Girl {
   isPlaceholder?: boolean;
 }
 
-// Private recipient profiles and wishes are returned only by an authenticated server session.
+// Legacy presentation helper; current recipient records come from the Excel JSON export.
 export const girls: Girl[] = [];

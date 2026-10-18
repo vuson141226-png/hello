@@ -19,6 +19,7 @@ async function openWish(page: Page, query = profiles[0].fullName) {
   await page.getByLabel('Tên của cậu là gì?').fill(query)
   await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
+  await page.getByRole('button', { name: /^Đọc lời chúc 1/ }).click()
   await expect(page.locator('main .greeting-card')).toBeVisible()
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
 }
@@ -216,7 +217,7 @@ test('opens the unchanged gift into a single-photo memory album and the next cha
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
 })
 
-test('validates name and student code accessibly before checking credentials on the server', async ({ page }) => {
+test('validates name and student code accessibly before looking up the spreadsheet', async ({ page }) => {
   await page.goto('/#/your-wish')
   const input = page.getByLabel('Tên của cậu là gì?')
   const code = page.getByLabel('Mã sinh viên của cậu', { exact: true })
@@ -233,16 +234,17 @@ test('validates name and student code accessibly before checking credentials on 
   await code.fill('WRONG-TEST-CODE')
   await submit.click()
   await expect(page.getByRole('alert')).toContainText('Tên hoặc mã sinh viên chưa đúng')
-  await expect(code).toHaveValue('')
+  await expect(code).toHaveValue('WRONG-TEST-CODE')
   await expect(page.locator('main .greeting-card')).toHaveCount(0)
   await code.fill(testStudentCode)
   await submit.click()
+  await page.getByRole('button', { name: /^Đọc lời chúc 1/ }).click()
   await expect(page.locator('main .card-dear')).toHaveText('Dear Bạn mẫu 1,')
   await expect(page.locator('main .card-letter')).toHaveText('Lời chúc kiểm thử số 1.')
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
 })
 
-test('pairs synthetic authenticated profiles with the right portraits and wishes', async ({ page }) => {
+test('pairs synthetic spreadsheet profiles with the right portraits and wishes', async ({ page }) => {
   for (const profile of profiles) {
     await openWish(page, profile.fullName)
     const image = page.locator('main .greeting-card .card-photo img')
@@ -257,7 +259,7 @@ test('pairs synthetic authenticated profiles with the right portraits and wishes
     await expect(page.locator('main .card-dear')).toHaveText(`Dear ${profile.displayName},`)
     await expect(page.locator('main .card-letter')).toHaveText(profile.wish)
     await expect(page.locator('.sample-sticker,.card-placeholder-note,.demo-hint')).toHaveCount(0)
-    await page.getByRole('button', { name: 'Đăng xuất và đổi người nhận' }).click()
+    await page.getByRole('button', { name: 'Nhập lại tên và mã sinh viên' }).click()
     await expect(page.getByLabel('Tên của cậu là gì?')).toBeEnabled()
     await expect(page.getByLabel('Tên của cậu là gì?')).toHaveValue('')
   }
@@ -273,7 +275,7 @@ test('replays the letter, sends a heart, dismisses the toast and starts another 
   await expect(page.getByRole('status')).toContainText('Cảm ơn cậu!')
   await page.getByRole('button', { name: 'Đóng thông báo' }).click()
   await expect(page.getByRole('status')).toHaveCount(0)
-  await page.getByRole('button', { name: 'Đăng xuất và đổi người nhận' }).click()
+  await page.getByRole('button', { name: 'Nhập lại tên và mã sinh viên' }).click()
   const input = page.getByLabel('Tên của cậu là gì?')
   await expect(input).toHaveValue('')
   await expect(input).toBeFocused()
@@ -284,6 +286,7 @@ test('replays the letter, sends a heart, dismisses the toast and starts another 
   await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
   await expect(input).toHaveValue(profiles[1].fullName)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
+  await page.getByRole('button', { name: /^Đọc lời chúc 1/ }).click()
   await expect(page.locator('main .card-dear')).toHaveText('Dear Bạn mẫu 2,')
   await expect(page.locator('main .card-letter')).toHaveText('Lời chúc kiểm thử số 2.')
 })
@@ -409,7 +412,7 @@ test('keeps every edge of portrait and landscape photos visible in the phone PNG
     await writeFile(proofPath, png)
     await testInfo.attach(`phone-${orientation}-whole-photo.png`, { path: proofPath, contentType: 'image/png' })
     await page.unroute('**/test-portraits/recipient-01.svg')
-    await page.getByRole('button', { name: 'Đăng xuất và đổi người nhận' }).click()
+    await page.getByRole('button', { name: 'Nhập lại tên và mã sinh viên' }).click()
   }
 })
 
@@ -660,6 +663,7 @@ test('fits every mobile route, swipes memories and keeps errors and personalized
   await page.getByLabel('Tên của cậu là gì?').fill(profiles[0].fullName)
   await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
+  await page.getByRole('button', { name: /^Đọc lời chúc 1/ }).click()
   await expect(page.locator('main .greeting-card')).toBeVisible()
   await expectNoHorizontalOverflow(page)
   await readySaveButton(page)
@@ -681,6 +685,7 @@ test('honors reduced motion while retaining the complete gift interaction', asyn
   await page.getByLabel('Tên của cậu là gì?').fill(profiles[0].fullName)
   await page.getByLabel('Mã sinh viên của cậu', { exact: true }).fill(testStudentCode)
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
+  await page.getByRole('button', { name: /^Đọc lời chúc 1/ }).click()
   await expect(page.locator('main .card-dear')).toHaveText('Dear Bạn mẫu 1,')
   await expect(page.locator('.heart-burst > span')).toHaveCount(0)
   await page.getByRole('button', { name: 'Gửi một trái tim' }).click()

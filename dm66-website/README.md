@@ -1,6 +1,6 @@
 # Chúc mừng 20/10 · Digital Marketing 66D
 
-Website lời chúc dành riêng cho lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Hành trình hiện có 4 trang: Welcome → Our Memories → Your Special Wish → Letters To DM66D Boys. Giữ nguyên trang Welcome và các chức năng thiệp PNG, gửi trái tim, nhạc nền; bổ sung album kỷ niệm, đăng nhập người nhận bằng tên và mã sinh viên, nhiều lời chúc riêng và thư gửi lại được lưu tập trung bằng Supabase.
+Website lời chúc dành riêng cho lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Hành trình hiện có 4 trang: Welcome → Our Memories → Your Special Wish → Letters To DM66D Boys. Giữ nguyên trang Welcome và các chức năng thiệp PNG, gửi trái tim, nhạc nền; bổ sung album kỷ niệm, tra cứu người nhận bằng tên và mã sinh viên, nhiều lời chúc và thư gửi lại được lưu tập trung bằng Supabase.
 
 Thiệp cá nhân hóa đặt ảnh lớn bên trái, tiêu đề và lời chúc bên phải trên màn hình rộng; trên điện thoại, các phần xếp dọc để dễ đọc. Thiệp PNG được xuất theo bố cục ngang từ mọi thiết bị.
 
@@ -44,20 +44,19 @@ Quản trị đăng nhập tại `/#/admin` để xem tổng số, sắp xếp v
 
 ```sh
 npm run test:database # Cần Docker; kiểm tra PostgreSQL thật, restart, retry, rate limit và quyền
-npm run test:recipients:database # Đăng nhập, phiên riêng, nhập nguyên tử và cách ly người nhận
 ```
 
-## Người nhận và nhiều lời chúc riêng
+## Tra cứu tên, mã sinh viên và lời chúc
 
-Trang `/#/your-wish` yêu cầu tên đầy đủ và mã sinh viên; kiểm tra diễn ra trên máy chủ. Mỗi người nhận có nhiều lời chúc, được đếm và chọn xem từng lời. Thiệp và PNG dùng nội dung, chữ ký người gửi của lời đang chọn. Tài khoản chưa có lời chúc hiển thị trạng thái đang chuẩn bị.
+Trang `/#/your-wish` đối chiếu họ tên và mã sinh viên ngay trong trình duyệt. Tên được chuẩn hóa dấu, chữ hoa/thường và khoảng trắng; mã được so dưới dạng chuỗi để giữ số 0 đầu. Cả hai phải khớp cùng một dòng. Sau khi tra cứu, trang thông báo số lời chúc, hiển thị các nút để mở từng lời; thiệp và PNG dùng đúng nội dung và người gửi của lời đang chọn. Người có 0 lời chúc được báo rõ trạng thái này.
 
-Không còn danh sách người nhận, mã sinh viên hoặc nội dung lời chúc riêng nhúng trong JavaScript. Nội dung chỉ được trả về sau khi máy chủ xác thực phiên của đúng người nhận. Mã sinh viên lưu trong PostgreSQL dưới dạng bcrypt; cookie phiên HttpOnly, SameSite=Strict và Secure trên HTTPS. Đăng xuất thu hồi phiên phía máy chủ. Kiểm thử chỉ dùng dữ liệu giả lập.
+Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json`. Đây là dữ liệu công khai, có thể được người truy cập website đọc. Tra cứu này không có đăng nhập, cookie phiên hoặc yêu cầu Supabase. Phần gửi thư và quản trị hộp thư dùng API Supabase hiện có.
 
-- [Excel mẫu: Người nhận và Lời chúc](public/downloads/DM66D-private-wishes-template.xlsx) là mẫu trống, không chứa dữ liệu cá nhân.
-- [Hướng dẫn nhập riêng tư và cấu hình Preview](docs/private-wishes.md) mô tả các cột, migration, nhập Excel qua máy chủ và kiểm tra quyền.
-- Lưu Excel đã điền ngoài checkout hoặc trong `.private/` được Git bỏ qua. Không đưa file đã điền, mã sinh viên hoặc bản xuất dữ liệu vào Git, `src/`, `public/` hay `prebuilt/`.
+- [Excel mẫu: Người nhận và Lời chúc](public/downloads/DM66D-wishes-template.xlsx), cũng có nút tải trong trang quản trị.
+- [Hướng dẫn cập nhật dữ liệu](docs/wishes.md).
+- [Báo cáo đối chiếu file được cung cấp](docs/wishes-data-report.md).
 
-Ảnh dùng đường dẫn tĩnh trong `public/images/` có thể được khách truy cập đọc. Chỉ dùng ảnh đã có sự đồng ý cho phép công khai; ảnh riêng cần kho lưu trữ có kiểm soát truy cập. Các đường dẫn ảnh hiện có vẫn được giữ để tương thích. Ảnh ngoài miền cần CORS để xuất PNG.
+File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Ảnh người nhận dùng khung minh họa vì file không có ánh xạ ảnh; các đường dẫn ảnh cũ vẫn được giữ để tương thích. Ảnh ngoài miền cần CORS để xuất PNG.
 
 ## Dữ liệu album kỷ niệm
 
@@ -90,8 +89,8 @@ Dự án dùng đường dẫn gốc `/`, phù hợp khi deploy ở tên miền 
 Trước khi chia sẻ, chạy `npm test` và `npm run build`, rồi kiểm tra trên bản Preview:
 
 - Cả bốn trang, CTA và đường dẫn chia sẻ trực tiếp hoạt động trên máy tính, điện thoại.
-- Đăng nhập bằng tên có dấu/không dấu và mã sinh viên; thử mã sai, hết phiên và đổi tài khoản.
+- Tra cứu bằng tên có dấu/không dấu và mã sinh viên; thử sai tên, sai mã và tra cứu người khác.
 - Xác nhận số lượng lời chúc, chọn từng lời và kiểm tra PNG khớp lời đang xem.
-- Tài khoản A không đọc được lời chúc của B; khách chưa đăng nhập không nhận danh sách hoặc nội dung riêng.
+- Xác nhận thông báo số lượng trước khi mở từng lời, cả trường hợp chưa có lời chúc.
 - Ảnh và lời chúc đúng người, nội dung không còn là dữ liệu mẫu.
 - Thiệp PNG tải được, đủ chữ tiếng Việt và ảnh; nhạc bật/tắt được nếu đã cấu hình.

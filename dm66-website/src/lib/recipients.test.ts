@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { girls, type Girl } from "../data/girls";
+import { type Girl } from "../data/girls";
 import { findRecipients, normalizeName } from "./recipients";
 
 // Synthetic examples used only by these tests, not real classmates.
@@ -96,10 +96,6 @@ describe("findRecipients", () => {
 
     expect(match).toBe(samples[0]);
     expect(samples).toEqual(snapshot);
-  });
-
-  it("ships no public recipient directory or private wishes", () => {
-    expect(girls).toEqual([]);
   });
 
   it("returns every recipient sharing the same display name", () => {

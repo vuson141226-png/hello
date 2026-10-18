@@ -169,7 +169,7 @@ export function AdminLettersPage({ onHome }: { onHome: () => void }) {
             <div className="admin-inbox-total"><Mail size={24} strokeWidth={1.2} /><span><strong>{total.toLocaleString("vi-VN")}</strong> lời nhắn<small>{adminEmail || "Quản trị viên"}</small></span></div>
             <button type="button" className="text-button" onClick={() => void logout()}><LogOut size={15} /> Đăng xuất</button>
           </div>
-          <a className="text-button admin-template-download" href="/downloads/DM66D-private-wishes-template.xlsx" download="DM66D-private-wishes-template.xlsx">
+          <a className="text-button admin-template-download" href="/downloads/DM66D-wishes-template.xlsx" download="DM66D-wishes-template.xlsx">
             <Download size={15} /> Tải Excel mẫu: Người nhận và Lời chúc
           </a>
           <div className="admin-inbox-controls">

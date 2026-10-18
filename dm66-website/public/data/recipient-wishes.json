@@ -1,0 +1,799 @@
+[
+  {
+    "id": "recipient-001",
+    "fullName": "Bùi Trần Ngọc Trâm",
+    "displayName": "Bùi Trần Ngọc Trâm",
+    "studentCode": "11244891",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": []
+  },
+  {
+    "id": "recipient-002",
+    "fullName": "Chu Ngọc Lam Khuê",
+    "displayName": "Chu Ngọc Lam Khuê",
+    "studentCode": "11247469",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-001",
+        "title": "Lời chúc từ Chính",
+        "senderName": "Chính",
+        "message": "Hello bạn lớp trưởng cute, cái bạn lớp trưởng này dạo này là nhận hơi bị nhiều job với đi về khuya đấy nhé=))). Làm gì làm nhớ giữ gìn sức khoẻ nha để có sức lãnh đạo quần chúng bọn tôi nữa=))). Cảm ơn bạn lớp trưởng vì những gì mà bạn đã nỗ lực, cố gắng cho tập thể Digi Mar 66D.\n\nChúc Lam Khuê 20/10 zui zẻ, mãi xinh đẹp, sức khoẻ dồi dào và đạt được nhiều thành công nhaa!!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-003",
+    "fullName": "Đặng Phương Nga",
+    "displayName": "Đặng Phương Nga",
+    "studentCode": "11243454",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-002",
+        "title": "Lời chúc từ Chiến",
+        "senderName": "Chiến",
+        "message": "Chúc Phương Nga Chiikawa có thật nhiều niềm vui và một ngày 20/10 thật ý nghĩa nhéee\n\nChúc Nga lúc nào cũng xinh tươi, hạnh phúc và luôn gặp những điều tốt đẹp và đặc biệt là sớm có ảnh chụp cùng với chú Thỏ nhaaaa Bonne fête des femmes vietnamiennes"
+      }
+    ]
+  },
+  {
+    "id": "recipient-004",
+    "fullName": "Đỗ Hương Linh",
+    "displayName": "Đỗ Hương Linh",
+    "studentCode": "11247472",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-003",
+        "title": "Lời chúc từ Dũng",
+        "senderName": "Dũng",
+        "message": "Mới đó mà bọn mình đã học cùng nhau được 2 năm rồi Linh nhỉ? Thật sự rất nể cái sự chăm chỉ và tinh thần học hỏi không biết mệt mỏi của bạn. Nhìn Hương Linh lúc nào cũng tràn đầy năng lượng, xinh xắn và rạng rỡ, làm không khí xung quanh cũng tích cực lây. 20/10 năm nay, chúc bạn luôn giữ vững phong độ học giỏi này, luôn tự tin và yêu đời nhé. À, học giỏi chăm chỉ thế là đủ rồi, chúc bạn sớm tìm được một người thực sự chân thành để chiều chuộng và đồng hành cùng cô gái tuyệt vời này nha!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-005",
+    "fullName": "Đỗ Minh Trang",
+    "displayName": "Đỗ Minh Trang",
+    "studentCode": "11248364",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-004",
+        "title": "Lời chúc từ Việt",
+        "senderName": "Việt",
+        "message": "Hi Minh Trang! Lần đầu biết Minh Trang là con người hài hước tớ rất vui vì ra đường ít người bựa bựa giống mình lắm. Cảm ơn Minh Trang đã chịu ngồi nghe tớ tâm sự than thở câu chuyện cuộc đời hihihihi dù lúc đấy cũng phải 2h sáng rồi. Chúc Minh Trang một ngày 20/10 thật nhiều niềm vui, lúc nào cũng xinh đẹp, rạng rỡ và tràn đầy năng lượng tích cực, và tự sắm cho mình một anh người yêu tuyệt hảo cú mèo nhéee."
+      },
+      {
+        "id": "wish-005",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Nhiệt liệt mừng ngày 20/10 đến với Minh Trang, Tuổi mới (20/10 mới), chúc Trang Minh không bao giờ bị mất acc ig nữa, để có cái up khoe với bạn bè cuộc sống “thú dị - tẻ nhạt” của Minh Trang. Chúc Minh Trang luôn Nhật Bản, Hàn Quốc, Việt Nam, chúc đi tập gym thành công để tăng cơ, độ body thật đệp như ý nguyện.\n\nÀ quan trọng nhất, chúc Minh Trang sớm kiếm được anh người yêu thật đệp zai, NHIỀU TIỀN, tử tế, ga lăng và phải tri thức 1 chút nghe chưa?!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-006",
+    "fullName": "Đỗ Quỳnh Trang",
+    "displayName": "Đỗ Quỳnh Trang",
+    "studentCode": "11245298",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-006",
+        "title": "Lời chúc từ Chính",
+        "senderName": "Chính",
+        "message": "Hello bạn nhóm trưởng (cũ) =)))\n\nKì trước khi được làm nhóm với bạn, mình mới biết bạn là một người vô cùng tài giỏi, chăm chỉ, luôn nỗ lực và quan tâm, chia sẻ với các thành viên trong nhóm để giúp nhóm đạt được kết quả tốt nhất. Khoảng thời gian được tiếp xúc, nói chuyện và chia sẻ cùng b giúp t cảm thấy vô cùng thoải mái, bình yên và học được nhiều điều. Hãy luôn giữ vững những giá trị tốt đẹp này nha!\n\nNhân dịp 20/10, chúc bạn mãi luôn xinh đẹp, dồi dào sức khỏe và đạt được nhiều thành công nhé!! Mong có dịp được hợp tác lại với bạn trong kì tiếp theo nha!"
+      },
+      {
+        "id": "wish-007",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Thân gửi Quỳnh Trang iêu dấu,\n\nNhân ngày 20/10, chúc Quỳnh Trang ngày càng tràn trề năng lượng để có thêm nhiều power làm lead gánh cả team đạt điểm cao trọng mọi kỳ học. Bên cạnh đó, chúc Quỳnh Trang luôn xinh đẹp với mái tóc tẩy, không lo khô xơ hay rụng tóc nữa mà hãy tự tin tỏa sáng. Cuối dùng, chúc Quỳnh Trang đi tập gym thật thành công, có thể làm những động tác khó, nhiều rep, nhiều set để tăng cơ, body đẹp như Ngọc Trinh!\n\nHết rồi, chúc thế thôi cho dễ đạt được như ước nguyện nhaaaa!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-007",
+    "fullName": "Đoàn Phương Anh",
+    "displayName": "Đoàn Phương Anh",
+    "studentCode": "11245318",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-008",
+        "title": "Lời chúc từ Tùng",
+        "senderName": "Tùng",
+        "message": "Chúc Phương Anh luôn là một cô gái mạnh mẽ khi cần, bản lĩnh trước những khó khăn nhưng cũng đủ dịu dàng với chính bản thân mình. Phương Anh không nhất thiết phải lúc nào cũng cố gắng, lúc nào cũng phải tỏ ra ổn hay tự mình giải quyết tất cả mọi chuyện đâu. Nếu có ngày nào đó cảm thấy mệt mỏi, áp lực hoặc không còn nhiều năng lượng thì hãy cho bản thân một khoảng nghỉ nhé. Đôi khi nghỉ ngơi cũng là một cách để tiến về phía trước, và Phương Anh hoàn toàn xứng đáng được quan tâm, yêu thương và chiều chuộng."
+      }
+    ]
+  },
+  {
+    "id": "recipient-008",
+    "fullName": "Dương Linh Chi",
+    "displayName": "Dương Linh Chi",
+    "studentCode": "11243573",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-009",
+        "title": "Lời chúc từ Hoàng Anh",
+        "senderName": "Hoàng Anh",
+        "message": "Hello Linh Chi, 20/10 của Chi mong là Chi sẽ nhận được nhiều lời yêu thương từ mọi người nhé. Hiện tại thì tui thấy Chi đang phải cân bằng với rất nhiều thứ bên lề như nghiên cứu khoa học, ôn thi cho kịp deadline hay phải tham gia cuộc thi nữa, biết là sẽ hơi mệt và đuối nhưng mà tui nghĩ sẽ có một cái kết đẹp cho Chi thui. Và quan trọng hết, nói to lên nhé không được nói lí nha lí nhí đâu, hẳn hoi và chuyên nghiệp lên như cách Chi bắt nạt tui ấy nha."
+      }
+    ]
+  },
+  {
+    "id": "recipient-009",
+    "fullName": "Dương Yến Ngọc",
+    "displayName": "Dương Yến Ngọc",
+    "studentCode": "11247706",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": []
+  },
+  {
+    "id": "recipient-010",
+    "fullName": "Hồ Ngọc Bảo Trân",
+    "displayName": "Hồ Ngọc Bảo Trân",
+    "studentCode": "11240424",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-010",
+        "title": "Lời chúc từ Hiếu",
+        "senderName": "Hiếu",
+        "message": "20/10 rồi, chúc Trân lúc nào cũng vui vẻ, xinh đẹp, học hành thuận lợi và gặp thật nhiều điều may mắn nhaaa!! Ấn tượng về Trân là một cô gái nhỏ nhắn, xinh xắn, đáng yêu nhưng bên trong lại là cả một nguồn năng lượng không hề nhỏ. Vừa năng động, chăm chỉ, vừa có khả năng quay chụp, edit đẳng cấp pro, đúng kiểu người có thể biến những khoảnh khắc bình thường thành những sản phẩm có tâm và có tầm. Cũng khá có duyên khi có cơ hội làm bài tập nhóm cùng Trân, với có kỷ niệm nói chuyện lần đầu với nhau khá đặc biệt mà không biết Trân còn nhớ không =))) Chúc Trân ngày càng phát huy được thế mạnh của mình, có thêm nhiều cơ hội để làm những điều mình thích và đạt được những mục tiêu đã đặt ra nha. Mong là công việc mới sẽ nhẹ nhàng hơn, luôn phát huy được thế mạnh của bản thân và lúc nào cũng giữ được năng lượng tích cực như bây giờ. Chúc bạn học Trân ngày càng thành công và luôn có thật nhiều niềm vui nhéee !!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-011",
+    "fullName": "Hoàng Minh Hương",
+    "displayName": "Hoàng Minh Hương",
+    "studentCode": "11243590",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-011",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Minh Hương, Happy Women's Dayyy! 💗 Nhân ngày 20/10, chúc Hương của chúng mình lúc nào cũng xinh xắn, vui vẻ và gặp thật nhiều điều may mắn nhaaa! Thế là tụi mình cũng đã đi cùng nhau đến năm 3 đại học rồi đấy. Thời gian trôi nhanh thật nhỉ? Chẳng mấy chốc mà mỗi đứa lại bắt đầu có những dự định và con đường riêng. Mong rằng trong khoảng thời gian sắp tới, Hương sẽ có thêm thật nhiều trải nghiệm đáng nhớ, tìm được những điều mình thực sự yêu thích và có đủ tự tin để theo đuổi chúng. Có thể mọi thứ không phải lúc nào cũng diễn ra như ý, nhưng hy vọng cậu sẽ luôn tìm được cách khiến bản thân vui vẻ và thoải mái nhất. À, chúc Hương ngày càng xinh, ngày càng giàu, thích món gì cũng mua được và đi đâu cũng có người chụp cho những tấm ảnh thật đẹp nhé =))) Cảm ơn Hương vì đã là một phần của 66D. Chúc cậu một ngày 20/10 thật vui và những ngày sau đó cũng đáng yêu không kém nha! 🌷"
+      }
+    ]
+  },
+  {
+    "id": "recipient-012",
+    "fullName": "Hoàng Thị Thảo Nguyên",
+    "displayName": "Hoàng Thị Thảo Nguyên",
+    "studentCode": "11242798",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-012",
+        "title": "Lời chúc từ Chính",
+        "senderName": "Chính",
+        "message": "Hello bạn Thảo Nguyên cute!\n\nNgay từ lúc đầu khi có cơ hội được tiếp xúc, trò chuyện với m t đã thấy m là một người vô cùng hoạt bát, năng nổ, và luôn tích cực kết nối với mọi người. Đôi lúc ở trong lớp t cảm thấy cũng hơi lạc lõng nhưng có những người bạn như m đã giúp t vơi bớt đi cảm giác cô đơn phần nào. Cảm ơn m vì tất cả những giá trị tuyệt đẹp m đã m đã đem đến cho t và cho cả tập thể 66D này.\n\n20/10 chúc bạn Thảo Nguyên mãi luôn xinh đẹp, tươi tắn, tích cực, dồi dào sức khoẻ, và đạt được nhiều thành công tỏng cuộc sống nhaa"
+      }
+    ]
+  },
+  {
+    "id": "recipient-013",
+    "fullName": "Lê Diệu Anh",
+    "displayName": "Lê Diệu Anh",
+    "studentCode": "11246810",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-013",
+        "title": "Lời chúc từ Chiến",
+        "senderName": "Chiến",
+        "message": "Chúc Diệu Anh có một ngày 20/10 lần thứ hai cùng lớp thật vui vẻ nhé hihi Dù mới quay trở lại nhưng mong Diệu Anh sẽ sớm quen lại với mọi người, bắt kịp nhịp sinh hoạt của lớp và có thật nhiều kỷ niệm đáng nhớ cùng cả lớp nhaaa. Chúc Diệu Anh luôn xinh đẹp, vui vẻ, học tập thuận lợi và có một ngày 20/10 thật ý nghĩa nhé! Willkommen zurück"
+      }
+    ]
+  },
+  {
+    "id": "recipient-014",
+    "fullName": "Lê Đông Nhi",
+    "displayName": "Lê Đông Nhi",
+    "studentCode": "11245661",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-014",
+        "title": "Lời chúc từ Hiếu",
+        "senderName": "Hiếu",
+        "message": "Chúc Đông Nhi 20/10 thật vui vẻ nhaaa!! Mong Nhi luôn gặp nhiều điều may mắn, học hành thuận lợi, làm gì cũng suôn sẻ và có thật nhiều kỷ niệm đẹp trong năm 3 này nhéee! Thật ra năm nhất với năm hai cũng không có nhiều cơ hội nói chuyện, may mà lên năm ba lại có dịp tiếp xúc với nhau nhiều hơn. Đôi khi thấy cũng hay, có những người trước đây chỉ biết mặt thôi nhưng càng về sau lại càng có cơ hội nói chuyện nhiều hơn một chút =))) Chúc Nhi thời gian tới sẽ luôn gặp được những người tốt, làm những điều mình thích và đạt được những mục tiêu mà bản thân mong muốn. Mong là năm ba sẽ có thật nhiều kỷ niệm vui, chuyện học hành thuận lợi, deadline bớt dí và những điều đang cố gắng rồi sẽ có kết quả thật xứng đáng. Cứ luôn vui vẻ, tự tin và là chính mình nha. Chúc Nhi có một chặng đường đại học thật đáng nhớ, sau này nhìn lại sẽ thấy những năm tháng này có thật nhiều điều đáng để mỉm cười."
+      },
+      {
+        "id": "wish-015",
+        "title": "Lời chúc từ Tùng",
+        "senderName": "Tùng",
+        "message": "Chúc Đông Nhi có một ngày 20/10 thật xinh, thật vui và thật nhiều bất ngờ nhéee! 💗 Mong rằng những điều dễ thương nhất sẽ luôn tìm đến Đông Nhi, từ những niềm vui nhỏ bé mỗi ngày cho đến những điều tuyệt vời mà Đông Nhi luôn mong đợi. Chúc Đông Nhi lúc nào cũng rạng rỡ, luôn có thật nhiều năng lượng tích cực và gặp được những người chân thành, tử tế với mình. Mong những ngày tháng sau này của Đông Nhi sẽ có thật nhiều tiếng cười, ít đi những nỗi buồn và luôn có người sẵn sàng ở bên chia sẻ mỗi khi Đông Nhi cần. Chúc Đông Nhi không chỉ xinh đẹp ở bên ngoài mà còn luôn hạnh phúc, bình yên trong lòng. Cứ sống thật vui vẻ, làm những điều mình thích và trở thành phiên bản mà Đông Nhi tự hào nhất nhaaa! Chúc Đông Nhi một ngày 20/10 ngập tràn yêu thương và luôn được trân trọng theo cách mà Đông Nhi xứng đáng. 🌸"
+      }
+    ]
+  },
+  {
+    "id": "recipient-015",
+    "fullName": "Lê Hoàng Yến Nhi",
+    "displayName": "Lê Hoàng Yến Nhi",
+    "studentCode": "11241821",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-016",
+        "title": "Lời chúc từ Hiếu",
+        "senderName": "Hiếu",
+        "message": "Chúc Yến Nhi 20/10 thật vui vẻ nhaaa. Ban đầu cứ tưởng Nhi là người ít nói, hướng nội, ai ngờ tiếp xúc nhiều hơn mới thấy Nhi lag hướng lung tung, chủ động với nói nhiều phết =))) Đúng là không nên đánh giá một người qua vẻ bề ngoài mà. Ấn tượng ở Nhi không chỉ là một cô gái nhỏ nhắn, xinh xắn mà còn học giỏi, năng động và có nhiều điều để học hỏi. Cũng cảm ơn Nhi vì đã giúp đỡ nhiều trong quá trình học tập và giúp mở rộng thêm network nữa nha. Mong là thời gian tới sẽ có thêm nhiều cơ hội làm việc cùng Nhi để vừa học hỏi thêm, vừa có thêm nhiều kỷ niệm vui. Chúc Nhi luôn giữ được sự tự tin, nhiệt huyết của mình, học hành thuận lợi, làm gì cũng suôn sẻ và sớm đạt được những mục tiêu đã đặt ra. Mong rằng những nỗ lực của Nhi sẽ luôn được đền đáp xứng đáng, ngày càng giỏi giang, xinh đẹp và gặp được thật nhiều người tốt trên hành trình phía trước nhéee."
+      },
+      {
+        "id": "wish-017",
+        "title": "Lời chúc từ Tùng",
+        "senderName": "Tùng",
+        "message": "Chúc bạn thân 20/10 xinh x100 lần , vui vẻ x100 lần , tâm an vạn sự lành . Chúc bạn thân gặp toàn chuyện tốt , mọi chuyện suôn sẻ thuận lợi , tiền tài tự mò vào túi ko bao giờ hết , Sống một cuộc đời thật hạnh phúc nhé ! Nhân ngày 20/10, chúc Yến Nhi lúc nào cũng giữ được sự vui vẻ, hồn nhiên và nét đáng yêu rất riêng của mình nhaaa! 💕 Mong rằng mỗi ngày trôi qua, Yến Nhi đều có thêm những lý do để mỉm cười, có thật nhiều niềm vui nho nhỏ và luôn gặp được những điều tốt đẹp. Mong Yến Nhi sẽ luôn được yêu thương, được quan tâm và gặp những người thật lòng trân trọng con người của mình. Cuộc sống đôi khi sẽ có những ngày không được như ý, có lúc mệt mỏi hay cảm thấy mọi thứ chẳng dễ dàng chút nào, nhưng những lúc như thế thì Yến Nhi nhớ dành cho bản thân một chút thời gian để nghỉ ngơi nhé. Không cần phải lúc nào cũng mạnh mẽ hay cố gắng làm hài lòng tất cả mọi người đâu, vì Yến Nhi cũng xứng đáng được chiều chuộng, được yêu thương và được ưu tiên mà. Chúc Yến Nhi luôn xinh đẹp, tự tin, gặp nhiều may mắn và làm được những điều mình mong muốn. Mong tuổi trẻ của Yến Nhi sẽ là những tháng ngày thật rực rỡ, có bạn bè tốt, có những kỷ niệm đẹp và có thật nhiều câu chuyện đáng nhớ để sau này nhìn lại vẫn thấy vui. Chúc Yến Nhi một ngày 20/10 thật hạnh phúc nha! 🫶🏻"
+      }
+    ]
+  },
+  {
+    "id": "recipient-016",
+    "fullName": "Lưu Thị Quỳnh Trang",
+    "displayName": "Lưu Thị Quỳnh Trang",
+    "studentCode": "11247237",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-018",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Quỳnh Trang, 20/10 vui vẻ nha Tranggg! 💕 Đầu tiên là chúc cậu ngày càng xinh đẹp, luôn khỏe mạnh, ăn ngon ngủ ngon và có thật nhiều chuyện vui để kể. Mong năm nay Trang sẽ được đi chơi nhiều hơn, khám phá thêm nhiều nơi thú vị và có một chiếc ví đủ rủng rỉnh để thoải mái chiều chuộng bản thân hehe. Năm 3 rồi, chắc ai cũng có những điều riêng cần cố gắng và đôi lúc sẽ thấy hơi áp lực một chút. Nhưng tớ mong Trang đừng quá khắt khe với bản thân nhé. Không phải chuyện gì cũng cần phải làm thật tốt ngay từ đầu, và cũng chẳng cần lúc nào cũng phải tỏ ra mình ổn. Cứ đi từng bước theo nhịp của riêng cậu thôi, miễn là cậu thấy vui với những gì mình đang làm. Hy vọng những ngày sắp tới sẽ có thật nhiều bất ngờ dễ thương dành cho Trang, từ những chuyện nhỏ xíu đến những điều cậu đã mong chờ từ lâu. Chúc Trang luôn giữ được nụ cười thật tươi và nhớ là năm 3 rồi thì phải tranh thủ tạo thêm thật nhiều kỷ niệm với 66D nữa nhéee! 🫶"
+      }
+    ]
+  },
+  {
+    "id": "recipient-017",
+    "fullName": "Ngô Hà My",
+    "displayName": "Ngô Hà My",
+    "studentCode": "11240301",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-019",
+        "title": "Lời chúc từ Hiếu",
+        "senderName": "Hiếu",
+        "message": "Chúc Hà My 20/10 thật vui vẻ nhaaa. Ban đầu cứ nghĩ My hướng nội lắm, ai ngờ chơi cùng rồi mới thấy cũng không đến nỗi trầm như tưởng tượng, dù vẫn hơi hướng nội một chút =))) Nhưng mà phải công nhận My vừa nhỏ nhắn, xinh gái lại còn làm việc giỏi nữa. Những lần làm bài tập nhóm cùng nhau, My đã giúp đỡ rất nhiều nên thật sự rất quý sự nhiệt tình giúp đỡ những lần hơi ngu của tôi. Mong là thời gian tới sẽ có thêm nhiều cơ hội làm việc cùng nhau, thân nhau hơn và có thêm nhiều kỷ niệm vui nữa nha. Chúc My học hành thuận lợi, làm gì cũng suôn sẻ, những cố gắng đều được đền đáp xứng đáng, lúc nào cũng giữ được năng lượng tích cực của mình và sớm tìm được người mình thương nhéee=))) Mong mọi điều tốt đẹp sẽ đến với My, không chỉ trong năm nay mà cả những chặng đường sau này nữa."
+      }
+    ]
+  },
+  {
+    "id": "recipient-018",
+    "fullName": "Nguyễn Đỗ Nhật Bình",
+    "displayName": "Nguyễn Đỗ Nhật Bình",
+    "studentCode": "11243183",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-020",
+        "title": "Lời chúc từ Hoàng Anh",
+        "senderName": "Hoàng Anh",
+        "message": "Hello Nhật Bình, nhân dịp 20/10 này chúc Bình có thật nhiều niềm vui và hạnh phúc nha, muốn có cái gì là sẽ đạt được cái đó và phải tận dụng nó thật tốt vào nhé. Và quan trọng nhất là hãy luôn giữ sức khoẻ để có thể chạy nước rút trong những năm cuối cùng nhíe, vì còn làm nghiên cứu khoa học và ôn thi để kéo điểm lên mà =)))))))))))))))))) tui tin là sẽ làm được thui nên là quyết tâm để cái tên “bình gold” sáng như “gold” thiệt nha."
+      }
+    ]
+  },
+  {
+    "id": "recipient-019",
+    "fullName": "Nguyễn Hải Ngọc Linh",
+    "displayName": "Nguyễn Hải Ngọc Linh",
+    "studentCode": "11245021",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-021",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Bèo Nhím Ngọc Linh, Chúc Ngọc Linh của 66D một ngày 20/10 thật vui, thật nhiều quà và được ăn toàn món ngon nhaaa! 🌸 Không biết Linh có thấy thế không, nhưng càng lớn tụi mình càng dễ bị cuốn vào đủ thứ chuyện mà đôi khi quên mất phải dành thời gian tận hưởng cuộc sống nữa. Thế nên nhân dịp đặc biệt này, tớ muốn chúc Linh có thật nhiều khoảng thời gian được làm những điều mình thích, đi đến những nơi mình muốn và gặp những người khiến cậu cảm thấy vui vẻ, thoải mái và bớt bánh bèo dô dụng hơn nhaaa. Mong Linh sẽ có một năm với thật nhiều tin tốt (intop giải case, đạt giải NCKH, …), những dự định đang ấp ủ dần trở thành hiện thực và những cố gắng của cậu đều có kết quả xứng đáng. Còn những chuyện chưa được như ý thì cũng đừng suy nghĩ quá nhiều nhé, biết đâu một điều hay ho hơn đang chờ ở phía trước thì sao! Cuối cùng, chúc Linh ngày càng xinh đẹp, tự tin, yêu đời và có thật nhiều kỷ niệm vui cùng lớp mình. Mong rằng sau này khi nhớ về 66D, cậu sẽ có cả một kho chuyện hài hước để kể lại nhé! 💗"
+      },
+      {
+        "id": "wish-022",
+        "title": "Lời chúc từ Tùng",
+        "senderName": "Tùng",
+        "message": "Chúc cậu luôn xinh theo cách riêng của mình, vui theo cách mình thích và được làm thật nhiều điều khiến bản thân thấy hạnh phúc sống một cuộc đời đáng sống nhé , Nếu có lúc nào đó cảm thấy mệt mỏi, áp lực hay mất phương hướng thì hãy nhớ rằng ai cũng phải bắt đầu từ đâu đó, chẳng có hành trình nào lúc nào cũng thuận lợi và chẳng ai cần phải thành công ngay từ những bước đầu tiên. Cứ từ từ cố gắng, cứ sống tử tế với bản thân và kiên trì với những điều mình tin tưởng nhé. Tớ mong cậu sẽ có một cuộc đời thật đáng sống, có sự nghiệp mình yêu thích, tài chính vững vàng, tình yêu đẹp đẽ và một tâm hồn luôn tràn đầy niềm vui. Chúc Nguyễn Hải Ngọc Linh không chỉ hạnh phúc trong ngày hôm nay mà còn hạnh phúc trong tất cả những ngày sau này nữa. 20/10 vui vẻ nha"
+      }
+    ]
+  },
+  {
+    "id": "recipient-020",
+    "fullName": "Nguyễn Hoà Bình",
+    "displayName": "Nguyễn Hoà Bình",
+    "studentCode": "11240998",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-023",
+        "title": "Lời chúc từ Duy",
+        "senderName": "Duy",
+        "message": "Nhân dịp ngày trọng đại này , chúc habibi sớm tìm được người thật sự phù hợp với mình , người khiến cậu không phải ngày đêm trằn trọc mà không biết ý của họ ra sao . Mình vẫn luôn tin cậu là một cô gái rất cá tính , rất dễ thương ( nhưng nhiều lúc hơi bựa ) vậy nên hãy cứ tin vào bản thân mình , tin vào những lựa chọn của mình nhé . Mong cậu đọc được những dòng này rồi sớm trả kèo búng tai cho mình"
+      }
+    ]
+  },
+  {
+    "id": "recipient-021",
+    "fullName": "Nguyễn Lê Phương Vy",
+    "displayName": "Nguyễn Lê Phương Vy",
+    "studentCode": "11240848",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-024",
+        "title": "Lời chúc từ Việt",
+        "senderName": "Việt",
+        "message": "Hello chị gái thân yêu của em. Nhân dịp 20/10 ni em kính chúc chị gái tất cạ. Chúc từ sức khoẻ cả thể chất lẫn tinh thần, tiền vào như thác tiền ra nhỏ giọt, mần ăn chi cụng phát đạt nghennn. Cảm ơn Vy đã là người bạn đầu tiên của t khi lên đại học, đã hỗ trợ t rất nhiều cả về học tập lẫn tinh thần. Vy ơi luôn mạnh khoẻ học giỏi xinh gái nha."
+      },
+      {
+        "id": "wish-025",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Hi guys, hi Phương Vy,\n\nChúc con gái Vy 20/10 thật xinh đệp, rạng ngời, tỏa sáng niềm vui ngập tràn. Chúc Vy đi làm thật như ý, mãn nguyện, thành công tốt đẹp để không bị trauma hay áp lực gì cả! Chúc gái iêu sớm đạt các mong ước lơn lao của cuộc đời như NCKH, độ body thành công sau những năm tháng miệt mài tập gym. Cuối cùng, chúc con 1 giấc ngủ ngon, không bị deadlines đè nén làm tỉnh mộng giữ đêm hay bị Thầy K xuất hiện trong giấc mơ kkk"
+      }
+    ]
+  },
+  {
+    "id": "recipient-022",
+    "fullName": "Nguyễn Minh Trang",
+    "displayName": "Nguyễn Minh Trang",
+    "studentCode": "11245701",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-026",
+        "title": "Lời chúc từ Chính",
+        "senderName": "Chính",
+        "message": "Hello bà, chân bà khỏi hẳn chưa vậy, lần sau đi đứng cẩn thận nhé=)))), nhận ít job thôi cho đời dễ thở, nhớ giữ gìn sức khoẻ=)). Nói chung là cũng cảm ơn bà vì những câu chuyện, những chia sẻ, những kỉ niệm đẹp và những tiếng cười trong suốt con đường mà tôi và bà cùng nhau đi. Mong rằng sau này tôi với bà vẫn tiếp tục có cơ hội được đồng hành, có thêm những kỉ niệm đẹp Chúc bà một ngày 20/10 zui zẻ, mãi luôn xinh đẹp, slay và thành công nhá!!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-023",
+    "fullName": "Nguyễn Ngọc Khánh",
+    "displayName": "Nguyễn Ngọc Khánh",
+    "studentCode": "11245388",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-027",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Ngọc Khành, Hellooo Khành! Nhân ngày 20/10, gửi đến cậu một chiếc thiệp nhỏ cùng thật nhiều lời chúc tốt đẹp từ 66D nèee! 💌 Chúc Khành của chúng mình lúc nào cũng vui vẻ, xinh xắn, tự tin và gặp thật nhiều may mắn trong cuộc sống. Mong cậu sẽ có thêm nhiều cơ hội để thử những điều mới, được làm những thứ mình thích và có thật nhiều trải nghiệm hay ho trong những năm tháng đại học còn lại. Có một điều tớ muốn gửi đến Khành là đừng bao giờ ngại làm những điều khiến cậu thấy vui chỉ vì sợ người khác nghĩ gì nhé. Mỗi người đều có một cách sống, một hướng đi riêng, và tớ hy vọng cậu sẽ luôn thoải mái với những lựa chọn của mình. Những điều cậu muốn làm thì cứ mạnh dạn thử, những nơi muốn đi thì cứ lên kế hoạch, còn những ngày thấy mệt thì tự thưởng một bữa thật ngon nha! Chúc Khành ngày càng có nhiều điều để tự hào về bản thân, có thêm thật nhiều người bạn tốt và những kỷ niệm đẹp cùng 66D. À, quan trọng nữa là chúc cậu lúc nào cũng rủng rỉnh để thích gì mua nấy nhéee =))) 💕"
+      }
+    ]
+  },
+  {
+    "id": "recipient-024",
+    "fullName": "Nguyễn Ngọc Mai",
+    "displayName": "Nguyễn Ngọc Mai",
+    "studentCode": "11247682",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-028",
+        "title": "Lời chúc từ Minh",
+        "senderName": "Minh",
+        "message": "Hôm nay là Ngày Phụ nữ Việt Nam, và tớ muốn dành riêng cho Mai những lời chúc này. Trong mắt tớ, Mai là người xinh đẹp, năng động và đặc biệt là hát siêu hay. Tuy tớ chưa có nhiều dịp trò chuyện với Mai, nhưng ấn tượng của tớ về cậu luôn rất đẹp. Mong rằng Mai sẽ luôn giữ niềm đam mê ca hát, tỏa sáng thật nhiều và có thật nhiều khoảnh khắc đáng nhớ trên hành trình của mình.\n\nChúc Mai luôn khỏe mạnh, bình an và được yêu thương thật nhiều. Chúc mọi dự định của cậu đều thành hiện thực, và mỗi ngày trôi qua đều là một ngày đáng nhớ.\n\nChúc cậu một ngày 20/10 thật trọn vẹn và ngọt ngào!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-025",
+    "fullName": "Nguyễn Ngọc Nhi",
+    "displayName": "Nguyễn Ngọc Nhi",
+    "studentCode": "11240309",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-029",
+        "title": "Lời chúc từ Chiến",
+        "senderName": "Chiến",
+        "message": "Chúc mừng ngày Phụ nữ Việt Nam 20/10! Chúc Nhi luôn cười thật tươi, vui vẻ, tràn ngập hạnh phúc và có thật nhiều niềm vui trong cuộc sống nhaaa. Chúc Nhi ngày càng xinh đẹp, luôn gặp may mắn, làm gì cũng thuận lợi và sớm đạt được những điều mình mong muốn. Mong rằng mỗi ngày của Nhi đều sẽ có thật nhiều điều tích cực, luôn được mọi người yêu quý và có thật nhiều kỷ niệm đáng nhớ bên bạn bè nhéeee"
+      }
+    ]
+  },
+  {
+    "id": "recipient-026",
+    "fullName": "Nguyễn Thái Hà My",
+    "displayName": "Nguyễn Thái Hà My",
+    "studentCode": "11244357",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-030",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Hà My, Happy 20/10 to Hà Myyy! 🌷 Chúc cậu có một ngày thật đặc biệt, được nhận nhiều lời chúc dễ thương, nhiều món quà xinh xắn và tất nhiên là phải có thật nhiều đồ ăn ngon nữa nhé! Thấm thoắt mà tụi mình đã là sinh viên năm 3 rồi. Tớ mong quãng thời gian còn lại ở D66 sẽ mang đến cho My thật nhiều kỷ niệm vui, từ những lần cả lớp tụ tập, những cuộc đi chơi bất chợt cho đến những chuyện linh tinh mà sau này chỉ cần nhắc lại là cả đám đã bật cười. Ngoài ra, chúc My sẽ luôn có đủ tự tin để thử sức với những điều mới, tìm được những cơ hội phù hợp và dần thực hiện được những dự định của mình. Dù sau này có bận rộn đến đâu thì cũng đừng quên dành thời gian cho những người cậu yêu quý và cho cả bản thân nữa nhé. Hy vọng năm nay My sẽ có thật nhiều chuyến đi đáng nhớ, nhiều bức ảnh xinh, nhiều lần cười đến đau bụng và thật ít chuyện phải phiền lòng. Chúc cô gái Hà My luôn vui vẻ, may mắn và có một tuổi 20 thật đáng nhớ nhaaa! 🧸"
+      }
+    ]
+  },
+  {
+    "id": "recipient-027",
+    "fullName": "Nguyễn Thị Hà Linh",
+    "displayName": "Nguyễn Thị Hà Linh",
+    "studentCode": "11243099",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-031",
+        "title": "Lời chúc từ Việt",
+        "senderName": "Việt",
+        "message": "Hello Hà Linh. Thật ra là chưa có nhiều dịp tiếp xúc với Hà Linh lắm nhưng mà qua phần làm việc nhóm chung tớ thấy Linh rất chu đáo với tất cả mọi người, gánh trên vai rất nhiều trọng trách mà không một lời than thở. Mong rằng dịp 20/10 này Linh sẽ tiếp tục cố gắng hơn nữa, đương nhiên là vẫn phải giữ sức khoẻ và nhan sắc nhéee."
+      },
+      {
+        "id": "wish-032",
+        "title": "Lời chúc từ Dũng",
+        "senderName": "Dũng",
+        "message": "2 năm học chung, dù Hà Linh với tớ là người khá trầm tính và ít nói, nhưng sự tinh tế cùng nụ cười siêu tươi của bạn luôn để lại ấn tượng rất đặc biệt. Cảm ơn vì đã luôn là một người bạn học giỏi, điềm đạm và đáng tin cậy. 20/10 chúc Hà Linh luôn bình yên, luôn giữ được nét duyên thầm xinh xắn ấy và gặp thật nhiều may mắn trên chặng đường phía trước nhé!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-028",
+    "fullName": "Nguyễn Thị Lan Anh",
+    "displayName": "Nguyễn Thị Lan Anh",
+    "studentCode": "11244242",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": []
+  },
+  {
+    "id": "recipient-029",
+    "fullName": "Nguyễn Thị Minh Hoà",
+    "displayName": "Nguyễn Thị Minh Hoà",
+    "studentCode": "11240050",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": []
+  },
+  {
+    "id": "recipient-030",
+    "fullName": "Nguyễn Thị Thanh Bình",
+    "displayName": "Nguyễn Thị Thanh Bình",
+    "studentCode": "11243028",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-033",
+        "title": "Lời chúc từ Hoàng Anh",
+        "senderName": "Hoàng Anh",
+        "message": "Hello Thanh Bình, chúc Thanh Bình có một ngày 20/10 thật vui vẻ và hạnh phúc nha. Mặc dù tên mày là “Bình Nước Lọc” nhưng mà thanksbinh không nhạt như “nước lọc” mà giỡn siêu vui =)))))))))))))))))). Hãy cố gắng giữ gìn sức khoẻ, đừng trở nên hustle quá nhiều khi phải gồng gánh giữa việc chụp ảnh, make-up và đi học hàng ngày nha. Biết là phải chọn lựa giữa hướng đi trong tương lai và đam mê thật khó, nhưng mà tui tin là lọc sẽ làm được thui nè vì có sức khoẻ mới có khả năng được làm nhiều việc chứ đúng không hihi"
+      }
+    ]
+  },
+  {
+    "id": "recipient-031",
+    "fullName": "Nguyễn Thị Thùy Dương",
+    "displayName": "Nguyễn Thị Thùy Dương",
+    "studentCode": "11240662",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-034",
+        "title": "Lời chúc từ Việt",
+        "senderName": "Việt",
+        "message": "Ôi xin chào con người Hải Phòng dễ thương. Tớ cảm ơn Dương đã giúp đỡ tớ rất nhiều trong học tập, làm việc suốt thời gian qua hé hihihihihi. Cảm ơn Dương đã không một lời than thở khi phải gánh tớ những lúc tớ hơi “đần”. Nhân dịp này cũng chúc cho Dương có thật nhiều sức khoẻ, tiền tài danh vọng, tiền chất thành núi, và vẫn tiếp tục cố gắng nhéee."
+      },
+      {
+        "id": "wish-035",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "TD Thùy Dương mến iêu, 20/10 chúc TDương mãi vui vẻ, trẻ khỏe, mát mẻ, san sẻ và hay ẻ thật thành công rực rỡ! Chúc gái Dương hết bị tiền đình, hết bị nhập viện, để có sức khỏe đi trekking thêm nhiều chuyến nữa. Chúc con học song ngành thật thuận lợi, đừng để 2 ngành nó song sắt nhé kkk. Chúc con có thật nhiều tiền và anh người yêu thật hiền để không làm phiền đến bạn bè xung quanh nhé con gái iêu! Chúc con bớt ăn lại, độ body thành công và bớt uống đồ ngọt lại nữa nghe chưaaa ?!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-032",
+    "fullName": "Nguyễn Trần Bảo Thiện",
+    "displayName": "Nguyễn Trần Bảo Thiện",
+    "studentCode": "11240116",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-036",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Bảo Thiện, 20/10 vui vẻ nha Thiện ơiii! 💗 Chúc cậu có một ngày thật vui, thật nhiều bất ngờ và được mọi người yêu thương, quan tâm thật nhiều nhé! Nhân dịp này, tớ muốn chúc Thiện không chỉ có một ngày 20/10 thật đẹp mà cả những ngày bình thường cũng có nhiều chuyện khiến cậu vui. Mong rằng những điều cậu đang cố gắng sẽ dần có kết quả tốt, những kế hoạch cậu ấp ủ sẽ sớm thực hiện được và những cơ hội thú vị sẽ cứ thế tìm đến cậu. Năm 3 rồi, tụi mình cũng bắt đầu nghĩ nhiều hơn về tương lai. Có thể sẽ có những lúc hơi hoang mang vì chưa biết mình muốn gì hoặc nên chọn hướng nào, nhưng hy vọng Thiện sẽ không vì thế mà quá áp lực. Cậu vẫn còn rất nhiều thời gian để khám phá và tìm ra điều phù hợp nhất với mình mà! À, cũng phải chúc Thiện ngày càng xinh, ngày càng nhiều tiền, đi ăn luôn chọn đúng quán ngon, đi chơi luôn có ảnh đẹp và lúc nào cũng có một hội bạn thật hợp cạ nhé =))) Chúc Thiện sẽ có thêm thật nhiều kỷ niệm đáng yêu trong những năm tháng còn lại cùng D66. Mong mọi điều tốt đẹp sẽ đến với cậu nha! 🫶"
+      }
+    ]
+  },
+  {
+    "id": "recipient-033",
+    "fullName": "Nguyễn Trang Linh",
+    "displayName": "Nguyễn Trang Linh",
+    "studentCode": "11244851",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-037",
+        "title": "Lời chúc từ Dũng",
+        "senderName": "Dũng",
+        "message": "Vậy là chúng mình đã học cùng đến năm nay là năm thứ 3 rùii.Phải công nhận là nhờ có sự vui tính và năng lượng tích cực của Trang Linh mà mấy giờ học căng thẳng trở nên dễ chịu hơn hẳn kkk. Cảm ơn một cô bạn xinh xắn, lúc nào cũng hào sảng và mang lại tiếng cười cho mọi người. Ngày 20/10 chúc bạn luôn rạng rỡ, giữ trọn sự hồn nhiên, năng động này và lúc nào cũng gặp được những điều ngọt ngào nhất!"
+      },
+      {
+        "id": "wish-038",
+        "title": "Lời chúc từ Tùng",
+        "senderName": "Tùng",
+        "message": "Chúc Trang Linh có một ngày 20/10 thật vui vẻ, luôn xinh đẹp, rạng rỡ và tràn đầy năng lượng tích cực nhaaa! 🌷 Mong rằng Trang Linh sẽ luôn giữ được nụ cười trên môi, sự dịu dàng trong trái tim và cả nét đáng yêu rất riêng của mình. Chúc Trang Linh lúc nào cũng gặp nhiều may mắn, công việc và học tập đều thuận lợi, những dự định trong tương lai từng bước được hoàn thành và những điều mình mong chờ sẽ sớm trở thành hiện thực."
+      }
+    ]
+  },
+  {
+    "id": "recipient-034",
+    "fullName": "Nguyễn Vỹ Hà",
+    "displayName": "Nguyễn Vỹ Hà",
+    "studentCode": "11247877",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-039",
+        "title": "Lời chúc từ Việt",
+        "senderName": "Việt",
+        "message": "Tớ chưa nghĩ ra được từ nào để miêu tả được hết cảm xúc trong thời gian tiếp xúc với Hà cả. Thật sự cảm ơn Hà đã là người gánh tớ còng cả lưng bao nhiêu môn, một con người quá thông minh quá xuất sắc quá xinh gái. Hà cũng là người rất kiên nhẫn, bỏ cả đống thời gian ra ngồi sửa vid cho tớ mà không than trách hay j cả, ra đường tớ nể Hà khoản này nhất. Thôi thì không giông dài làm gì, chúc Hà luôn khoẻ mạnh tràn đầy sức sống và luôn giữ được tinh thần học tập tuyệt vời này nheeeeee. CHAYOOOOOO"
+      },
+      {
+        "id": "wish-040",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Vỹ Hà dấu iêu,\n\nChúc Hà 20/20 thật xinh đẹp, vui vẻ, trẻ khỏe, tràn ngập sức sống để đủ sức gành đỡ kỳ học kinh hoàng này!\n\nChúc Hà sớm tìm được việc làm xịn, giới thiệu job cho các bạn xung quanh, không phải làm content ctct nữa. Chúc Hà đạt giải NCKH thật cao, đi du học, đi mọi nơi trên khắp thế giới, để giàu có hơn cho các bạn được nhờ vả nhaaaaaaa."
+      }
+    ]
+  },
+  {
+    "id": "recipient-035",
+    "fullName": "Phạm An Châu",
+    "displayName": "Phạm An Châu",
+    "studentCode": "11241746",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-041",
+        "title": "Lời chúc từ Hiếu",
+        "senderName": "Hiếu",
+        "message": "Chúc An Châu 20/10 thật vui vẻ nhaaa. Tuy chưa có nhiều cơ hội nói chuyện nhưng may là cũng được làm việc nhóm cùng nhau nên có dịp tiếp xúc và hiểu hơn về An Châu. Ấn tượng là một cô gái vừa xinh gái vừa giỏi giang, làm việc cũng rất đáng ngưỡng mộ nữa =))) Mong là thời gian tới sẽ có thêm nhiều cơ hội làm việc cùng nhau, nói chuyện nhiều hơn và có thêm nhiều kỷ niệm vui nha. Chúc An Châu luôn tự tin, học hành thuận lợi, làm gì cũng suôn sẻ và sớm đạt được những điều mà bản thân mong muốn. Hy vọng mọi cố gắng của bạn học Phạm đều sẽ được đền đáp xứng đáng, luôn gặp được những người tốt và có thật nhiều niềm vui trong những năm tháng đại học. Chúc cô gái tài sắc vẹn toàn này ngày càng thành công và lúc nào cũng rạng rỡ nhéee."
+      }
+    ]
+  },
+  {
+    "id": "recipient-036",
+    "fullName": "Trần Khánh Linh",
+    "displayName": "Trần Khánh Linh",
+    "studentCode": "11242552",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-042",
+        "title": "Lời chúc từ Việt",
+        "senderName": "Việt",
+        "message": "Không một tính từ nào là đủ để miêu tả cho nhan sắc và thần thái của bạn Khánh Linh tôi cả. Khen thì cũng khen quá nhiều rồi, Linh chắc cũng nghe phát sợ rồi he =))))))))))))) (nma xinh gái quá ngang Kiều rồi bạn ơi). Chúc Khánh Linh luôn trong trạng thái xinh đẹp, học giỏi, chăm chỉ, và dù đi theo hướng nào tớ vẫn sẽ hoàn toàn ủng hộ nhe hihi. NMA MAI MỐT TỰ TIN PHÁT BIỂU HƠN ĐI NHÁT QUÁ."
+      },
+      {
+        "id": "wish-043",
+        "title": "Lời chúc từ Dũng",
+        "senderName": "Dũng",
+        "message": "Đồng hành cùng nhau 2 năm qua, chứng kiến Khánh Linh vừa chăm học, vừa kiên trì đuổi theo đam mê nhảy hát và làm kênh TikTok, mình thật sự rất nể nỗ lực của bạn. Xinh xắn, tài năng mà lại chưa bao giờ ngừng cố gắng. 20/10 chúc Khánh Linh luôn giữ trọn ngọn lửa nhiệt huyết này, kênh ngày càng phát triển, ra clip nào lên xu hướng clip đó, và luôn tỏa sáng theo cách riêng của mình nhé!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-037",
+    "fullName": "Trần Mai Linh",
+    "displayName": "Trần Mai Linh",
+    "studentCode": "11245420",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-044",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Mai Linh, 20/10 vui vẻ nha Linhhh! 🌼 Gửi cậu một chiếc thiệp nho nhỏ nhưng chứa rất nhiều lời chúc tốt đẹp của chúng mình đây! Chúc Linh luôn xinh xắn, vui vẻ và gặp thật nhiều may mắn. Mong cậu sẽ có một năm với thật nhiều trải nghiệm thú vị, được thử những điều mới và có thêm nhiều câu chuyện hay ho để kể với hội bạn. Tớ hy vọng sau này khi nhìn lại quãng thời gian đại học, Linh sẽ nhớ đến những buổi đi chơi ngẫu hứng, những lần cả đám ngồi tám chuyện chẳng biết chán và cả những khoảnh khắc rất bình thường nhưng lại vui vô cùng. Tụi mình đã đến năm 3 rồi nên càng phải tranh thủ tạo thêm nhiều kỷ niệm đẹp cùng nhau, đúng không? Ngoài ra, mong Linh sẽ luôn gặp được những người bạn tốt, có những cơ hội tuyệt vời và làm được những điều mà cậu vẫn luôn mong muốn. Nếu có lúc mọi chuyện chưa được như ý thì cũng đừng nản nhé, cứ cho bản thân thêm thời gian một chút. Cuối cùng, chúc Linh lúc nào cũng thật rạng rỡ, đi đâu cũng gặp chuyện vui và có thật nhiều lý do để mỉm cười. Nhớ tận hưởng ngày 20/10 thật trọn vẹn nhaaa! 💕"
+      },
+      {
+        "id": "wish-045",
+        "title": "Lời chúc từ Dũng",
+        "senderName": "Dũng",
+        "message": "2 năm học cùng Mai Linh là 2 năm được ngưỡng mộ một cô bạn vừa xinh xắn, đáng yêu lại vừa học siêu giỏi và chăm chỉ. Sự chỉn chu và nhẹ nhàng của bạn luôn khiến người khác cảm thấy vô cùng dễ chịu khi làm việc cùng. Ngày 20/10, chúc Mai Linh luôn tràn ngập niềm vui, giữ mãi nét đáng yêu này và gặt hái thêm thật nhiều điểm số xuất sắc cùng những mục tiêu bạn đang ấp ủ nha!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-038",
+    "fullName": "Trần Nguyễn Ngọc Khánh",
+    "displayName": "Trần Nguyễn Ngọc Khánh",
+    "studentCode": "11246885",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-046",
+        "title": "Lời chúc từ Hoàng Anh",
+        "senderName": "Hoàng Anh",
+        "message": "Hello Trần Nguyễn Ngọc Khánh hay còn gọi với cái tên “bbiibiib._”, chúc cho nk sẽ có một 20/10 thật nhiều niềm vui và đạt được những gì mình mong muốn nha. Hiện tại thì thấy nk đang tham gia nhiều hoạt động, nhưng mà tui cũng thấy rất vui vì nk cũng có thể giành thời gian ra để chạy bộ và đạp xe. Hãy cố gắng chăm sóc sức khỏe của mình để có thể đạt được kết quả tốt nhé vì tui tin là những điều tốt đẹp nhất sắp đến với nk rồi!!!!!!!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-039",
+    "fullName": "Trần Thu Phương",
+    "displayName": "Trần Thu Phương",
+    "studentCode": "11248340",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": []
+  },
+  {
+    "id": "recipient-040",
+    "fullName": "Võ Hương Giang",
+    "displayName": "Võ Hương Giang",
+    "studentCode": "11244474",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-047",
+        "title": "Lời chúc từ Minh",
+        "senderName": "Minh",
+        "message": "Hôm nay là ngày của những cô nàng tuyệt vời, và Giang chắc chắn nằm trong danh sách đó. Mình luôn trân trọng sự tử tế, tinh tế và cách bạn quan tâm đến mọi người xung quanh. Có những người chỉ cần xuất hiện thôi cũng khiến không khí trở nên dễ chịu hơn, và với mình, Giang chính là một người như vậy.\n\nChúc Giang luôn khỏe mạnh, bình an và giữ được nụ cười thật tươi mỗi ngày. Chúc mọi dự định của Giang đều thuận lợi, công việc và học tập đều suôn sẻ, và Giang luôn được yêu thương, trân trọng đúng như những gì bạn dành cho người khác.\n\nChúc Giang có một ngày 20/10 thật trọn vẹn và ngọt ngào!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-041",
+    "fullName": "Vũ Diệp Anh",
+    "displayName": "Vũ Diệp Anh",
+    "studentCode": "11247542",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-048",
+        "title": "Lời chúc từ Duy",
+        "senderName": "Duy",
+        "message": "https://drive.google.com/file/d/1yfBn-2qbbpjLpLmUzpaES3vxk4bNgZB3/view?usp=sharing Đối với mình thì Diệp Anh là một cô gái rất tuyệt vời và là một người bạn rất dễ gần . Tuy chưa có cơ hội làm việc nhóm với cậu nhiều nhưng chỉ cần một kỳ thôi mình đã cảm nhận được câu là một người rất có trách nhiệm và cũng rất hết mình vì bạn bè. Mong cậu luôn luôn xinh đẹp và sống trọn vẹn nhất với những năm tháng thanh xuân tươi đẹp bên lớp chúng ta nhé !!!"
+      }
+    ]
+  },
+  {
+    "id": "recipient-042",
+    "fullName": "Vũ Phương Thùy",
+    "displayName": "Vũ Phương Thùy",
+    "studentCode": "11240333",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-049",
+        "title": "Lời chúc từ Bách",
+        "senderName": "Bách",
+        "message": "Gửi Phương Thùy, Hellooo Thùy! Chúc cậu một ngày 20/10 thật vui, thật xinh và nhận được thật nhiều lời chúc đáng yêu nhaaa! 💐 Chẳng biết từ lúc nào mà tụi mình đã học cùng nhau đến năm 3 rồi nhỉ. Tớ mong khoảng thời gian sắp tới sẽ thật đáng nhớ với Thùy, không chỉ vì những thành tích hay mục tiêu đạt được mà còn bởi những khoảnh khắc vui vẻ bên bạn bè và những trải nghiệm mới mà cậu có được. Tớ muốn chúc Thùy luôn đủ tự tin để làm những điều mình thích và có thật nhiều cơ hội để thử sức với những điều cậu quan tâm. Cứ từ từ khám phá thôi nhé, không cần vội vàng so sánh mình với bất kỳ ai cả. Mong rằng dù sau này có bận rộn thế nào, cậu vẫn luôn dành thời gian cho những sở thích riêng, những cuộc hẹn với bạn bè và những ngày chỉ đơn giản là nghỉ ngơi, tận hưởng cuộc sống. Và tất nhiên, chúc Thùy càng ngày càng xinh, tiền tiêu không hết, shopping không cần đắn đo và đi chơi lúc nào cũng có một chiếc máy ảnh thật có tâm đi theo =)))) Cảm ơn Thùy vì đã là một mảnh ghép của 66D. Hy vọng tụi mình sẽ còn có thật nhiều kỷ niệm đẹp trong những năm tháng đại học còn lại nhé! 💗"
+      }
+    ]
+  },
+  {
+    "id": "recipient-043",
+    "fullName": "Yên Thị Bảo Uyên",
+    "displayName": "Yên Thị Bảo Uyên",
+    "studentCode": "11242629",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-050",
+        "title": "Lời chúc từ Chiến",
+        "senderName": "Chiến",
+        "message": "Chúc Uri-chan có một ngày 20/10 thật hạnh phúc và ngày càng xinh tươi như hoa nhéeee Chúc Uri luôn vui vẻ, gặp thật nhiều may mắn và sớm trở thành streamer nổi tiếng hơn cả Độ Mixi nhé! 好姑娘"
+      }
+    ]
+  },
+  {
+    "id": "recipient-044",
+    "fullName": "Võ Hoàn Ngọc Linh",
+    "displayName": "Võ Hoàn Ngọc Linh",
+    "studentCode": "11245241",
+    "image": "/images/portrait-placeholder.svg",
+    "introduction": "",
+    "personality": "",
+    "wishes": [
+      {
+        "id": "wish-051",
+        "title": "Lời chúc từ Duy",
+        "senderName": "Duy",
+        "message": "20/10 này , chúc Võ Hoàn Ngọc linh sẽ luôn giữ được nguồn năng lượng tích cực, sự năng động và luôn gặp được những điều may mắn trong cuộc sống , tiền luôn rủng rình như cách cậu luộc hết tiền của mình khi đánh bài trên xuho . Mong cậu sẽ luôn được sống như cách mình muốn , vì khi cậu là chính mình thì cậu sẽ là phiên bản tuyệt vời nhất . Võ Hoàn Ngọc Linh luôn luôn và sẽ mãi là mảnh ghép không thể thiếu của bức tranh chung của tập thể 66D chúng ta"
+      },
+      {
+        "id": "wish-052",
+        "title": "Lời chúc từ Dũng",
+        "senderName": "Dũng",
+        "message": "Trải qua 2 năm gắn bó, điều mình trân trọng nhất ở Ngọc Linh chính là sự nỗ lực âm thầm nhưng bền bỉ của bạn. Lúc nào cũng thấy bạn năng động, cố gắng hết mình trong mọi việc mà vẫn giữ được sự duyên dáng, dịu dàng rất riêng. 20/10 chúc Ngọc Linh luôn vững tin vào bản thân, gieo điều gì sẽ thu hoạch được quả ngọt đó, và hãy luôn mỉm cười hạnh phúc trên hành trình trưởng thành này nhé!"
+      },
+      {
+        "id": "wish-053",
+        "title": "Lời chúc từ Hoàng Anh",
+        "senderName": "Hoàng Anh",
+        "message": "Hello Võ Hoàn Ngọc Linh, một “mama-girl” của lớp với tính cách luôn “willing to support” đến mọi người từ A tới Z, chúc cho Linh có một 20/10 thật tươi vui và phấn khởi nhiều nhé. Mong mọi điều Linh mong muốn sẽ thành một hiện thực, và tui tin là với sự cầu tiến và ham học hỏi của Linh sẽ giúp Linh tiến xa hơn trong những dự định sắp tới của mình nhé."
+      }
+    ]
+  }
+]

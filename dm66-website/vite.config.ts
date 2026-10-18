@@ -5,9 +5,6 @@ import tailwindcss from "@tailwindcss/vite";
 
 const apiFiles: Record<string, string> = {
   "/api/letters": "/api/letters.ts",
-  "/api/recipient/login": "/api/recipient/login.ts",
-  "/api/recipient/session": "/api/recipient/session.ts",
-  "/api/recipient/logout": "/api/recipient/logout.ts",
   "/api/admin/login": "/api/admin/login.ts",
   "/api/admin/logout": "/api/admin/logout.ts",
   "/api/admin/session": "/api/admin/session.ts",
