@@ -1,6 +1,6 @@
 # Chúc mừng 20/10 · Digital Marketing 66D
 
-Website lời chúc dành riêng cho lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Hành trình hiện có 4 trang: Welcome → Our Memories → Your Special Wish → Letters To DM66D Boys. Giữ nguyên trang Welcome và các chức năng thiệp PNG, gửi trái tim, nhạc nền; bổ sung album kỷ niệm, tra cứu người nhận bằng tên và mã sinh viên, nhiều lời chúc và thư gửi lại được lưu tập trung bằng Supabase.
+Website lời chúc dành riêng cho lớp Digital Marketing 66D, xây dựng bằng React, TypeScript và Vite. Hành trình hiện có 5 trang: Welcome → Our Memories → Your Special Wish → Letters To DM66D Boys → Photobooth. Giữ nguyên trang Welcome và các chức năng thiệp PNG, gửi trái tim, nhạc nền; bổ sung album kỷ niệm, tra cứu người nhận bằng tên và mã sinh viên, nhiều lời chúc và thư gửi lại được lưu tập trung bằng Supabase.
 
 Thiệp cá nhân hóa đặt ảnh lớn bên trái, tiêu đề và lời chúc bên phải trên màn hình rộng; trên điện thoại, các phần xếp dọc để dễ đọc. Thiệp PNG được xuất theo bố cục ngang từ mọi thiết bị.
 
@@ -32,7 +32,7 @@ npm run test:e2e
 
 Trong môi trường đám mây này, Chromium đã có sẵn. Có thể đặt `PLAYWRIGHT_CHROMIUM_EXECUTABLE` nếu trình duyệt nằm ở đường dẫn khác.
 
-Bốn trang dùng hash route: `/#/`, `/#/our-memories`, `/#/your-wish`, `/#/letters-to-boys`. Link cũ `/#/our-girls` vẫn mở album kỷ niệm. Khu vực quản trị riêng tại `/#/admin`, không tính vào hành trình và yêu cầu đăng nhập quản trị. Khi chia sẻ đường dẫn trực tiếp, giữ nguyên phần `/#/...`.
+Năm trang dùng hash route: `/#/`, `/#/our-memories`, `/#/your-wish`, `/#/letters-to-boys`, `/#/photobooth`. Link cũ `/#/our-girls` vẫn mở album kỷ niệm. Khu vực quản trị riêng tại `/#/admin`, không tính vào hành trình và yêu cầu đăng nhập quản trị. Khi chia sẻ đường dẫn trực tiếp, giữ nguyên phần `/#/...`.
 
 ## Album kỷ niệm và hộp thư
 
@@ -84,6 +84,12 @@ Website chuẩn bị sẵn PNG sau khi mở thiệp; đợi nút lưu sẵn sàn
 - **Điện thoại:** nếu trình duyệt hỗ trợ chia sẻ tệp PNG, nút lưu mở bảng chia sẻ của hệ thống. Chọn **Lưu hình ảnh / Save Image / Photos** nếu có; website không thể tự ghi ảnh vào thư viện Photos.
 - Nếu chia sẻ không khả dụng hoặc không có mục lưu ảnh, chọn **Mở ảnh để lưu vào máy**. Hộp xem hiển thị PNG đầy đủ để nhấn giữ và lưu; cũng có thể chọn **Tải ảnh PNG** hoặc **Mở ảnh riêng**.
 
+## Photobooth · mục 05
+
+Mở `/#/photobooth`, chọn **Bật camera**, cho phép truy cập rồi chụp ba kiểu ảnh với đếm ngược. Khung PNG đặt **Digimar 66D** ở giữa phía trên, trang trí tim, nơ và hoa. Có thể chụp lại hoặc chọn ba ảnh có sẵn để ghép cùng khung. Ảnh được xử lý ngay trên thiết bị; trang không gửi ảnh hoặc âm thanh lên máy chủ. Camera chỉ bật sau thao tác của người xem và được tắt khi rời trang.
+
+Nút lưu dùng bộ lưu ảnh hiện có: máy tính chọn nơi lưu hoặc tải PNG; điện thoại mở bảng chia sẻ nếu hỗ trợ, hoặc mở ảnh đầy đủ để nhấn giữ lưu. Trình duyệt quyết định vị trí và quyền lưu. Camera cần HTTPS trên bản triển khai hoặc localhost khi phát triển; kiểm thử dùng luồng video giả, không truy cập camera thật.
+
 ## Nhạc nền tùy chọn
 
 Thêm tệp âm thanh có quyền sử dụng vào `public/audio/background.mp3`, rồi đặt `siteConfig.musicSrc` trong `src/config.ts` thành `/audio/background.mp3`. Giá trị mặc định `null` tắt tính năng nhạc.
@@ -100,7 +106,7 @@ Dự án dùng đường dẫn gốc `/`, phù hợp khi deploy ở tên miền 
 
 Trước khi chia sẻ, chạy `npm test` và `npm run build`, rồi kiểm tra trên bản Preview:
 
-- Cả bốn trang, CTA và đường dẫn chia sẻ trực tiếp hoạt động trên máy tính, điện thoại.
+- Cả năm trang, CTA và đường dẫn chia sẻ trực tiếp hoạt động trên máy tính, điện thoại.
 - Tra cứu bằng tên có dấu/không dấu và mã sinh viên; thử sai tên, sai mã và tra cứu người khác.
 - Xác nhận số lượng lời chúc, chọn từng lời và kiểm tra PNG khớp lời đang xem.
 - Xác nhận thông báo số lượng trước khi mở từng lời, cả trường hợp chưa có lời chúc.

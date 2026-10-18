@@ -34,18 +34,20 @@ import { MemoriesPage } from "./pages/MemoriesPage";
 import { LettersPage } from "./pages/LettersPage";
 import { AdminLettersPage } from "./pages/AdminLettersPage";
 import { AnniversaryGallery, AnniversaryHero } from "./components/AnniversaryExperience";
+import { PhotoboothPage } from "./pages/PhotoboothPage";
 
-type Page = "welcome" | "our-girls" | "our-memories" | "your-wish" | "letters-to-boys" | "admin";
+type Page = "welcome" | "our-girls" | "our-memories" | "your-wish" | "letters-to-boys" | "photobooth" | "admin";
 const readPage = (): Page => {
   const page = window.location.hash.replace(/^#\/?/, "");
   if (page === "our-girls") return "our-memories";
-  return page === "our-memories" || page === "your-wish" || page === "letters-to-boys" || page === "admin" ? page : "welcome";
+  return page === "our-memories" || page === "your-wish" || page === "letters-to-boys" || page === "photobooth" || page === "admin" ? page : "welcome";
 };
 const pageLinks: { page: Page; label: string; short: string }[] = [
   { page: "welcome", label: "Lời chào", short: "Chào cậu" },
   { page: "our-memories", label: "Kỷ niệm của chúng mình", short: "Kỷ niệm" },
   { page: "your-wish", label: "Lời chúc riêng", short: "Lời chúc" },
   { page: "letters-to-boys", label: "Thư gửi các bạn nam", short: "Gửi thư" },
+  { page: "photobooth", label: "Photobooth", short: "Chụp ảnh" },
 ];
 
 function Bow({ className = "" }: { className?: string }) {
@@ -876,6 +878,7 @@ export default function App() {
       "our-memories": "Kỷ niệm của chúng mình",
       "your-wish": "Lời chúc dành riêng cho cậu",
       "letters-to-boys": "Thư gửi các bạn nam",
+      photobooth: "Photobooth · Digimar 66D",
       admin: "Quản trị lời nhắn",
     };
     document.title = `${titles[page]} · DM66D`;
@@ -992,6 +995,8 @@ export default function App() {
                   onHome={() => navigate("welcome")}
                   onCelebrate={() => setBurst((value) => value + 1)}
                 />
+              ) : page === "photobooth" ? (
+                <PhotoboothPage notify={notify} />
               ) : page === "admin" ? (
                 <AdminLettersPage onHome={() => navigate("welcome")} />
               ) : (

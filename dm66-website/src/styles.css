@@ -2956,6 +2956,25 @@ h1 em {
     font-size: 5.5px;
   }
 }
+/* Keep all five chapters visible without squeezing their labels. */
+@media (max-width: 1250px) {
+  .main-nav { margin-left: 0; gap: 2px; }
+  .main-nav a { padding-inline: 9px; gap: 6px; }
+  .nav-label { display: none; }
+  .nav-short { display: inline; }
+}
+@media (max-width: 680px) {
+  .main-nav a {
+    min-width: 0;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 3px;
+    font-size: 9px;
+  }
+  .main-nav .nav-active-dot { position: absolute; top: 9px; right: 5px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
