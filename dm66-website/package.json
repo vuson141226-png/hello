@@ -11,8 +11,8 @@
     "test:e2e": "playwright test",
     "test:database": "node server/test-postgres.mjs",
     "test:recipients:database": "node server/test-recipient-postgres.mjs",
-    "template:private": "python scripts/create_private_wishes_template.py",
-    "test:import": "python -m unittest discover -s scripts -p \"test_*.py\""
+    "template:private": ".venv-import/bin/python scripts/create_private_wishes_template.py",
+    "test:import": ".venv-import/bin/python -m unittest discover -s scripts -p \"test_*.py\""
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "^5.3.0",
