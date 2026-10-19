@@ -6,7 +6,9 @@ Người xem nhập họ tên và mã sinh viên tại `/#/your-wish`. Website s
 
 ## File đã cung cấp
 
-Website dùng danh sách từ sheet **Danh sách 44 bạn** và nội dung đầy đủ từ **Mỗi lời chúc 1 dòng** của file cuối `Tong_hop_loi_chuc_20_10_kem_ten_anh.xlsx`: 44 người nhận, 60 lời chúc.
+Website dùng danh sách từ sheet **Danh sách 44 bạn** và nội dung đầy đủ từ **Mỗi lời chúc 1 dòng** của file cuối `Tong_hop_loi_chuc_20_10_kem_ten_anh.xlsx`: 44 người nhận, 60 lời chúc trong bản gốc. Sau các cập nhật nội dung của người dùng, bản hiện tại có 62 lời chúc.
+
+Các cập nhật sau Excel: thay nội dung lời chúc 1 của Lưu Thị Quỳnh Trang; thêm lời chúc 2 cho Phạm An Châu và lời chúc 3 cho Trần Mai Linh. Hai lời bổ sung dùng ảnh cá nhân hiện có của đúng người nhận. Emoji được giữ dưới dạng ký tự; các URL ảnh emoji và ký hiệu khoảng trắng cuối tin nhắn không trở thành nội dung thiệp. Bản Excel cập nhật được giữ ngoài repository. Khi nhập lại dữ liệu, cập nhật nội dung, tên ảnh và số lời chúc ở cả hai sheet để giữ các thay đổi này.
 
 - Liên kết bằng STT trong danh sách, đồng thời đối chiếu tên và mã khi có.
 - Đối chiếu số thứ tự lời chúc, nội dung và tên ảnh giữa bảng tổng hợp và chi tiết.
@@ -31,7 +33,7 @@ npm run build
 
 Lệnh xuất kiểm tra liên kết và dữ liệu trước khi ghi JSON. Nếu thông tin tên hoặc mã của hai bảng mâu thuẫn, sửa file nguồn rồi xuất lại. Nội dung ô Excel được coi là dữ liệu, không phải chỉ dẫn vận hành hoặc lệnh thực thi.
 
-56 ảnh gốc từ hai ZIP cuối đã được nhập trong `public/images/recipients/`, gắn vào đủ 59 lời chúc có tên ảnh. Một lời chúc không ghi tên ảnh trong Excel giữ hình minh họa; hai ảnh còn lại không được tự ghép. Ánh xạ hiện tại nằm trong `scripts/recipient-photo-manifest.json`; giữ tham số này khi xuất lại dữ liệu để giữ ảnh đã ghép.
+56 ảnh gốc từ hai ZIP cuối đã được nhập trong `public/images/recipients/`, gắn vào đủ 61 lời chúc có tên ảnh. Một lời chúc không ghi tên ảnh trong Excel giữ hình minh họa; hai ảnh còn lại không được tự ghép. Ánh xạ hiện tại nằm trong `scripts/recipient-photo-manifest.json`; giữ tham số này khi xuất lại dữ liệu để giữ ảnh đã ghép.
 
 Đính chính theo yêu cầu kiểm tra ảnh: Trần Thu Phương dùng `trầnphuong.jpg` cho lời chúc 1 (áo trắng, bó hoa hồng) và `tranphuong.jpg` cho lời chúc 2 (áo xanh). Đây là hai ảnh khác nhau có sẵn trong ZIP. Bản Excel đã nhận ghi lặp tên có dấu cho cả hai lời chúc; trước khi xuất lại, sửa ô `G44` của sheet **Danh sách 44 bạn** và ô `F58` của sheet **Mỗi lời chúc 1 dòng** thành `tranphuong.jpg`. Giữ nguyên tên ảnh lời chúc 1. Bản đính chính Excel được giữ ngoài repository; không thay đổi nội dung lời chúc.
 
