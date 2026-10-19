@@ -69,7 +69,10 @@ function wasCancelled(error: unknown): boolean {
   );
 }
 
-export async function saveImage(file: File): Promise<SaveImageResult> {
+async function saveMediaFile(
+  file: File,
+  fileType: SavePickerOptions["types"][number],
+): Promise<SaveImageResult> {
   if (isMobileDevice()) {
     try {
       const shareData = { files: [file] };
@@ -104,7 +107,7 @@ export async function saveImage(file: File): Promise<SaveImageResult> {
     // Open the picker synchronously while this call still has click activation.
     const handle = await picker.call(window, {
       suggestedName: file.name,
-      types: [{ description: "Ảnh PNG", accept: { "image/png": [".png"] } }],
+      types: [fileType],
     });
     writable = await handle.createWritable();
     await writable.write(file);
@@ -119,4 +122,32 @@ export async function saveImage(file: File): Promise<SaveImageResult> {
     }
     return wasCancelled(error) ? "cancelled" : "preview";
   }
+}
+
+export function saveImage(file: File): Promise<SaveImageResult> {
+  return saveMediaFile(file, {
+    description: "Ảnh PNG",
+    accept: { "image/png": [".png"] },
+  });
+}
+
+export function saveVideo(file: File): Promise<SaveImageResult> {
+  const mime = file.type.split(";")[0].trim().toLowerCase();
+  if (mime === "video/mp4") {
+    return saveMediaFile(file, {
+      description: "Video MP4",
+      accept: { "video/mp4": [".mp4"] },
+    });
+  }
+  if (mime === "video/webm") {
+    return saveMediaFile(file, {
+      description: "Video WebM",
+      accept: { "video/webm": [".webm"] },
+    });
+  }
+  return Promise.resolve("preview");
+}
+
+export function downloadVideo(file: File): void {
+  downloadImage(file);
 }

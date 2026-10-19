@@ -58,7 +58,7 @@ Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json
 
 File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Đã ghép 55 ảnh gốc theo tên file Excel cho 59 lời chúc; một lời không ghi tên ảnh giữ hình minh họa. Ánh xạ được lưu trong `scripts/recipient-photo-manifest.json` để giữ ảnh khi xuất lại dữ liệu. Xem tình trạng ghép ảnh trong báo cáo dữ liệu. Ảnh ngoài miền cần CORS để xuất PNG.
 
-Thiệp kỷ niệm riêng được lưu tại `public/data/special-recipients.json`, đọc cùng danh sách của lớp khi tra cứu. Hồ sơ có cấu hình `anniversary` mở trực tiếp thiệp một tháng yêu nhau, hiệu ứng tim và album ảnh xem lớn; các hồ sơ khác giữ luồng chọn từng lời chúc. 11 ảnh gốc nằm trong `public/images/anniversary-phuong/`. Xem [đối chiếu dữ liệu thiệp kỷ niệm](docs/anniversary-data.md). Khi nhập lại Excel, giữ file bổ sung này và đồng bộ toàn bộ `dist/` sang `prebuilt/`.
+Thiệp kỷ niệm riêng được lưu tại `public/data/special-recipients.json`, đọc cùng danh sách của lớp khi tra cứu. Hồ sơ có cấu hình `anniversary` mở trực tiếp thiệp một tháng yêu nhau, hiệu ứng tim và 11 ảnh rải xuyên suốt phần mở đầu, lời chúc và phần kết; bấm từng ảnh để xem lớn. Các hồ sơ khác giữ luồng chọn từng lời chúc. 11 ảnh gốc nằm trong `public/images/anniversary-phuong/`. Xem [đối chiếu dữ liệu thiệp kỷ niệm](docs/anniversary-data.md). Khi nhập lại Excel, giữ file bổ sung này và đồng bộ toàn bộ `dist/` sang `prebuilt/`.
 
 ## Dữ liệu album kỷ niệm
 
@@ -86,9 +86,11 @@ Website chuẩn bị sẵn PNG sau khi mở thiệp; đợi nút lưu sẵn sàn
 
 ## Photobooth · mục 05
 
-Mở `/#/photobooth`, chọn **Bật camera**, cho phép truy cập rồi chụp ba kiểu ảnh với đếm ngược. Khung PNG đặt **Digimar 66D** ở giữa phía trên, trang trí tim, nơ và hoa. Có thể chụp lại hoặc chọn ba ảnh có sẵn để ghép cùng khung. Ảnh được xử lý ngay trên thiết bị; trang không gửi ảnh hoặc âm thanh lên máy chủ. Camera chỉ bật sau thao tác của người xem và được tắt khi rời trang.
+Mở `/#/photobooth`, chọn **Bật camera**, cho phép truy cập rồi chụp ba kiểu ảnh với đếm ngược. Khung PNG 1080 × 1920 (9:16) đặt **Digimar 66D** ở giữa phía trên, trang trí tim, nơ và hoa. Có thể chụp lại hoặc chọn ba ảnh có sẵn để ghép cùng khung. Bản xem trước và hộp lưu thu vừa toàn bộ ảnh theo màn hình điện thoại.
 
-Nút lưu dùng bộ lưu ảnh hiện có: máy tính chọn nơi lưu hoặc tải PNG; điện thoại mở bảng chia sẻ nếu hỗ trợ, hoặc mở ảnh đầy đủ để nhấn giữ lưu. Trình duyệt quyết định vị trí và quyền lưu. Camera cần HTTPS trên bản triển khai hoặc localhost khi phát triển; kiểm thử dùng luồng video giả, không truy cập camera thật.
+Bật **Ghi video cùng lượt chụp** trước khi chụp để lưu thêm video 720 × 1280 với hình camera liên tục, đếm ngược, ba ảnh đã chụp và hiệu ứng lóe sáng, tim, ngôi sao ở mỗi lần bấm máy. Nút **Lưu video** xuất MP4 nếu trình duyệt hỗ trợ, hoặc WebM. Video không thu âm; trình duyệt thiếu tính năng ghi vẫn chụp và lưu ảnh bình thường. Ảnh và video được xử lý ngay trên thiết bị, không gửi lên máy chủ. Camera chỉ bật sau thao tác của người xem và được tắt khi rời trang.
+
+Nút lưu ảnh/video dùng file đã tạo sẵn: máy tính chọn nơi lưu hoặc tải file; điện thoại mở bảng chia sẻ nếu hỗ trợ, hoặc mở bản xem trước có nút tải. Trình duyệt quyết định vị trí và quyền lưu. Camera cần HTTPS trên bản triển khai hoặc localhost khi phát triển; kiểm thử dùng luồng video giả, không truy cập camera thật.
 
 ## Nhạc nền tùy chọn
 

@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
-import { Camera, CameraOff, Check, Download, Heart, ImagePlus, LoaderCircle, RefreshCw, Sparkles, X } from "lucide-react";
+import { Camera, CameraOff, Check, Download, Heart, ImagePlus, LoaderCircle, Play, RefreshCw, Sparkles, Video, X } from "lucide-react";
 import { PHOTOBOOTH_SHOTS, capturePhotoboothShot, createPhotoboothImage } from "../lib/photoboothImage";
-import { downloadImage, isMobileDevice, saveImage } from "../lib/saveImage";
+import { startPhotoboothVideo, supportsPhotoboothVideo } from "../lib/photoboothVideo";
+import type { PhotoboothVideoSession } from "../lib/photoboothVideo";
+import { downloadImage, downloadVideo, isMobileDevice, saveImage, saveVideo } from "../lib/saveImage";
 import "./photobooth.css";
 
 interface PhotoboothPageProps {
@@ -98,10 +100,19 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [recordVideo, setRecordVideo] = useState(false);
+  const [videoSupported] = useState(supportsPhotoboothVideo);
+  const [videoStatus, setVideoStatus] = useState<"idle" | "recording" | "finishing" | "ready" | "failed">("idle");
+  const [recordedVideo, setRecordedVideo] = useState<File | null>(null);
+  const [recordingUrl, setRecordingUrl] = useState<string | null>(null);
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [savingVideo, setSavingVideo] = useState(false);
   const mounted = useRef(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
   const saveDialogRef = useRef<HTMLDialogElement>(null);
+  const videoDialogRef = useRef<HTMLDialogElement>(null);
+  const recordingRef = useRef<PhotoboothVideoSession | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const trackCleanup = useRef<(() => void) | null>(null);
   const cameraRequest = useRef(0);
@@ -114,15 +125,29 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
   const savingActive = useRef(false);
   const preparedFile = shots.length === PHOTOBOOTH_SHOTS && composite?.shots === shots ? composite.file : null;
   const mobile = isMobileDevice();
+  const busySaving = saving || savingVideo;
+
+  const clearVideo = useCallback((update = true) => {
+    recordingRef.current?.cancel();
+    recordingRef.current = null;
+    if (update && mounted.current) {
+      setRecordedVideo(null);
+      setVideoStatus("idle");
+      setVideoOpen(false);
+    }
+  }, []);
 
   const cancelCapture = useCallback((update = true) => {
     ++captureVersion.current;
     captureActive.current = false;
     captureWait.current?.();
     captureWait.current = null;
+    recordingRef.current?.cancel();
+    recordingRef.current = null;
     if (update && mounted.current) {
       setCapturing(false);
       setCountdown(null);
+      setVideoStatus((previous) => previous === "recording" || previous === "finishing" ? "idle" : previous);
     }
   }, []);
 
@@ -149,6 +174,7 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
     mounted.current = true;
     const leavePage = () => {
       stopCamera();
+      clearVideo();
       uploadController.current?.abort();
       uploadActive.current = false;
       setUploading(false);
@@ -157,11 +183,12 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
     return () => {
       mounted.current = false;
       stopCamera(false);
+      clearVideo(false);
       uploadController.current?.abort();
       uploadActive.current = false;
       window.removeEventListener("pagehide", leavePage);
     };
-  }, [stopCamera]);
+  }, [stopCamera, clearVideo]);
 
   useEffect(() => {
     let cancelled = false;
@@ -191,6 +218,26 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
     if (previewOpen && previewUrl && !dialog.open) dialog.showModal();
     else if (!previewOpen && dialog.open) dialog.close();
   }, [previewOpen, previewUrl]);
+
+  useEffect(() => {
+    if (!recordedVideo) {
+      setRecordingUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(recordedVideo);
+    setRecordingUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [recordedVideo]);
+
+  useEffect(() => {
+    const dialog = videoDialogRef.current;
+    if (!dialog) return;
+    if (videoOpen && recordingUrl && !dialog.open) dialog.showModal();
+    else if (!videoOpen && dialog.open) {
+      dialog.querySelector("video")?.pause();
+      dialog.close();
+    }
+  }, [videoOpen, recordingUrl]);
 
   const updateVideoReady = () => {
     const video = videoRef.current;
@@ -256,34 +303,64 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
     setCapturing(true);
     setError("");
     setShots([]);
+    clearVideo();
     const current = () => mounted.current && version === captureVersion.current && streamRef.current !== null;
-    const waitOneSecond = () => new Promise<boolean>((resolve) => {
+    const wait = (duration = 1000) => new Promise<boolean>((resolve) => {
       const timer = window.setTimeout(() => {
         captureWait.current = null;
         resolve(true);
-      }, 1000);
+      }, duration);
       captureWait.current = () => { window.clearTimeout(timer); resolve(false); };
     });
     try {
+      if (recordVideo && videoSupported) {
+        try {
+          recordingRef.current = startPhotoboothVideo(video, {
+            onError: () => { if (current()) setVideoStatus("failed"); },
+          });
+          setVideoStatus("recording");
+        } catch {
+          setVideoStatus("failed");
+        }
+      }
       const nextShots: string[] = [];
       for (let index = 0; index < PHOTOBOOTH_SHOTS; index += 1) {
         setPose(index);
         for (let count = 3; count >= 1; count -= 1) {
           if (!current()) return;
           setCountdown(count);
-          if (!await waitOneSecond() || !current()) return;
+          recordingRef.current?.updateCountdown(count, index);
+          if (!await wait() || !current()) return;
         }
         if (!streamRef.current?.getVideoTracks().some((track) => track.readyState === "live")) {
           throw new Error("Camera disconnected");
         }
-        nextShots.push(capturePhotoboothShot(video, true));
+        const shot = capturePhotoboothShot(video, true);
+        nextShots.push(shot);
+        recordingRef.current?.updateCountdown(null, index);
+        recordingRef.current?.markShot(shot);
         setShots([...nextShots]);
         setFlash((value) => value + 1);
         setCountdown(null);
       }
+      const recording = recordingRef.current;
+      if (recording) {
+        setVideoStatus((previous) => previous === "failed" ? previous : "finishing");
+        if (!await wait(1100) || !current()) return;
+        const file = await recording.finish();
+        if (!current()) return;
+        recordingRef.current = null;
+        setRecordedVideo(file);
+        setVideoStatus(file ? "ready" : "failed");
+      }
       notify("Đã chụp đủ 3 kiểu ảnh. Cậu có thể lưu khung ảnh vào máy rồi nhé!");
     } catch {
-      if (current()) setError("Chưa chụp được ảnh từ camera. Cậu chờ hình ảnh hiện rõ rồi nhấn chụp lại nhé!");
+      recordingRef.current?.cancel();
+      recordingRef.current = null;
+      if (current()) {
+        setVideoStatus((previous) => previous === "recording" || previous === "finishing" ? "failed" : previous);
+        setError("Chưa chụp được ảnh từ camera. Cậu chờ hình ảnh hiện rõ rồi nhấn chụp lại nhé!");
+      }
     } finally {
       if (mounted.current && version === captureVersion.current) {
         captureActive.current = false;
@@ -295,6 +372,7 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
 
   const resetPhotos = () => {
     cancelCapture();
+    clearVideo();
     uploadController.current?.abort();
     uploadActive.current = false;
     setUploading(false);
@@ -316,6 +394,7 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
       return;
     }
     stopCamera();
+    clearVideo();
     uploadController.current?.abort();
     const controller = new AbortController();
     uploadController.current = controller;
@@ -359,8 +438,28 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
     }
   };
 
+  const saveRecording = async () => {
+    if (!recordedVideo || savingActive.current || uploadActive.current || captureActive.current) return;
+    savingActive.current = true;
+    setSavingVideo(true);
+    try {
+      // Pass the already prepared file to the native picker within this tap.
+      const result = await saveVideo(recordedVideo);
+      if (!mounted.current) return;
+      if (result === "saved") notify("Video đã được lưu vào nơi cậu chọn.");
+      else if (result === "shared") notify("Video đã được chuyển tới ứng dụng cậu chọn.");
+      else if (result === "downloaded") notify("Cậu kiểm tra video trong thư mục Tải xuống nhé!");
+      else if (result === "preview") setVideoOpen(true);
+    } catch {
+      if (mounted.current) setVideoOpen(true);
+    } finally {
+      savingActive.current = false;
+      if (mounted.current) setSavingVideo(false);
+    }
+  };
+
   const status = uploading ? "Đang ghép 3 ảnh của cậu…"
-    : capturing ? `Kiểu ảnh ${pose + 1} trên ${PHOTOBOOTH_SHOTS} · sẵn sàng trong ${countdown ?? 1} giây`
+    : capturing ? videoStatus === "finishing" ? "Đã đủ 3 ảnh, đang hoàn thiện video…" : `Kiểu ảnh ${pose + 1} trên ${PHOTOBOOTH_SHOTS} · sẵn sàng trong ${countdown ?? 1} giây`
       : shots.length === PHOTOBOOTH_SHOTS ? "Đủ 3 khoảnh khắc đáng yêu rồi!"
         : cameraState === "starting" ? "Cậu cho phép trình duyệt dùng camera nhé!"
           : cameraState === "on" ? cameraReady ? "Camera đã sẵn sàng. Cậu tạo dáng nhé!" : "Đang chờ hình ảnh từ camera…"
@@ -413,7 +512,7 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
             <span className="photobooth-view-corner photobooth-view-corner-br" aria-hidden="true" />
             {countdown !== null && <div className="photobooth-countdown" data-testid="photobooth-countdown" aria-hidden="true"><span>{countdown}</span><small>kiểu {pose + 1} / {PHOTOBOOTH_SHOTS}</small></div>}
             {flash > 0 && <div key={flash} className="photobooth-flash" aria-hidden="true" />}
-            <span className="photobooth-view-caption" aria-hidden="true">Digimar 66D · little lovely moments</span>
+            <span className="photobooth-view-caption" aria-hidden="true">Digimar 66D</span>
           </div>
 
           <div className="photobooth-progress" aria-label={`Đã có ${shots.length} trên ${PHOTOBOOTH_SHOTS} ảnh`}>
@@ -423,12 +522,18 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
 
           {error && <p className="photobooth-error" role="alert">{error}</p>}
 
+          <div className="photobooth-record-option">
+            <label><input type="checkbox" checked={recordVideo} disabled={!videoSupported || capturing || uploading || busySaving} onChange={(event) => setRecordVideo(event.target.checked)} /><Video size={16} aria-hidden="true" />Ghi video cùng lượt chụp</label>
+            <p>{videoSupported ? "Lưu cả lúc tạo dáng và hiệu ứng sau mỗi lần chụp, không thu âm." : "Trình duyệt này chưa hỗ trợ ghi video. Cậu vẫn chụp và lưu ảnh bình thường nhé!"}</p>
+          </div>
+          {(recordVideo || videoStatus !== "idle") && <p className={`photobooth-video-status${videoStatus === "recording" ? " is-recording" : ""}`} data-testid="photobooth-video-status" role="status" aria-live="polite">{videoStatus === "recording" ? "● Đang ghi video những khoảnh khắc của cậu…" : videoStatus === "finishing" ? "Đang giữ lại hiệu ứng cuối và chuẩn bị video…" : videoStatus === "ready" ? "Video đã sẵn sàng để xem và lưu vào máy." : videoStatus === "failed" ? "Chưa ghi được video trên trình duyệt này. Ảnh vẫn được giữ lại; cậu có thể thử một lượt mới nhé!" : "Video sẽ bắt đầu khi cậu nhấn Chụp 3 kiểu ảnh."}</p>}
+
           <div className="photobooth-camera-actions">
             {cameraState === "off" ? (
-              <button type="button" className="button button-primary" onClick={startCamera} disabled={uploading || saving}><Camera size={17} aria-hidden="true" /> Bật camera</button>
+              <button type="button" className="button button-primary" onClick={startCamera} disabled={uploading || busySaving}><Camera size={17} aria-hidden="true" /> Bật camera</button>
             ) : (
               <>
-                {!capturing && <button type="button" className="button button-primary" onClick={capturePhotos} disabled={!cameraReady || uploading || saving}><Camera size={17} aria-hidden="true" />Chụp 3 kiểu ảnh</button>}
+                {!capturing && <button type="button" className="button button-primary" onClick={capturePhotos} disabled={!cameraReady || uploading || busySaving}><Camera size={17} aria-hidden="true" />Chụp 3 kiểu ảnh</button>}
                 {capturing && <button type="button" className="button button-secondary" onClick={() => cancelCapture()}><X size={17} aria-hidden="true" />Hủy lượt chụp</button>}
                 <button type="button" className="photobooth-text-button" onClick={() => stopCamera()}><CameraOff size={16} aria-hidden="true" />Tắt camera</button>
               </>
@@ -437,8 +542,8 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
 
           <div className="photobooth-upload">
             <span className="photobooth-or">hoặc</span>
-            <input ref={uploadRef} className="photobooth-file-input" type="file" accept="image/*" multiple aria-label="Chọn 3 ảnh có sẵn" onChange={selectPhotos} disabled={capturing || uploading || saving} />
-            <button type="button" className="photobooth-upload-button" onClick={() => uploadRef.current?.click()} disabled={capturing || uploading || saving}>
+            <input ref={uploadRef} className="photobooth-file-input" type="file" accept="image/*" multiple aria-label="Chọn 3 ảnh có sẵn" onChange={selectPhotos} disabled={capturing || uploading || busySaving} />
+            <button type="button" className="photobooth-upload-button" onClick={() => uploadRef.current?.click()} disabled={capturing || uploading || busySaving}>
               {uploading ? <LoaderCircle className="photobooth-spinning" size={17} aria-hidden="true" /> : <ImagePlus size={17} aria-hidden="true" />}
               {uploading ? "Đang ghép ảnh…" : "Chọn 3 ảnh có sẵn"}
             </button>
@@ -452,17 +557,19 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
           <div className="photobooth-strip-wrap" aria-busy={preparing}>
             <span className="photobooth-tape" aria-hidden="true" />
             {previewUrl ? <img className="photobooth-preview-image" src={previewUrl} alt={`Khung ảnh Digimar 66D, đã có ${composite?.shots.length ?? 0} trên 3 ảnh`} /> : (
-              <div className="photobooth-strip-placeholder" aria-label="Khung ảnh Digimar 66D đang được chuẩn bị"><strong>Digimar 66D</strong><span>little lovely moments</span>{[1, 2, 3].map((index) => <div key={index}><Heart size={20} strokeWidth={1.2} aria-hidden="true" /><span>{String(index).padStart(2, "0")}</span></div>)}<small>made with love ♡</small></div>
+              <div className="photobooth-strip-placeholder" aria-label="Khung ảnh Digimar 66D đang được chuẩn bị"><strong>Digimar 66D</strong>{[1, 2, 3].map((index) => <div key={index}><Heart size={20} strokeWidth={1.2} aria-hidden="true" /><span>{String(index).padStart(2, "0")}</span></div>)}<small>made with love ♡</small></div>
             )}
           </div>
           {imageError ? <div className="photobooth-image-error"><p role="alert">Chưa tạo được khung ảnh. Cậu nhấn thử lại nhé!</p><button type="button" className="photobooth-text-button" onClick={() => setImageAttempt((value) => value + 1)}><RefreshCw size={15} aria-hidden="true" />Thử tạo lại ảnh</button></div>
             : <p className="photobooth-preview-note">{preparing && shots.length === PHOTOBOOTH_SHOTS ? "Đang chuẩn bị ảnh PNG cho cậu…" : "Một chiếc ảnh nhỏ, thật nhiều niềm vui ♡"}</p>}
           <div className="photobooth-result-actions">
-            <button type="button" className="button button-primary photobooth-save-button" onClick={savePhotos} disabled={!preparedFile || preparing || capturing || uploading || saving}>
+            <button type="button" className="button button-primary photobooth-save-button" onClick={savePhotos} disabled={!preparedFile || preparing || capturing || uploading || busySaving}>
               {saving || (preparing && shots.length === PHOTOBOOTH_SHOTS) ? <LoaderCircle className="photobooth-spinning" size={17} aria-hidden="true" /> : <Download size={17} aria-hidden="true" />}
               {saving ? "Đang lưu ảnh…" : "Lưu ảnh vào máy"}
             </button>
-            {shots.length > 0 && !capturing && <button type="button" className="photobooth-text-button" onClick={resetPhotos} disabled={uploading || saving}><RefreshCw size={15} aria-hidden="true" />Chụp lại</button>}
+            {preparedFile && <button type="button" className="photobooth-text-button" onClick={() => setPreviewOpen(true)} disabled={capturing || uploading || busySaving}><ImagePlus size={15} aria-hidden="true" />Xem khung ảnh</button>}
+            {recordedVideo && <div className="photobooth-video-actions"><button type="button" className="button button-secondary" onClick={saveRecording} disabled={capturing || uploading || busySaving}>{savingVideo ? <LoaderCircle className="photobooth-spinning" size={16} aria-hidden="true" /> : <Download size={16} aria-hidden="true" />}{savingVideo ? "Đang lưu video…" : "Lưu video"}</button><button type="button" className="photobooth-text-button" onClick={() => setVideoOpen(true)} disabled={busySaving}><Play size={15} aria-hidden="true" />Xem video</button></div>}
+            {shots.length > 0 && !capturing && <button type="button" className="photobooth-text-button" onClick={resetPhotos} disabled={uploading || busySaving}><RefreshCw size={15} aria-hidden="true" />Chụp lại</button>}
           </div>
           <p className="photobooth-save-help">{mobile ? "Chọn Lưu hình ảnh trong bảng chia sẻ, hoặc nhấn giữ ảnh để lưu." : "Khung ảnh được lưu thành PNG, gồm cả ảnh và trang trí."}</p>
         </section>
@@ -477,6 +584,14 @@ export function PhotoboothPage({ notify }: PhotoboothPageProps) {
           <button type="button" className="button button-primary" onClick={() => { if (preparedFile) { downloadImage(preparedFile); notify("Đã yêu cầu tải ảnh PNG. Cậu kiểm tra mục tải xuống nhé!"); } }}><Download size={18} aria-hidden="true" />Tải ảnh PNG</button>
           {previewUrl && <a className="button button-secondary" href={previewUrl} target="_blank" rel="noopener noreferrer">Mở ảnh riêng</a>}
         </div>
+      </dialog>
+
+      <dialog ref={videoDialogRef} className="save-image-dialog photobooth-video-dialog" aria-labelledby="photobooth-video-title" aria-describedby="photobooth-video-help" onCancel={() => setVideoOpen(false)} onClose={() => { videoDialogRef.current?.querySelector("video")?.pause(); setVideoOpen(false); }}>
+        <button className="save-image-close" type="button" aria-label="Đóng video" onClick={() => setVideoOpen(false)}><X size={21} aria-hidden="true" /></button>
+        <h2 id="photobooth-video-title">Video photobooth của cậu</h2>
+        <p id="photobooth-video-help">{mobile ? "Chọn tải video hoặc mở riêng để lưu theo trình duyệt của cậu." : "Xem lại những lúc tạo dáng và hiệu ứng sau mỗi kiểu ảnh."}</p>
+        {recordingUrl && <video data-testid="photobooth-video-preview" className="photobooth-recorded-video" src={recordingUrl} controls playsInline preload="metadata" />}
+        <div className="save-image-options"><button type="button" className="button button-primary" onClick={() => { if (recordedVideo) { downloadVideo(recordedVideo); notify("Đã yêu cầu tải video. Cậu kiểm tra mục tải xuống nhé!"); } }}><Download size={18} aria-hidden="true" />Tải video {recordedVideo?.type.startsWith("video/mp4") ? "MP4" : "WebM"}</button>{recordingUrl && <a className="button button-secondary" href={recordingUrl} target="_blank" rel="noopener noreferrer">Mở video riêng</a>}</div>
       </dialog>
     </main>
   );
