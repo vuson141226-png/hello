@@ -56,7 +56,7 @@ Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json
 - [Hướng dẫn cập nhật dữ liệu](docs/wishes.md).
 - [Báo cáo đối chiếu file được cung cấp](docs/wishes-data-report.md).
 
-File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Đã ghép 55 ảnh gốc theo tên file Excel cho 59 lời chúc; một lời không ghi tên ảnh giữ hình minh họa. Ánh xạ được lưu trong `scripts/recipient-photo-manifest.json` để giữ ảnh khi xuất lại dữ liệu. Xem tình trạng ghép ảnh trong báo cáo dữ liệu. Ảnh ngoài miền cần CORS để xuất PNG.
+File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Đã ghép 56 ảnh gốc cho 59 lời chúc; một lời không ghi tên ảnh giữ hình minh họa. Ánh xạ được lưu trong `scripts/recipient-photo-manifest.json` để giữ ảnh khi xuất lại dữ liệu. Đính chính hai tên ảnh của Trần Thu Phương và cách xuất lại nằm trong hướng dẫn cập nhật dữ liệu. Ảnh ngoài miền cần CORS để xuất PNG.
 
 Thiệp kỷ niệm riêng được lưu tại `public/data/special-recipients.json`, đọc cùng danh sách của lớp khi tra cứu. Hồ sơ có cấu hình `anniversary` mở trực tiếp thiệp một tháng yêu nhau, hiệu ứng tim và 11 ảnh rải xuyên suốt phần mở đầu, lời chúc và phần kết; bấm từng ảnh để xem lớn. Các hồ sơ khác giữ luồng chọn từng lời chúc. 11 ảnh gốc nằm trong `public/images/anniversary-phuong/`. Xem [đối chiếu dữ liệu thiệp kỷ niệm](docs/anniversary-data.md). Khi nhập lại Excel, giữ file bổ sung này và đồng bộ toàn bộ `dist/` sang `prebuilt/`.
 
