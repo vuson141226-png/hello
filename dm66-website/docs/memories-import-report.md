@@ -14,6 +14,7 @@ Nguồn: `DM66D-memories-template (1) (2).xlsx` và `anhkyniem.zip` do người 
 
 - `ky-niem-06`: tên ảnh `cnxkh1.jpg` trong Excel được đối chiếu rõ ràng với `cnxhkh1.jpg` trong ZIP.
 - `ky-niem-13`: ô tên sự kiện trống; dùng **Boy Day 2026** vì mô tả ghi rõ tên này.
+- Theo yêu cầu chỉnh nội dung sau Excel: `ky-niem-05` dùng mô tả ngày 8/3 đầu tiên với bánh có khuôn mặt và banner; `ky-niem-12` dùng mô tả 8/3/2026 với video, banner, sính lễ và bánh. Khi nhập lại workbook, giữ hai mô tả đã cập nhật tại `Du_lieu_ky_niem!E6` và `E13`; tiêu đề và ảnh của hai sự kiện giữ nguyên.
 - Excel không cung cấp thời gian riêng cho các sự kiện; không tự gán ngày hoặc năm.
 
 ## Danh sách sự kiện

@@ -48,7 +48,7 @@ npm run test:database # Cần Docker; kiểm tra PostgreSQL thật, restart, ret
 
 ## Tra cứu tên, mã sinh viên và lời chúc
 
-Trang `/#/your-wish` đối chiếu họ tên và mã sinh viên ngay trong trình duyệt. Tên được chuẩn hóa dấu, chữ hoa/thường và khoảng trắng; mã được so dưới dạng chuỗi để giữ số 0 đầu. Cả hai phải khớp cùng một dòng. Sau khi tra cứu, trang thông báo số lời chúc, hiển thị các nút để mở từng lời; thiệp và PNG dùng đúng nội dung và ảnh của lời đang chọn. Dữ liệu cuối có 44 người nhận và 60 lời chúc. Người có 0 lời chúc vẫn được báo rõ trạng thái này khi cập nhật dữ liệu sau này.
+Trang `/#/your-wish` đối chiếu họ tên và mã sinh viên ngay trong trình duyệt. Tên được chuẩn hóa dấu, chữ hoa/thường và khoảng trắng; mã được so dưới dạng chuỗi để giữ số 0 đầu. Cả hai phải khớp cùng một dòng. Sau khi tra cứu, trang thông báo số lời chúc, hiển thị các nút để mở từng lời; thiệp và PNG dùng đúng nội dung và ảnh của lời đang chọn. Dữ liệu hiện có 44 người nhận và 62 lời chúc, gồm hai lời bổ sung sau bản Excel cuối. Người có 0 lời chúc vẫn được báo rõ trạng thái này khi cập nhật dữ liệu sau này.
 
 Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json`. Đây là dữ liệu công khai, có thể được người truy cập website đọc. Tra cứu này không có đăng nhập, cookie phiên hoặc yêu cầu Supabase. Phần gửi thư và quản trị hộp thư dùng API Supabase hiện có.
 
@@ -56,7 +56,7 @@ Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json
 - [Hướng dẫn cập nhật dữ liệu](docs/wishes.md).
 - [Báo cáo đối chiếu file được cung cấp](docs/wishes-data-report.md).
 
-File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Đã ghép 56 ảnh gốc cho 59 lời chúc; một lời không ghi tên ảnh giữ hình minh họa. Ánh xạ được lưu trong `scripts/recipient-photo-manifest.json` để giữ ảnh khi xuất lại dữ liệu. Đính chính hai tên ảnh của Trần Thu Phương và cách xuất lại nằm trong hướng dẫn cập nhật dữ liệu. Ảnh ngoài miền cần CORS để xuất PNG.
+File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Đã ghép 56 ảnh gốc cho 61 lời chúc; một lời không ghi tên ảnh giữ hình minh họa. Ánh xạ được lưu trong `scripts/recipient-photo-manifest.json` để giữ ảnh khi xuất lại dữ liệu. Đính chính hai tên ảnh của Trần Thu Phương và cách giữ các lời chúc mới khi xuất lại nằm trong hướng dẫn cập nhật dữ liệu. Ảnh ngoài miền cần CORS để xuất PNG.
 
 Thiệp kỷ niệm riêng được lưu tại `public/data/special-recipients.json`, đọc cùng danh sách của lớp khi tra cứu. Hồ sơ có cấu hình `anniversary` mở trực tiếp thiệp một tháng yêu nhau, hiệu ứng tim và 11 ảnh rải xuyên suốt phần mở đầu, lời chúc và phần kết; bấm từng ảnh để xem lớn. Các hồ sơ khác giữ luồng chọn từng lời chúc. 11 ảnh gốc nằm trong `public/images/anniversary-phuong/`. Xem [đối chiếu dữ liệu thiệp kỷ niệm](docs/anniversary-data.md). Khi nhập lại Excel, giữ file bổ sung này và đồng bộ toàn bộ `dist/` sang `prebuilt/`.
 
