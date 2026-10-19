@@ -87,7 +87,7 @@ export const memories: Memory[] = [
         "altText": "First 08/03 — ảnh kỷ niệm 2"
       }
     ],
-    "description": "Ngày 8/3 đầu tiên của 66D với lớp, ban đầu còn nghĩ là chắc tặng quà gì đó nhưng mà lúc đó đã có idea bánh có khuôn mặt mọi người và một chiếc banner siêu sến. Trộm vía là may thay tui đã kịp nhớ hết khuôn mặt đến tóc tai của các bạn nên khi thấy cái bánh đó các bạn chụp lên up str tui thích lắm phổng mũi tự hào lần 2 và lại thêm một kỷ niệm nữa với lớp D."
+    "description": "Ngày 8/3 đầu tiên của 66D với lớp, ban đầu còn nghĩ là chắc tặng quà gì đó nhưng mà lúc đó đã có idea bánh có khuôn mặt mọi người và một chiếc banner siêu sến. Trộm vía là may thay tui đã kịp nhớ hết khuôn mặt đến tóc tai của các bạn nên khi thấy cái bánh đó các bạn chụp lên up str tui thích lắm phổng mũi tự hào lần 2 và lại thêm một kỷ niệm nữa với lớp D"
   },
   {
     "id": "ky-niem-06",
@@ -192,7 +192,7 @@ export const memories: Memory[] = [
         "altText": "08/03/2026 — ảnh kỷ niệm 2"
       }
     ],
-    "description": "8/3/2026: lại thêm một ngày 8/3 nữa đến với các bạn nữ 66D rồi, ban đầu còn gần như là nổ rồi vì sát ngày vẫn chưa nghĩ ra idea cho các bạn xong may thay có một cái video và banner bonus thêm sính lễ cuới và bánh, và đó là lần đầu tiên chúng mình làm video dành tặng các cậu đấy (hứa hẹn còn lần sau)."
+    "description": "Lại thêm một ngày 8/3 nữa đến với các bạn nữ 66D rồi, ban đầu còn gần như là nổ rồi vì sát ngày vẫn chưa nghĩ ra idea cho các bạn xong may thay có một cái video và banner bonus thêm sính lễ cuới và bánh, và đó là lần đầu tiên chúng mình làm video dành tặng các cậu đấy (hứa hẹn còn lần sau)"
   },
   {
     "id": "ky-niem-13",
