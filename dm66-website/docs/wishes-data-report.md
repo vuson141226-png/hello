@@ -19,9 +19,9 @@ Hai sheet dữ liệu cuối cùng được đối chiếu theo STT, họ tên, 
 Workbook không có cột người gửi. Tiêu đề dùng số thứ tự lời chúc; không suy đoán người viết từ lời văn hoặc dữ liệu cũ. Sheet kiểm tra tên ảnh chỉ là thông tin bổ sung và không được dùng để tự đoán ảnh cho người nhận.
 
 - Lời chúc có tên tệp ảnh trong nguồn: 59.
-- Tên tệp ảnh riêng biệt được tham chiếu: 55.
+- Tên tệp ảnh riêng biệt được tham chiếu: 56.
 - Lời chúc không có tên tệp ảnh: 1.
-- Tệp ảnh đã nhập và kiểm tra tồn tại: 55.
+- Tệp ảnh đã nhập và kiểm tra tồn tại: 56.
 - Lời chúc đã gắn được ảnh: 59.
 - Tệp ảnh còn thiếu: 0.
 
