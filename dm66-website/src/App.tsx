@@ -33,7 +33,7 @@ import { siteConfig } from "./config";
 import { MemoriesPage } from "./pages/MemoriesPage";
 import { LettersPage } from "./pages/LettersPage";
 import { AdminLettersPage } from "./pages/AdminLettersPage";
-import { AnniversaryGallery, AnniversaryHero } from "./components/AnniversaryExperience";
+import { AnniversaryHero, AnniversaryLetter, AnniversaryPhotoGroup, AnniversaryPhotoProvider } from "./components/AnniversaryExperience";
 import { PhotoboothPage } from "./pages/PhotoboothPage";
 
 type Page = "welcome" | "our-girls" | "our-memories" | "your-wish" | "letters-to-boys" | "photobooth" | "admin";
@@ -310,12 +310,12 @@ function GreetingCard({
   return (
     <div className="greeting-card" ref={cardRef}>
       <div className="card-topline">
-        <span>{anniversary ? "SƠN & PHƯƠNG" : "DIGITAL MARKETING 66D"}</span>
+        <span>{anniversary ? "MỘT THÁNG BÊN NHAU" : "DIGITAL MARKETING 66D"}</span>
         <Heart size={15} />
         <span>20.10.2026</span>
       </div>
       <div className="card-body">
-        <div className="card-portrait-panel">
+        <div className="card-portrait-panel" aria-hidden={anniversary || undefined}>
           <div className="card-photo">
             <Portrait girl={girl} />
             <Bow className="card-photo-bow" />
@@ -331,7 +331,7 @@ function GreetingCard({
               ? <>Chúc mừng <em>1 tháng yêu nhau!</em></>
               : <>Chúc mừng ngày <em>20/10!</em></>}
           </h2>
-          <motion.div
+          {anniversary ? <AnniversaryLetter text={girl.wish} replay={replay} /> : <motion.div
             key={replay}
             className="card-letter"
             initial="hidden"
@@ -359,7 +359,7 @@ function GreetingCard({
                   {paragraph}
                 </motion.p>
               ))}
-          </motion.div>
+          </motion.div>}
           {girl.isPlaceholder && (
             <p className="card-placeholder-note">
               Đây là thiệp từ dữ liệu thử. Ảnh hiện dùng hình mẫu; các phần còn
@@ -559,6 +559,7 @@ function WishPage({
   };
   if (recipient)
     return (
+      <AnniversaryPhotoProvider images={anniversary?.images ?? []}>
       <main className={`result-page page-shell${anniversary ? " anniversary-page" : ""}`} id="main-content" tabIndex={-1}>
         {anniversary ? (
           <AnniversaryHero headingRef={resultRef} celebrationKey={replay} />
@@ -685,11 +686,13 @@ function WishPage({
           </aside>
         </div>}
         {anniversary ? <>
-          <AnniversaryGallery images={anniversary.images} />
-          <div className="anniversary-closing">
-            <Heart size={25} strokeWidth={1.2} />
-            <p>Một tháng đầu tiên, và còn thật nhiều kỷ niệm đang chờ chúng mình.</p>
-            <span>Sơn ♡ Phương</span>
+          <div className="anniversary-ending">
+            <AnniversaryPhotoGroup indices={[9, 10]} placement="closing" />
+            <div className="anniversary-closing">
+              <Heart size={25} strokeWidth={1.2} />
+              <p>Một tháng đầu tiên, và còn thật nhiều kỷ niệm đang chờ chúng mình.</p>
+              <span>Sơn ♡ Phương</span>
+            </div>
           </div>
         </> : <section className="wish-letter-transition" aria-label="Một lời nhắn gửi lại">
           <p>Chúng tớ đã gửi những lời chúc của mình rồi. Còn cậu, có điều gì muốn nhắn gửi đến những chàng trai DM66D không? 💗</p>
@@ -749,6 +752,7 @@ function WishPage({
           </div>
         </dialog>
       </main>
+      </AnniversaryPhotoProvider>
     );
   return (
     <main className="wish-page page-shell" id="main-content" tabIndex={-1}>

@@ -58,8 +58,15 @@ test('opens the special celebration immediately and exports the entire anniversa
   await expect(page.locator('.card-dear')).toHaveText('Dear Phương,')
   await expect(page.locator('.greeting-card h2')).toHaveText('Chúc mừng 1 tháng yêu nhau!')
   await expect(page.locator('.anniversary-letter-note')).toContainText('20/10')
-  await expect(page.locator('.card-letter p')).toHaveText(letter)
-  await expect(page.locator('.anniversary-photo-wall img')).toHaveCount(11)
+  const displayedLetter = await page.locator('.card-letter p').allTextContents()
+  expect(displayedLetter.join(' ').replace(/\s+/g, ' ').trim()).toBe(letter.join(' ').replace(/\s+/g, ' ').trim())
+  await expect(page.locator('.anniversary-opening .anniversary-photo-button')).toHaveCount(2)
+  await expect(page.locator('.anniversary-letter-chapter')).toHaveCount(4)
+  await expect(page.locator('.card-letter .anniversary-photo-button')).toHaveCount(7)
+  await expect(page.locator('.anniversary-ending .anniversary-photo-button')).toHaveCount(2)
+  await expect(page.locator('.anniversary-photo-button')).toHaveCount(11)
+  await expect(page.locator('.anniversary-hero')).not.toContainText('Sơn')
+  await expect(page.locator('.anniversary-names,.anniversary-gallery,.anniversary-photo-wall')).toHaveCount(0)
   const save = page.getByRole('button', { name: 'Lưu thiệp của mình' })
   await expect(save).toBeEnabled()
   const paintedText = await page.evaluate(() => (window as unknown as { anniversaryPaintedText: string[] }).anniversaryPaintedText.join(' '))
@@ -115,11 +122,11 @@ test('requires the correct name and code and clears the special view on reset or
   await expect(page.getByLabel('Tên của cậu là gì?')).toHaveValue('')
   await expect(page.getByLabel('Mã sinh viên của cậu', { exact: true })).toHaveValue('')
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeFocused()
-  await expect(page.locator('.anniversary-hero,.anniversary-gallery,.greeting-card')).toHaveCount(0)
+  await expect(page.locator('.anniversary-hero,.anniversary-photo-group,.greeting-card')).toHaveCount(0)
   await lookup(page)
   await page.locator('nav a[href="#/our-memories"]').click()
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Our Little Memories')
-  await expect(page.locator('.anniversary-hero,.anniversary-gallery')).toHaveCount(0)
+  await expect(page.locator('.anniversary-hero,.anniversary-photo-group')).toHaveCount(0)
   await page.locator('nav a[href="#/your-wish"]').click()
   await expect(page.getByLabel('Tên của cậu là gì?')).toHaveValue('')
   await expect(page.getByLabel('Mã sinh viên của cậu', { exact: true })).toHaveValue('')
@@ -134,7 +141,7 @@ for (const width of [320, 390, 1440]) {
     await expect(page.getByRole('heading', { level: 1, name: 'Chúc mừng 1 tháng yêu nhau' })).toBeVisible()
     await expect(page.locator('.anniversary-celebration')).toBeHidden()
     expect(await page.locator('.anniversary-confetti').evaluateAll(elements => elements.every(element => getComputedStyle(element).animationName === 'none'))).toBe(true)
-    const images = page.locator('.anniversary-photo-wall img')
+    const images = page.locator('.anniversary-photo-group img')
     await expect(images).toHaveCount(11)
     for (const image of await images.all()) {
       await image.scrollIntoViewIfNeeded()
@@ -143,6 +150,17 @@ for (const width of [320, 390, 1440]) {
       const bounds = await image.boundingBox()
       expect(bounds!.x).toBeGreaterThanOrEqual(-1)
       expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1)
+    }
+    for (const chapter of await page.locator('.anniversary-letter-chapter').all()) {
+      const textBounds = await chapter.locator(':scope > p').boundingBox()
+      const photoBounds = await chapter.locator('.anniversary-photo-group').boundingBox()
+      if (width <= 760) {
+        expect(photoBounds!.y).toBeGreaterThanOrEqual(textBounds!.y + textBounds!.height)
+      } else {
+        const gap = Math.max(textBounds!.x, photoBounds!.x) - Math.min(textBounds!.x + textBounds!.width, photoBounds!.x + photoBounds!.width)
+        expect(gap).toBeGreaterThan(0)
+        expect(textBounds!.width).toBeGreaterThan(360)
+      }
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true)
     await page.screenshot({ path: testInfo.outputPath(`anniversary-${width}.png`), fullPage: true })

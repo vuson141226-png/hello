@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import type { CSSProperties, RefObject } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import type { CSSProperties, ReactNode, RefObject } from "react";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Flower2, Heart, Sparkles, X } from "lucide-react";
 import type { AnniversaryPhoto } from "../lib/recipientLookup";
 import "./anniversary.css";
@@ -16,43 +17,13 @@ const celebrationPieces = [
   [93, 61, -18, 0.22], [13, 85, 25, 0.48], [88, 86, -12, 0.5],
 ];
 
-export function AnniversaryHero({ headingRef, celebrationKey }: AnniversaryHeroProps) {
-  return (
-    <section className="anniversary-hero" aria-labelledby="anniversary-heading">
-      <div className="anniversary-celebration" key={celebrationKey} aria-hidden="true">
-        {celebrationPieces.map(([left, top, turn, delay], index) => (
-          <span
-            key={index}
-            className="anniversary-confetti"
-            style={{
-              "--piece-left": `${left}%`,
-              "--piece-top": `${top}%`,
-              "--piece-turn": `${turn}deg`,
-              "--piece-delay": `${delay}s`,
-            } as CSSProperties}
-          >
-            {index % 3 === 0 ? <Sparkles /> : <Heart fill="currentColor" />}
-          </span>
-        ))}
-      </div>
-      <Flower2 className="anniversary-hero-flower anniversary-hero-flower-left" strokeWidth={1} aria-hidden="true" />
-      <Flower2 className="anniversary-hero-flower anniversary-hero-flower-right" strokeWidth={1} aria-hidden="true" />
-      <p className="anniversary-dedication"><Heart size={13} aria-hidden="true" /> Dành riêng cho Múp <Heart size={13} aria-hidden="true" /></p>
-      <div className="anniversary-month" aria-label="Một tháng yêu nhau">
-        <span>01</span>
-        <small>THÁNG YÊU NHAU</small>
-      </div>
-      <p className="anniversary-names">Sơn <span aria-label="yêu">♡</span> Phương</p>
-      <h1 id="anniversary-heading" ref={headingRef} tabIndex={-1}>Chúc mừng 1 tháng yêu nhau</h1>
-      <p className="anniversary-hero-message">Một tháng thật thương, và còn thật nhiều ngày bên nhau nữa.</p>
-      <div className="anniversary-date"><span />20/10<span /></div>
-      <p className="anniversary-womens-day">Chúc mừng ngày Phụ nữ Việt Nam, tình yêu của anh.</p>
-      <div className="anniversary-hero-sign" aria-hidden="true">with all my love <Heart size={15} /></div>
-    </section>
-  );
-}
+const PhotoContext = createContext<{
+  images: AnniversaryPhoto[];
+  openPhoto: (index: number, opener: HTMLButtonElement) => void;
+}>({ images: [], openPhoto: () => undefined });
 
-export function AnniversaryGallery({ images }: { images: AnniversaryPhoto[] }) {
+/** One viewer connects the photos scattered throughout the letter. */
+export function AnniversaryPhotoProvider({ images, children }: { images: AnniversaryPhoto[]; children: ReactNode }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -87,38 +58,13 @@ export function AnniversaryGallery({ images }: { images: AnniversaryPhoto[] }) {
     setActiveIndex((index) => index === null ? null : (index + direction + images.length) % images.length);
   };
 
-  if (!images.length) return null;
-
   return (
-    <section className="anniversary-gallery" aria-labelledby="anniversary-gallery-title">
-      <header className="anniversary-gallery-heading">
-        <p className="anniversary-eyebrow"><span /> OUR LITTLE LOVE STORY <span /></p>
-        <h2 id="anniversary-gallery-title">Những khung hình của chúng mình <Heart aria-hidden="true" /></h2>
-        <p>{images.length} mảnh ghép nhỏ, thật nhiều yêu thương. Chạm vào ảnh để xem rõ hơn nhé.</p>
-      </header>
-      <div className="anniversary-photo-wall">
-        {images.map((photo, index) => (
-          <figure className="anniversary-polaroid" key={photo.src}>
-            <span className="anniversary-photo-tape" aria-hidden="true" />
-            <button
-              type="button"
-              className="anniversary-photo-button"
-              aria-label={`Xem ảnh kỷ niệm ${index + 1}: ${photo.altText}`}
-              onClick={(event) => {
-                openerRef.current = event.currentTarget;
-                setActiveIndex(index);
-              }}
-            >
-              <img src={photo.src} alt={photo.altText} width={photo.width} height={photo.height} loading="lazy" decoding="async" />
-              <span className="anniversary-photo-enlarge" aria-hidden="true">Xem ảnh</span>
-            </button>
-            <figcaption><span>Kỷ niệm {String(index + 1).padStart(2, "0")}</span><Heart size={13} aria-hidden="true" /></figcaption>
-          </figure>
-        ))}
-      </div>
-      <p className="anniversary-gallery-sign">Cất một chút hôm nay, để mai này cùng nhớ. <Heart size={14} aria-hidden="true" /></p>
-
-      <dialog
+    <PhotoContext.Provider value={{ images, openPhoto: (index, opener) => {
+      openerRef.current = opener;
+      setActiveIndex(index);
+    } }}>
+      {children}
+      {!!images.length && <dialog
         ref={dialogRef}
         className="anniversary-photo-dialog"
         aria-labelledby="anniversary-photo-dialog-title"
@@ -150,7 +96,108 @@ export function AnniversaryGallery({ images }: { images: AnniversaryPhoto[] }) {
             )}
           </div>
         )}
-      </dialog>
-    </section>
+      </dialog>}
+    </PhotoContext.Provider>
+  );
+}
+
+export function AnniversaryPhotoGroup({ indices, placement }: { indices: number[]; placement: "opening" | "letter" | "closing" }) {
+  const { images, openPhoto } = useContext(PhotoContext);
+  const available = indices.filter((index) => images[index]);
+  if (!available.length) return null;
+  return (
+    <div className={`anniversary-photo-group anniversary-photo-group--${placement}`} aria-label="Những khung hình của chúng mình">
+      {available.map((index) => {
+        const photo = images[index];
+        return <figure className="anniversary-polaroid" key={photo.src} data-photo-number={index + 1}>
+          <span className="anniversary-photo-tape" aria-hidden="true" />
+          <button
+            type="button"
+            className="anniversary-photo-button"
+            aria-label={`Xem ảnh kỷ niệm ${index + 1}: ${photo.altText}`}
+            onClick={(event) => openPhoto(index, event.currentTarget)}
+          >
+            <img src={photo.src} alt={photo.altText} width={photo.width} height={photo.height} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
+            <span className="anniversary-photo-enlarge" aria-hidden="true">Xem ảnh</span>
+          </button>
+          <figcaption><span>Kỷ niệm {String(index + 1).padStart(2, "0")}</span><Heart size={13} aria-hidden="true" /></figcaption>
+        </figure>;
+      })}
+    </div>
+  );
+}
+
+export function AnniversaryHero({ headingRef, celebrationKey }: AnniversaryHeroProps) {
+  return (
+    <div className="anniversary-opening">
+      <section className="anniversary-hero" aria-labelledby="anniversary-heading">
+        <div className="anniversary-celebration" key={celebrationKey} aria-hidden="true">
+          {celebrationPieces.map(([left, top, turn, delay], index) => (
+            <span
+              key={index}
+              className="anniversary-confetti"
+              style={{
+                "--piece-left": `${left}%`,
+                "--piece-top": `${top}%`,
+                "--piece-turn": `${turn}deg`,
+                "--piece-delay": `${delay}s`,
+              } as CSSProperties}
+            >
+              {index % 3 === 0 ? <Sparkles /> : <Heart fill="currentColor" />}
+            </span>
+          ))}
+        </div>
+        <Flower2 className="anniversary-hero-flower anniversary-hero-flower-left" strokeWidth={1} aria-hidden="true" />
+        <Flower2 className="anniversary-hero-flower anniversary-hero-flower-right" strokeWidth={1} aria-hidden="true" />
+        <p className="anniversary-dedication"><Heart size={13} aria-hidden="true" /> Dành riêng cho Múp <Heart size={13} aria-hidden="true" /></p>
+        <div className="anniversary-month" aria-label="Một tháng yêu nhau">
+          <span>01</span>
+          <small>THÁNG YÊU NHAU</small>
+        </div>
+        <h1 id="anniversary-heading" ref={headingRef} tabIndex={-1}>Chúc mừng 1 tháng yêu nhau</h1>
+        <p className="anniversary-hero-message">Một tháng thật thương, và còn thật nhiều ngày bên nhau nữa.</p>
+        <div className="anniversary-date"><span />20/10<span /></div>
+        <p className="anniversary-womens-day">Chúc mừng ngày Phụ nữ Việt Nam, tình yêu của anh.</p>
+        <div className="anniversary-hero-sign" aria-hidden="true">with all my love <Heart size={15} /></div>
+      </section>
+      <AnniversaryPhotoGroup indices={[0, 1]} placement="opening" />
+    </div>
+  );
+}
+
+/** Add reading breaks near sentence endings, changing whitespace only. */
+function letterSections(text: string) {
+  const words = text.trim().split(/\s+/);
+  const sections: string[] = [];
+  let start = 0;
+  for (let part = 0; part < 4; part++) {
+    if (part === 3) {
+      sections.push(words.slice(start).join(" "));
+      break;
+    }
+    const target = start + Math.ceil((words.length - start) / (4 - part));
+    let end = target;
+    for (let distance = 0; distance < 18; distance++) {
+      const candidates = [target + distance, target - distance];
+      const boundary = candidates.find((candidate) => candidate > start + 12 && candidate < words.length && /[.!?…)]$/.test(words[candidate - 1]));
+      if (boundary !== undefined) { end = boundary; break; }
+    }
+    sections.push(words.slice(start, end).join(" "));
+    start = end;
+  }
+  return sections.filter(Boolean);
+}
+
+export function AnniversaryLetter({ text, replay }: { text: string; replay: number }) {
+  const groups = [[2, 3], [4, 5], [6, 7], [8]];
+  return (
+    <motion.div key={replay} className="card-letter anniversary-letter" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.18 } } }}>
+      {letterSections(text).map((section, index) => (
+        <section className="anniversary-letter-chapter" key={index} aria-label={`Lá thư, phần ${index + 1}`}>
+          <motion.p variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }} transition={{ duration: 0.45 }}>{section}</motion.p>
+          <AnniversaryPhotoGroup indices={groups[index]} placement="letter" />
+        </section>
+      ))}
+    </motion.div>
   );
 }

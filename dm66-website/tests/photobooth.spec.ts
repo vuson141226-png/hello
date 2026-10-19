@@ -145,11 +145,13 @@ test('asks for camera only on a tap, captures three real video frames and downlo
   await expect(page.getByRole('button', { name: 'Chụp lại', exact: true })).toBeVisible()
   const png = await readPng(page, await downloadPng(page))
   expect(png.width).toBe(1080)
-  expect(png.height).toBe(2544)
+  expect(png.height).toBe(1920)
   const red = colorBands(png, [224, 32, 48])
-  expect(red.length).toBeGreaterThan(150)
+  expect(red.length).toBeGreaterThan(120)
   expect(red.filter((y, index) => index === 0 || y - red[index - 1] > 8)).toHaveLength(3)
-  expect((await probe(page)).paintedText.join(' ')).toContain('Digimar 66D')
+  const paintedText = (await probe(page)).paintedText
+  expect(paintedText).toContain('Digimar 66D')
+  expect(paintedText).not.toContain('giữ lại những khoảnh khắc đáng yêu')
   expect((await probe(page)).calls).toBe(1)
   expect((await probe(page)).videoCaptures).toBe(3)
   await page.getByRole('button', { name: 'Tắt camera', exact: true }).click()
@@ -206,7 +208,7 @@ test('preserves the order of three uploaded photos in the saved strip without op
   await uploadPhotos(page)
   const png = await readPng(page, await downloadPng(page))
   expect(png.width).toBe(1080)
-  expect(png.height).toBe(2544)
+  expect(png.height).toBe(1920)
   const red = colorBands(png, [224, 32, 48])
   const green = colorBands(png, [32, 176, 80])
   const blue = colorBands(png, [32, 64, 208])
@@ -263,28 +265,52 @@ test('passes a prepared PNG to the native picker during the save click', async (
   expect(saved.bytes).toBeGreaterThan(10_000)
 })
 
-test('offers an enlarged PNG with a download fallback on a phone without file sharing', async ({ page }) => {
-  await mockCamera(page)
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, 'userAgent', { configurable: true, value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1' })
-    Object.defineProperty(navigator, 'canShare', { configurable: true, value: undefined })
-    Object.defineProperty(navigator, 'share', { configurable: true, value: undefined })
+for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }]) {
+  test(`fits the whole saved PNG and download fallback on a ${viewport.width}px phone without file sharing`, async ({ page }) => {
+    await mockCamera(page)
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'userAgent', { configurable: true, value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1' })
+      Object.defineProperty(navigator, 'canShare', { configurable: true, value: undefined })
+      Object.defineProperty(navigator, 'share', { configurable: true, value: undefined })
+    })
+    await page.setViewportSize(viewport)
+    await page.goto('/#/photobooth')
+    await uploadPhotos(page)
+    await page.getByRole('button', { name: 'Lưu ảnh vào máy', exact: true }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    const image = dialog.locator('img')
+    await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBe(1080)
+    await expect(dialog).toContainText(/giữ|lưu ảnh/i)
+    const fit = await image.evaluate(element => {
+      const photo = element as HTMLImageElement
+      const bounds = photo.getBoundingClientRect()
+      const dialogBounds = photo.closest('dialog')!.getBoundingClientRect()
+      return {
+        top: bounds.top, bottom: bounds.bottom, left: bounds.left, right: bounds.right,
+        width: bounds.width, height: bounds.height,
+        ratio: photo.naturalWidth / photo.naturalHeight, objectFit: getComputedStyle(photo).objectFit,
+        dialogTop: dialogBounds.top, dialogBottom: dialogBounds.bottom, viewportHeight: innerHeight,
+      }
+    })
+    expect(fit.ratio).toBeCloseTo(9 / 16, 3)
+    expect(fit.objectFit).toBe('contain')
+    expect(fit.top).toBeGreaterThanOrEqual(fit.dialogTop)
+    expect(fit.bottom).toBeLessThanOrEqual(fit.dialogBottom + 1)
+    expect(fit.top).toBeGreaterThanOrEqual(0)
+    expect(fit.bottom).toBeLessThanOrEqual(fit.viewportHeight + 1)
+    expect(fit.left).toBeGreaterThanOrEqual(0)
+    expect(fit.right).toBeLessThanOrEqual(viewport.width + 1)
+    expect(fit.width).toBeGreaterThan(100)
+    expect(fit.height).toBeGreaterThan(150)
+    await expect(dialog.getByRole('button', { name: 'Tải ảnh PNG', exact: true })).toBeInViewport()
+    const downloadPromise = page.waitForEvent('download')
+    await dialog.getByRole('button', { name: 'Tải ảnh PNG', exact: true }).click()
+    const download = await downloadPromise
+    expect(await download.failure()).toBeNull()
+    expect(download.suggestedFilename()).toBe('Digimar66D-photobooth.png')
   })
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/#/photobooth')
-  await uploadPhotos(page)
-  await page.getByRole('button', { name: 'Lưu ảnh vào máy', exact: true }).click()
-  const dialog = page.getByRole('dialog')
-  await expect(dialog).toBeVisible()
-  const image = dialog.locator('img')
-  await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBe(1080)
-  await expect(dialog).toContainText(/giữ|lưu ảnh/i)
-  const downloadPromise = page.waitForEvent('download')
-  await dialog.getByRole('button', { name: 'Tải ảnh PNG', exact: true }).click()
-  const download = await downloadPromise
-  expect(await download.failure()).toBeNull()
-  expect(download.suggestedFilename()).toBe('Digimar66D-photobooth.png')
-})
+}
 
 for (const width of [320, 390, 1440]) {
   test(`keeps the three-photo frame and controls usable at ${width}px`, async ({ page }, testInfo) => {
@@ -300,6 +326,12 @@ for (const width of [320, 390, 1440]) {
     const bounds = await preview.boundingBox()
     expect(bounds!.x).toBeGreaterThanOrEqual(-1)
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1)
+    const dimensions = await preview.evaluate(element => {
+      const image = element as HTMLImageElement
+      return { width: image.naturalWidth, height: image.naturalHeight, objectFit: getComputedStyle(image).objectFit }
+    })
+    expect(dimensions).toEqual({ width: 1080, height: 1920, objectFit: 'contain' })
+    expect(bounds!.height).toBeLessThan(900 - 100)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true)
     await page.getByRole('button', { name: 'Lưu ảnh vào máy', exact: true }).scrollIntoViewIfNeeded()
     await expect(page.getByRole('button', { name: 'Lưu ảnh vào máy', exact: true })).toBeInViewport()

@@ -1,16 +1,16 @@
 export const PHOTOBOOTH_SHOTS = 3;
 
 const WIDTH = 1080;
-const HEIGHT = 2544;
-const PHOTO_X = 106;
-const PHOTO_WIDTH = 868;
+const HEIGHT = 1920;
+const PHOTO_X = 188;
+const PHOTO_WIDTH = 704;
 const PHOTO_HEIGHT = PHOTO_WIDTH * 3 / 4;
-const PHOTO_TOP = 298;
-const PHOTO_STEP = PHOTO_HEIGHT + 48;
+const PHOTO_TOP = 184;
+const PHOTO_STEP = PHOTO_HEIGHT + 36;
 const INK = "#99546f";
 const ROSE = "#c67d9a";
 const CREAM = "#fffaf5";
-const TITLE_FONT = '500 88px "Dancing Script", cursive';
+const TITLE_FONT = '500 104px "Dancing Script", cursive';
 const BODY_FONT = '400 24px "Be Vietnam Pro", sans-serif';
 
 /** The same centre crop is used by the 4:3 camera preview and captured photo. */
@@ -201,7 +201,7 @@ async function loadFonts() {
   // A failed optional font falls back to the canvas font stack, not a blank frame.
   await Promise.allSettled([
     document.fonts.load(TITLE_FONT, "Digimar 66D"),
-    document.fonts.load(BODY_FONT, "giữ lại những khoảnh khắc đáng yêu Một chút dễ thương, thật nhiều kỷ niệm 01 02 03"),
+    document.fonts.load(BODY_FONT, "Một chút dễ thương, thật nhiều kỷ niệm 01 02 03"),
   ]);
   await document.fonts.ready;
 }
@@ -244,19 +244,16 @@ export async function createPhotoboothImage(shots: readonly string[]): Promise<F
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = INK;
   ctx.font = TITLE_FONT;
-  ctx.fillText("Digimar 66D", WIDTH / 2, 135);
-  ctx.font = BODY_FONT;
-  ctx.fillStyle = "#af7d91";
-  ctx.fillText("giữ lại những khoảnh khắc đáng yêu", WIDTH / 2, 194);
-  heart(ctx, WIDTH / 2, 244, 20, true);
+  ctx.fillText("Digimar 66D", WIDTH / 2, 116);
+  heart(ctx, WIDTH / 2, 156, 16, true);
   ctx.strokeStyle = "#dfb4c4";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(350, 242); ctx.lineTo(489, 242);
-  ctx.moveTo(591, 242); ctx.lineTo(730, 242);
+  ctx.moveTo(350, 154); ctx.lineTo(489, 154);
+  ctx.moveTo(591, 154); ctx.lineTo(730, 154);
   ctx.stroke();
-  bow(ctx, 150, 172, 0.83, -0.19);
-  bow(ctx, 925, 172, 0.83, 0.19);
+  bow(ctx, 150, 111, 0.72, -0.19);
+  bow(ctx, 925, 111, 0.72, 0.19);
   sparkle(ctx, 104, 86, 13);
   sparkle(ctx, 974, 96, 17);
 
@@ -286,23 +283,22 @@ export async function createPhotoboothImage(shots: readonly string[]): Promise<F
     ctx.font = '400 17px "Be Vietnam Pro", sans-serif';
     ctx.fillStyle = "#b78198";
     ctx.textAlign = "center";
-    ctx.fillText(`0${index + 1}`, WIDTH / 2, top + PHOTO_HEIGHT + 29);
+    ctx.fillText(`0${index + 1}`, WIDTH / 2, top + PHOTO_HEIGHT + 20);
     heart(ctx, 55, top + 146, 19, index % 2 === 0);
     flower(ctx, WIDTH - 55, top + 305, 18);
     sparkle(ctx, 52, top + 458, 14);
-    heart(ctx, WIDTH - 53, top + 558, 14);
+    heart(ctx, WIDTH - 53, top + PHOTO_HEIGHT - 38, 14);
     if (index === 1) {
       flower(ctx, 55, top + 296, 18);
       sparkle(ctx, WIDTH - 52, top + 108, 14);
     }
   }
 
-  bow(ctx, WIDTH / 2, 2408, 0.48, 0);
   ctx.font = BODY_FONT;
   ctx.fillStyle = INK;
-  ctx.fillText("Một chút dễ thương, thật nhiều kỷ niệm", WIDTH / 2, 2490);
-  flower(ctx, 122, 2453, 21);
-  flower(ctx, WIDTH - 122, 2453, 21);
+  ctx.fillText("Một chút dễ thương, thật nhiều kỷ niệm", WIDTH / 2, 1892);
+  flower(ctx, 122, 1878, 18);
+  flower(ctx, WIDTH - 122, 1878, 18);
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((result) => result ? resolve(result) : reject(new Error("Chưa tạo được ảnh PNG. Cậu thử lại nhé.")), "image/png");

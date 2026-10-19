@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { downloadImage, isMobileDevice, saveImage } from "./saveImage";
+import { downloadImage, downloadVideo, isMobileDevice, saveImage, saveVideo } from "./saveImage";
 
 const file = new File(["image bytes"], "DM66D-card.png", { type: "image/png" });
 
@@ -176,6 +176,54 @@ describe("mobile saving", () => {
       share: vi.fn().mockRejectedValue(new DOMException("Blocked", "NotAllowedError")),
     });
     await expect(saveImage(file)).resolves.toBe("preview");
+  });
+});
+
+describe("video saving", () => {
+  it.each([
+    ["video/mp4", "mp4", "Video MP4"],
+    ["video/webm;codecs=vp8", "webm", "Video WebM"],
+  ])("opens the picker immediately with the actual %s video format", async (mime, extension, description) => {
+    const video = new File(["recorded video"], `Digimar66D-photobooth.${extension}`, { type: mime });
+    const write = vi.fn().mockResolvedValue(undefined);
+    const close = vi.fn().mockResolvedValue(undefined);
+    const picker = vi.fn().mockResolvedValue({ createWritable: vi.fn().mockResolvedValue({ write, close }) });
+    vi.stubGlobal("window", { showSaveFilePicker: picker });
+    const result = saveVideo(video);
+    expect(picker).toHaveBeenCalledExactlyOnceWith({
+      suggestedName: video.name,
+      types: [{ description, accept: { [mime.split(";")[0]]: [`.${extension}`] } }],
+    });
+    await expect(result).resolves.toBe("saved");
+    expect(write).toHaveBeenCalledExactlyOnceWith(video);
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it("shares the prepared video on the original mobile tap", async () => {
+    const video = new File(["recorded video"], "Digimar66D-photobooth.mp4", { type: "video/mp4" });
+    const share = vi.fn().mockResolvedValue(undefined);
+    device({ userAgent: "iPhone", canShare: vi.fn(() => true), share });
+    const result = saveVideo(video);
+    expect(share).toHaveBeenCalledExactlyOnceWith({ files: [video] });
+    await expect(result).resolves.toBe("shared");
+  });
+
+  it("offers preview for unsupported media without selecting a wrong extension", async () => {
+    const picker = vi.fn();
+    vi.stubGlobal("window", { showSaveFilePicker: picker });
+    await expect(saveVideo(new File(["video"], "unknown.avi", { type: "video/avi" }))).resolves.toBe("preview");
+    expect(picker).not.toHaveBeenCalled();
+  });
+
+  it("downloads the prepared video using its original filename", () => {
+    vi.useFakeTimers();
+    const video = new File(["recorded video"], "Digimar66D-photobooth.webm", { type: "video/webm" });
+    const { link, createObjectURL } = mockDownload();
+    downloadVideo(video);
+    expect(createObjectURL).toHaveBeenCalledExactlyOnceWith(video);
+    expect(link.download).toBe(video.name);
+    expect(link.click).toHaveBeenCalledOnce();
+    vi.runAllTimers();
   });
 });
 
