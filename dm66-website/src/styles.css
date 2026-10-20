@@ -692,39 +692,6 @@ h1 em {
 .music-bars i:nth-child(3) {
   animation-delay: -0.5s;
 }
-.music-popover {
-  width: 255px;
-  padding: 22px 21px;
-  background: #fffcfa;
-  border: 1px solid #ead2db;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  box-shadow: 0 8px 40px #7b3f5914;
-}
-.music-popover > button {
-  position: absolute;
-  right: 11px;
-  top: 12px;
-  border: 0;
-  background: transparent;
-  padding: 4px;
-}
-.music-popover > svg {
-  color: var(--rose);
-  margin-bottom: 10px;
-}
-.music-popover strong {
-  display: block;
-  font-size: 11px;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-.music-popover p {
-  font-size: 10px;
-  color: #9b7d8a;
-  line-height: 1.8;
-  margin: 0;
-}
 .heart-burst {
   position: fixed;
   left: 50%;
