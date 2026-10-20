@@ -9,6 +9,7 @@ Lời chúc giữ nguyên cách viết, từ ngữ, lỗi gõ và biểu tượn
 - 11 JPEG từ `tranphuong.zip`, tổng 3,343,826 byte, giữ nguyên từng byte.
 - Ảnh được đánh số theo thứ tự tăng dần của tên file gốc. Ảnh bìa `photo-11.jpg` cho thấy rõ cả hai người; không cắt hoặc chỉnh nội dung ảnh.
 - Mô tả thay thế chỉ đánh số ảnh trong album, không suy đoán sự kiện hoặc ngày chụp.
+- Theo yêu cầu đổi vị trí trang trí, **Kỷ niệm 03** hiển thị `photo-11.jpg` và **Kỷ niệm 11** hiển thị `photo-03.jpg`. Kích thước metadata đi cùng ảnh; nhãn và mô tả thay thế giữ số vị trí hiển thị. Ảnh bìa của thiệp vẫn dùng `photo-11.jpg`; tên tệp và byte ảnh gốc trong bảng dưới không đổi.
 
 | Ảnh xuất bản | Byte | SHA-256 giống file gốc trong ZIP |
 | --- | ---: | --- |

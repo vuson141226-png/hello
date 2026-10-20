@@ -32,10 +32,10 @@
           "height": 1376
         },
         {
-          "src": "/images/anniversary-phuong/photo-03.jpg",
+          "src": "/images/anniversary-phuong/photo-11.jpg",
           "altText": "Ảnh kỷ niệm 03 trong album của Sơn và Phương",
-          "width": 1440,
-          "height": 2560
+          "width": 1284,
+          "height": 1915
         },
         {
           "src": "/images/anniversary-phuong/photo-04.jpg",
@@ -80,10 +80,10 @@
           "height": 1920
         },
         {
-          "src": "/images/anniversary-phuong/photo-11.jpg",
+          "src": "/images/anniversary-phuong/photo-03.jpg",
           "altText": "Ảnh kỷ niệm 11 trong album của Sơn và Phương",
-          "width": 1284,
-          "height": 1915
+          "width": 1440,
+          "height": 2560
         }
       ]
     }

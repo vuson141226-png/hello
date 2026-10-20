@@ -15,7 +15,7 @@ Nguồn: `DM66D-memories-template (1) (2).xlsx` và `anhkyniem.zip` do người 
 - `ky-niem-06`: tên ảnh `cnxkh1.jpg` trong Excel được đối chiếu rõ ràng với `cnxhkh1.jpg` trong ZIP.
 - `ky-niem-13`: ô tên sự kiện trống; dùng **Boy Day 2026** vì mô tả ghi rõ tên này.
 - Theo yêu cầu chỉnh nội dung sau Excel: `ky-niem-05` dùng mô tả ngày 8/3 đầu tiên với bánh có khuôn mặt và banner; `ky-niem-12` dùng mô tả 8/3/2026 với video, banner, sính lễ và bánh. Khi nhập lại workbook, giữ hai mô tả đã cập nhật tại `Du_lieu_ky_niem!E6` và `E13`; tiêu đề và ảnh của hai sự kiện giữ nguyên.
-- `ky-niem-13` (Boy Day 2026): bổ sung khung phát video từ [liên kết Drive người dùng gửi](https://drive.google.com/file/d/1SUmpD8OtBOHTtKHZzJ5_hpC_dC_Q6lEC/view). Cấu hình trong `src/data/memoryVideos.ts` nối theo ID sự kiện, độc lập với dữ liệu Excel được sinh lại. Khung dùng trình phát Drive, có nút mở riêng, không tự phát và được gỡ khi chuyển sự kiện/rời trang.
+- `ky-niem-13` (Boy Day 2026): bổ sung ô video nhỏ cạnh hai ảnh trong cùng cụm trang trí, phía trên mô tả, từ [liên kết Drive người dùng gửi](https://drive.google.com/file/d/1SUmpD8OtBOHTtKHZzJ5_hpC_dC_Q6lEC/view). Cấu hình trong `src/data/memoryVideos.ts` nối theo ID sự kiện, độc lập với dữ liệu Excel được sinh lại. Trình phát mặc định xoay 90° trong khung ngang 16:9, có nút xoay thêm và mở riêng; không tự phát và được gỡ khi chuyển sự kiện/rời trang, kể cả lúc ảnh còn hiệu ứng chuyển. Chiều xoay áp dụng cho trình phát nhúng trên trang, không sửa tệp video gốc trên Drive.
 - Excel không cung cấp thời gian riêng cho các sự kiện; không tự gán ngày hoặc năm.
 
 ## Danh sách sự kiện

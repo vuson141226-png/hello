@@ -152,8 +152,11 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
                   aria-roledescription="trang album"
                   aria-label={`${activeIndex + 1} trên ${memories.length}`}
                 >
+                  <div className={`memories-media-group${currentVideo ? " has-video" : ""}`}>
                   <div className="memories-photo">
                     {currentMemory.images.map((image, index) => <MemoryPhoto key={`${currentMemory.id}-${index}`} {...image} />)}
+                  </div>
+                  {currentVideo && <MemoryVideo key={currentMemory.id} video={currentVideo} />}
                   </div>
                   <figcaption className="memories-caption">
                     <span className="memories-caption-kicker">Kỷ niệm của chúng mình</span>
@@ -164,7 +167,6 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
                 </motion.figure>
               </AnimatePresence>
             </div>
-            {currentVideo && <MemoryVideo key={currentMemory.id} video={currentVideo} />}
           </div>
 
           <div className="memories-controls">
