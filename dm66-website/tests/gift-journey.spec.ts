@@ -634,14 +634,10 @@ test('supports five public routes, legacy memory links, navigation history and m
   await expect(page.locator('.memories-count')).toHaveText('01/15')
   await page.goForward()
   await expect(page.getByLabel('Tên của cậu là gì?')).toBeVisible()
-  const music = page.getByRole('button', { name: 'Bật nhạc', exact: true })
-  await expect(music).toHaveAttribute('aria-pressed', 'false')
-  await expect(page.locator('audio')).toHaveCount(0)
-  await music.click()
-  await expect(page.locator('.music-popover')).toContainText('nhạc sẽ theo cậu qua các trang')
-  await expect(page.getByRole('link', { name: 'Nghe trên YouTube' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=oahyzTO6VFw')
-  await page.getByRole('button', { name: 'Tắt nhạc', exact: true }).click()
-  await expect(page.locator('.music-popover')).toBeHidden()
+  await expect(page.locator('audio.background-music-audio')).toHaveAttribute('src', '/audio/in-love-instrumental.mp3')
+  await expect(page.locator('audio.background-music-audio')).toHaveAttribute('loop', '')
+  await expect(page.locator('.music-toggle')).toHaveText('Một chút nhạc')
+  await expect(page.locator('.music-popover, .music-widget iframe, .music-widget a')).toHaveCount(0)
 })
 
 test('fits every mobile route, swipes memories and keeps errors and personalized card usable', async ({ page }) => {

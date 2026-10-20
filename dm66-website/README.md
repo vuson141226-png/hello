@@ -94,9 +94,11 @@ Nút lưu ảnh/video dùng file đã tạo sẵn: máy tính chọn nơi lưu h
 
 ## Nhạc nền
 
-Nút **Bật nhạc** dùng trình phát YouTube chính thức cho [bài nhạc được cung cấp](https://www.youtube.com/watch?v=oahyzTO6VFw), cấu hình bằng `siteConfig.musicYouTubeId` và `musicUrl`. Trình phát được giữ ngoài các trang chuyển động nên bài nhạc tiếp tục khi chuyển giữa năm mục, tự lặp khi kết thúc. Mở hộp xem video Boy Day tạm dừng nhạc; đóng hộp phát tiếp nếu người xem vẫn bật nhạc. Tắt nhạc hoặc rời trang thì dừng phát.
+Nhạc nền dùng tệp MP3 người dùng cung cấp, lưu tại `public/audio/in-love-instrumental.mp3` và cấu hình bằng `siteConfig.musicSrc`. Trang thử tự phát âm thanh ngay khi mở, tự lặp khi hết bài; một phần tử audio được giữ xuyên suốt khi chuyển giữa năm mục. Nút **Một chút nhạc** chỉ bật/tắt, không mở khung thông tin hay trình phát. Trạng thái nút phản ánh âm thanh đang phát thực tế.
 
-Trình duyệt có thể yêu cầu bấm **Phát nhạc** thêm một lần để cho phép âm thanh. Trạng thái đang phát chỉ hiển thị sau xác nhận từ YouTube; khi mạng hoặc video nhúng bị chặn, hiện thông báo thử lại và liên kết nghe trên YouTube. Kiểm thử tự động dùng API YouTube giả và clip thử riêng để kiểm tra vòng lặp, chuyển trang và phối hợp tạm dừng; không xác nhận khả năng phát video/nhạc từ dịch vụ thật. Mạng môi trường đám mây hiện chặn Google Drive và YouTube nên cần đối chiếu nguồn thật trên Preview từ mạng có thể truy cập hai dịch vụ.
+Trình duyệt có thể chặn âm thanh tự động trước khi người xem tương tác. Khi đó, lần chạm hoặc nhấn phím đầu tiên trong trang sẽ thử phát lại; bấm nút nhạc cũng phát trực tiếp. Nếu người xem đã tắt nhạc, thao tác khác không tự bật lại. Mở hộp video Boy Day tạm dừng nhạc, đóng hộp phát tiếp nếu vẫn bật; rời trang tạm dừng và quay lại chỉ phát tiếp khi người xem chưa tắt. File MP3 đi cùng bản dựng, không phụ thuộc YouTube.
+
+Kiểm thử trình duyệt giải mã và phát tệp MP3 thật, kiểm tra tự lặp, chuyển trang, bật/tắt và phối hợp với hộp video. Các trường hợp trình duyệt chặn tự phát hoặc yêu cầu phát còn chờ dùng mô phỏng riêng để kiểm tra thao tác đầu tiên và chống phát lại ngoài ý muốn.
 
 ## Deploy
 
