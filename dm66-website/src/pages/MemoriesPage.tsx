@@ -3,6 +3,8 @@ import type { KeyboardEvent, TouchEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight, Flower2, Heart, Sparkles } from "lucide-react";
 import { memories } from "../data/memories";
+import { memoryVideos } from "../data/memoryVideos";
+import { MemoryVideo } from "../components/MemoryVideo";
 import "./memories.css";
 
 interface MemoriesPageProps {
@@ -45,6 +47,7 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
   const reducedMotion = useReducedMotion();
   const touchOrigin = useRef<{ x: number; y: number } | null>(null);
   const currentMemory = memories[activeIndex];
+  const currentVideo = currentMemory ? memoryVideos[currentMemory.id] : undefined;
   const hasMultiple = memories.length > 1;
 
   const goToMemory = (index: number, nextDirection: number) => {
@@ -161,6 +164,7 @@ export function MemoriesPage({ onContinue }: MemoriesPageProps) {
                 </motion.figure>
               </AnimatePresence>
             </div>
+            {currentVideo && <MemoryVideo key={currentMemory.id} video={currentVideo} />}
           </div>
 
           <div className="memories-controls">

@@ -36,7 +36,7 @@ Năm trang dùng hash route: `/#/`, `/#/our-memories`, `/#/your-wish`, `/#/lette
 
 ## Album kỷ niệm và hộp thư
 
-`src/data/memories.ts` lưu 15 sự kiện từ Excel cuối được cung cấp, mỗi sự kiện gồm tên đầy đủ, mô tả và hai ảnh. Album dùng hai khung ảnh gọn, hơi nghiêng và chồng nhẹ lên nhau; giữ tỷ lệ ảnh gốc và hỗ trợ mũi tên, chấm, bàn phím, vuốt trên điện thoại. Đủ 30 ảnh thật nằm trong `public/images/memories/`, gồm cặp ảnh Lẩu Phann. Xem [báo cáo nhập dữ liệu](docs/memories-import-report.md).
+`src/data/memories.ts` lưu 15 sự kiện từ Excel cuối được cung cấp, mỗi sự kiện gồm tên đầy đủ, mô tả và hai ảnh. Album dùng hai khung ảnh gọn, hơi nghiêng và chồng nhẹ lên nhau; giữ tỷ lệ ảnh gốc và hỗ trợ mũi tên, chấm, bàn phím, vuốt trên điện thoại. Đủ 30 ảnh thật nằm trong `public/images/memories/`, gồm cặp ảnh Lẩu Phann. Boy Day 2026 có thêm khung video trang trí, nhúng từ liên kết Drive do người dùng cung cấp, với tùy chọn mở video riêng. Video đính kèm được nối theo ID sự kiện trong `src/data/memoryVideos.ts` để giữ khi nhập lại Excel. Xem [báo cáo nhập dữ liệu](docs/memories-import-report.md).
 
 Trang viết thư chỉ báo thành công sau khi API xác nhận đã lưu PostgreSQL. Hướng dẫn tạo bảng, cấu hình Supabase, tài khoản quản trị và quyền truy cập nằm ở [supabase/README.md](supabase/README.md). Copy `.env.example` sang `.env.local` cho local, nhập ba biến server; `npm run dev` chạy cùng bộ API với Vercel. Chưa cấu hình thì API trả `503 NOT_CONFIGURED`, nội dung đang viết được giữ nguyên để thử lại.
 
@@ -58,7 +58,7 @@ Dữ liệu được xuất từ Excel thành `public/data/recipient-wishes.json
 
 File Excel gốc được giữ ngoài repository; bản JSON cần cho website được xuất theo yêu cầu công khai mới. Sheet ghi chú chỉ được dùng làm thông tin tham khảo; không ghi đè các giá trị thực tế trong bảng danh sách và chi tiết. Đã ghép 56 ảnh gốc cho 61 lời chúc; một lời không ghi tên ảnh giữ hình minh họa. Ánh xạ được lưu trong `scripts/recipient-photo-manifest.json` để giữ ảnh khi xuất lại dữ liệu. Đính chính hai tên ảnh của Trần Thu Phương và cách giữ các lời chúc mới khi xuất lại nằm trong hướng dẫn cập nhật dữ liệu. Ảnh ngoài miền cần CORS để xuất PNG.
 
-Thiệp kỷ niệm riêng được lưu tại `public/data/special-recipients.json`, đọc cùng danh sách của lớp khi tra cứu. Hồ sơ có cấu hình `anniversary` mở trực tiếp thiệp một tháng yêu nhau, hiệu ứng tim và 11 ảnh rải xuyên suốt phần mở đầu, lời chúc và phần kết; bấm từng ảnh để xem lớn. Các hồ sơ khác giữ luồng chọn từng lời chúc. 11 ảnh gốc nằm trong `public/images/anniversary-phuong/`. Xem [đối chiếu dữ liệu thiệp kỷ niệm](docs/anniversary-data.md). Khi nhập lại Excel, giữ file bổ sung này và đồng bộ toàn bộ `dist/` sang `prebuilt/`.
+Thiệp kỷ niệm riêng được lưu tại `public/data/special-recipients.json`, đọc cùng danh sách của lớp khi tra cứu. Hồ sơ có cấu hình `anniversary` mở trực tiếp thiệp một tháng yêu nhau, hiệu ứng tim và 11 ảnh trang trí: hai ảnh ở phần mở đầu, chín ảnh chạy dọc hai bên lá thư. Chữ ở giữa liền mạch, có lề ảnh riêng trên cả điện thoại; bấm từng ảnh nhỏ để xem lớn. Các hồ sơ khác giữ luồng chọn từng lời chúc. 11 ảnh gốc nằm trong `public/images/anniversary-phuong/`. Xem [đối chiếu dữ liệu thiệp kỷ niệm](docs/anniversary-data.md). Khi nhập lại Excel, giữ file bổ sung này và đồng bộ toàn bộ `dist/` sang `prebuilt/`.
 
 ## Dữ liệu album kỷ niệm
 

@@ -101,15 +101,22 @@ export function AnniversaryPhotoProvider({ images, children }: { images: Anniver
   );
 }
 
-export function AnniversaryPhotoGroup({ indices, placement }: { indices: number[]; placement: "opening" | "letter" | "closing" }) {
+export function AnniversaryPhotoGroup({ indices, placement }: { indices: number[]; placement: "opening" | "rail-left" | "rail-right" }) {
   const { images, openPhoto } = useContext(PhotoContext);
   const available = indices.filter((index) => images[index]);
   if (!available.length) return null;
   return (
     <div className={`anniversary-photo-group anniversary-photo-group--${placement}`} aria-label="Những khung hình của chúng mình">
-      {available.map((index) => {
+      {available.map((index, position) => {
         const photo = images[index];
-        return <figure className="anniversary-polaroid" key={photo.src} data-photo-number={index + 1}>
+        return <figure
+          className="anniversary-polaroid"
+          key={photo.src}
+          data-photo-number={index + 1}
+          style={placement === "opening" ? undefined : {
+            "--photo-position": `${12 + position * 76 / Math.max(1, available.length - 1)}%`,
+          } as CSSProperties}
+        >
           <span className="anniversary-photo-tape" aria-hidden="true" />
           <button
             type="button"
@@ -125,6 +132,15 @@ export function AnniversaryPhotoGroup({ indices, placement }: { indices: number[
       })}
     </div>
   );
+}
+
+/** The letter stays in the middle; photos follow its edges without splitting its copy. */
+export function AnniversaryLetterScene({ children }: { children: ReactNode }) {
+  return <div className="anniversary-letter-scene">
+    <AnniversaryPhotoGroup indices={[2, 4, 6, 8, 10]} placement="rail-left" />
+    <div className="anniversary-letter-center">{children}</div>
+    <AnniversaryPhotoGroup indices={[3, 5, 7, 9]} placement="rail-right" />
+  </div>;
 }
 
 export function AnniversaryHero({ headingRef, celebrationKey }: AnniversaryHeroProps) {
@@ -189,14 +205,10 @@ function letterSections(text: string) {
 }
 
 export function AnniversaryLetter({ text, replay }: { text: string; replay: number }) {
-  const groups = [[2, 3], [4, 5], [6, 7], [8]];
   return (
     <motion.div key={replay} className="card-letter anniversary-letter" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.18 } } }}>
       {letterSections(text).map((section, index) => (
-        <section className="anniversary-letter-chapter" key={index} aria-label={`Lá thư, phần ${index + 1}`}>
-          <motion.p variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }} transition={{ duration: 0.45 }}>{section}</motion.p>
-          <AnniversaryPhotoGroup indices={groups[index]} placement="letter" />
-        </section>
+        <motion.p key={index} variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }} transition={{ duration: 0.45 }}>{section}</motion.p>
       ))}
     </motion.div>
   );
