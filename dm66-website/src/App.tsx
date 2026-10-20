@@ -33,7 +33,7 @@ import { siteConfig } from "./config";
 import { MemoriesPage } from "./pages/MemoriesPage";
 import { LettersPage } from "./pages/LettersPage";
 import { AdminLettersPage } from "./pages/AdminLettersPage";
-import { AnniversaryHero, AnniversaryLetter, AnniversaryPhotoGroup, AnniversaryPhotoProvider } from "./components/AnniversaryExperience";
+import { AnniversaryHero, AnniversaryLetter, AnniversaryLetterScene, AnniversaryPhotoProvider } from "./components/AnniversaryExperience";
 import { PhotoboothPage } from "./pages/PhotoboothPage";
 
 type Page = "welcome" | "our-girls" | "our-memories" | "your-wish" | "letters-to-boys" | "photobooth" | "admin";
@@ -603,7 +603,9 @@ function WishPage({
           {anniversary && <p className="anniversary-letter-note">
             Một lá thư từ Sơn, dành riêng cho Phương trong ngày 20/10.
           </p>}
-          <GreetingCard girl={recipient} cardRef={cardRef} replay={replay} anniversary={!!anniversary} />
+          {anniversary ? <AnniversaryLetterScene>
+            <GreetingCard girl={recipient} cardRef={cardRef} replay={replay} anniversary />
+          </AnniversaryLetterScene> : <GreetingCard girl={recipient} cardRef={cardRef} replay={replay} />}
           <aside className="card-actions">
             <Bow className="actions-bow" />
             <span className="actions-script">
@@ -687,7 +689,6 @@ function WishPage({
         </div>}
         {anniversary ? <>
           <div className="anniversary-ending">
-            <AnniversaryPhotoGroup indices={[9, 10]} placement="closing" />
             <div className="anniversary-closing">
               <Heart size={25} strokeWidth={1.2} />
               <p>Một tháng đầu tiên, và còn thật nhiều kỷ niệm đang chờ chúng mình.</p>

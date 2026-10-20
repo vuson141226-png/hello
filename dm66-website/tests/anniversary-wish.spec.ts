@@ -61,9 +61,10 @@ test('opens the special celebration immediately and exports the entire anniversa
   const displayedLetter = await page.locator('.card-letter p').allTextContents()
   expect(displayedLetter.join(' ').replace(/\s+/g, ' ').trim()).toBe(letter.join(' ').replace(/\s+/g, ' ').trim())
   await expect(page.locator('.anniversary-opening .anniversary-photo-button')).toHaveCount(2)
-  await expect(page.locator('.anniversary-letter-chapter')).toHaveCount(4)
-  await expect(page.locator('.card-letter .anniversary-photo-button')).toHaveCount(7)
-  await expect(page.locator('.anniversary-ending .anniversary-photo-button')).toHaveCount(2)
+  await expect(page.locator('.anniversary-letter > p')).toHaveCount(4)
+  await expect(page.locator('.card-letter .anniversary-photo-button')).toHaveCount(0)
+  await expect(page.locator('.anniversary-letter-scene .anniversary-photo-button')).toHaveCount(9)
+  await expect(page.locator('.anniversary-ending .anniversary-photo-button')).toHaveCount(0)
   await expect(page.locator('.anniversary-photo-button')).toHaveCount(11)
   await expect(page.locator('.anniversary-hero')).not.toContainText('Sơn')
   await expect(page.locator('.anniversary-names,.anniversary-gallery,.anniversary-photo-wall')).toHaveCount(0)
@@ -151,16 +152,21 @@ for (const width of [320, 390, 1440]) {
       expect(bounds!.x).toBeGreaterThanOrEqual(-1)
       expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1)
     }
-    for (const chapter of await page.locator('.anniversary-letter-chapter').all()) {
-      const textBounds = await chapter.locator(':scope > p').boundingBox()
-      const photoBounds = await chapter.locator('.anniversary-photo-group').boundingBox()
-      if (width <= 760) {
-        expect(photoBounds!.y).toBeGreaterThanOrEqual(textBounds!.y + textBounds!.height)
-      } else {
-        const gap = Math.max(textBounds!.x, photoBounds!.x) - Math.min(textBounds!.x + textBounds!.width, photoBounds!.x + photoBounds!.width)
-        expect(gap).toBeGreaterThan(0)
-        expect(textBounds!.width).toBeGreaterThan(360)
+    await expect(page.locator('.card-letter .anniversary-photo-group,.anniversary-letter-chapter')).toHaveCount(0)
+    const letterBounds = (await page.locator('.card-letter').boundingBox())!
+    expect(letterBounds.width).toBeGreaterThan(width <= 760 ? 150 : 360)
+    for (const rail of await page.locator('.anniversary-letter-scene > .anniversary-photo-group').all()) {
+      const photoBoxes = await rail.locator('.anniversary-photo-button').all()
+      expect(photoBoxes.length).toBeGreaterThanOrEqual(4)
+      for (const photo of photoBoxes) {
+        const photoBounds = (await photo.boundingBox())!
+        const horizontalGap = Math.max(letterBounds.x, photoBounds.x)
+          - Math.min(letterBounds.x + letterBounds.width, photoBounds.x + photoBounds.width)
+        expect(horizontalGap, 'The photo must stay alongside the text, even on a phone').toBeGreaterThan(0)
       }
+      const first = (await photoBoxes[0].boundingBox())!
+      const last = (await photoBoxes[photoBoxes.length - 1].boundingBox())!
+      expect(last.y - first.y, 'Photos decorate the length of the letter').toBeGreaterThan(letterBounds.height * 0.6)
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true)
     await page.screenshot({ path: testInfo.outputPath(`anniversary-${width}.png`), fullPage: true })
