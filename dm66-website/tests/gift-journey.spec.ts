@@ -638,9 +638,10 @@ test('supports five public routes, legacy memory links, navigation history and m
   await expect(music).toHaveAttribute('aria-pressed', 'false')
   await expect(page.locator('audio')).toHaveCount(0)
   await music.click()
-  await expect(page.locator('.music-popover')).toContainText('đang được chuẩn bị')
-  await page.getByRole('button', { name: 'Đóng thông tin nhạc' }).click()
-  await expect(page.locator('.music-popover')).toHaveCount(0)
+  await expect(page.locator('.music-popover')).toContainText('nhạc sẽ theo cậu qua các trang')
+  await expect(page.getByRole('link', { name: 'Nghe trên YouTube' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=oahyzTO6VFw')
+  await page.getByRole('button', { name: 'Tắt nhạc', exact: true }).click()
+  await expect(page.locator('.music-popover')).toBeHidden()
 })
 
 test('fits every mobile route, swipes memories and keeps errors and personalized card usable', async ({ page }) => {
