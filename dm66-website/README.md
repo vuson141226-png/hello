@@ -36,7 +36,7 @@ Năm trang dùng hash route: `/#/`, `/#/our-memories`, `/#/your-wish`, `/#/lette
 
 ## Album kỷ niệm và hộp thư
 
-`src/data/memories.ts` lưu 15 sự kiện từ Excel cuối được cung cấp, mỗi sự kiện gồm tên đầy đủ, mô tả và hai ảnh. Album dùng hai khung ảnh gọn, hơi nghiêng và chồng nhẹ lên nhau; giữ tỷ lệ ảnh gốc và hỗ trợ mũi tên, chấm, bàn phím, vuốt trên điện thoại. Đủ 30 ảnh thật nằm trong `public/images/memories/`, gồm cặp ảnh Lẩu Phann. Boy Day 2026 có thêm ô video nhỏ trong cùng cụm hai ảnh, phía trên mô tả; trình phát Drive mặc định xoay 90° để nằm ngang và có nút xoay thêm, cùng liên kết mở riêng. Video đính kèm được nối theo ID sự kiện trong `src/data/memoryVideos.ts` để giữ khi nhập lại Excel. Xem [báo cáo nhập dữ liệu](docs/memories-import-report.md).
+`src/data/memories.ts` lưu 15 sự kiện từ Excel cuối được cung cấp, mỗi sự kiện gồm tên đầy đủ, mô tả và hai ảnh. Album dùng hai khung ảnh gọn, hơi nghiêng và chồng nhẹ lên nhau; giữ tỷ lệ ảnh gốc và hỗ trợ mũi tên, chấm, bàn phím, vuốt trên điện thoại. Đủ 30 ảnh thật nằm trong `public/images/memories/`, gồm cặp ảnh Lẩu Phann. Boy Day 2026 có thêm ô video nhỏ trong cùng cụm hai ảnh, phía trên mô tả; ô nhỏ chạy một đoạn xem trước tắt tiếng (giây 2–8) từ video gốc. Bấm ô này để mở hộp xem lớn ở giữa màn hình, có nơ, tim và hoa trang trí; trình phát Drive giữ nguyên toàn bộ khung, không xoay hoặc cắt trình phát. Đóng bằng nút ×, phím Escape hoặc bấm nền bên ngoài. Video được dừng khi đóng, đổi sự kiện hoặc rời trang. Nếu Drive không cho trình duyệt tải đoạn xem trước, ô nhỏ dùng ảnh thumbnail của chính video và vẫn mở được hộp xem lớn hoặc liên kết Drive. Video đính kèm được nối theo ID sự kiện trong `src/data/memoryVideos.ts` để giữ khi nhập lại Excel. Xem [báo cáo nhập dữ liệu](docs/memories-import-report.md).
 
 Trang viết thư chỉ báo thành công sau khi API xác nhận đã lưu PostgreSQL. Hướng dẫn tạo bảng, cấu hình Supabase, tài khoản quản trị và quyền truy cập nằm ở [supabase/README.md](supabase/README.md). Copy `.env.example` sang `.env.local` cho local, nhập ba biến server; `npm run dev` chạy cùng bộ API với Vercel. Chưa cấu hình thì API trả `503 NOT_CONFIGURED`, nội dung đang viết được giữ nguyên để thử lại.
 
@@ -92,11 +92,11 @@ Bật **Ghi video cùng lượt chụp** trước khi chụp để lưu thêm vi
 
 Nút lưu ảnh/video dùng file đã tạo sẵn: máy tính chọn nơi lưu hoặc tải file; điện thoại mở bảng chia sẻ nếu hỗ trợ, hoặc mở bản xem trước có nút tải. Trình duyệt quyết định vị trí và quyền lưu. Camera cần HTTPS trên bản triển khai hoặc localhost khi phát triển; kiểm thử dùng luồng video giả, không truy cập camera thật.
 
-## Nhạc nền tùy chọn
+## Nhạc nền
 
-Thêm tệp âm thanh có quyền sử dụng vào `public/audio/background.mp3`, rồi đặt `siteConfig.musicSrc` trong `src/config.ts` thành `/audio/background.mp3`. Giá trị mặc định `null` tắt tính năng nhạc.
+Nút **Bật nhạc** dùng trình phát YouTube chính thức cho [bài nhạc được cung cấp](https://www.youtube.com/watch?v=oahyzTO6VFw), cấu hình bằng `siteConfig.musicYouTubeId` và `musicUrl`. Trình phát được giữ ngoài các trang chuyển động nên bài nhạc tiếp tục khi chuyển giữa năm mục, tự lặp khi kết thúc. Mở hộp xem video Boy Day tạm dừng nhạc; đóng hộp phát tiếp nếu người xem vẫn bật nhạc. Tắt nhạc hoặc rời trang thì dừng phát.
 
-Nhạc chỉ phát sau thao tác bật của người dùng; website không tự phát âm thanh. Kiểm tra cả thao tác bật và tắt trên điện thoại sau khi thêm tệp.
+Trình duyệt có thể yêu cầu bấm **Phát nhạc** thêm một lần để cho phép âm thanh. Trạng thái đang phát chỉ hiển thị sau xác nhận từ YouTube; khi mạng hoặc video nhúng bị chặn, hiện thông báo thử lại và liên kết nghe trên YouTube. Kiểm thử tự động dùng API YouTube giả và clip thử riêng để kiểm tra vòng lặp, chuyển trang và phối hợp tạm dừng; không xác nhận khả năng phát video/nhạc từ dịch vụ thật. Mạng môi trường đám mây hiện chặn Google Drive và YouTube nên cần đối chiếu nguồn thật trên Preview từ mạng có thể truy cập hai dịch vụ.
 
 ## Deploy
 

@@ -15,12 +15,9 @@ import {
   Heart,
   HeartHandshake,
   Mail,
-  Music2,
   RotateCcw,
   Search,
   Sparkles,
-  Volume2,
-  VolumeX,
   X,
 } from "lucide-react";
 import type { Girl } from "./data/girls";
@@ -29,7 +26,7 @@ import type { WishRecipient } from "./lib/recipientLookup";
 import { createCardImage } from "./lib/cardImage";
 import { downloadImage, isMobileDevice, saveImage } from "./lib/saveImage";
 import { Envelope } from "./components/Envelope";
-import { siteConfig } from "./config";
+import { BackgroundMusic } from "./components/BackgroundMusic";
 import { MemoriesPage } from "./pages/MemoriesPage";
 import { LettersPage } from "./pages/LettersPage";
 import { AdminLettersPage } from "./pages/AdminLettersPage";
@@ -862,9 +859,6 @@ export default function App() {
   const [letterSenderName, setLetterSenderName] = useState("");
   const [burst, setBurst] = useState(0);
   const [toast, setToast] = useState("");
-  const [playing, setPlaying] = useState(false);
-  const [audioInfo, setAudioInfo] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
@@ -904,24 +898,6 @@ export default function App() {
     if (toastTimer.current) clearTimeout(toastTimer.current);
     setToast(message);
     toastTimer.current = setTimeout(() => setToast(""), 5500);
-  };
-  const toggleMusic = async () => {
-    if (!siteConfig.musicSrc) {
-      setAudioInfo((value) => !value);
-      return;
-    }
-    if (!audioRef.current) return;
-    if (playing) {
-      audioRef.current.pause();
-      setPlaying(false);
-    } else
-      try {
-        await audioRef.current.play();
-        setPlaying(true);
-      } catch {
-        setPlaying(false);
-        notify("Chưa thể phát nhạc. Hãy kiểm tra tệp âm thanh và thử lại nhé.");
-      }
   };
   return (
     <MotionConfig reducedMotion="user">
@@ -1027,60 +1003,7 @@ export default function App() {
             Một ngày 20/10 thật dịu dàng <span>✧</span>
           </a>
         </footer>
-        <div className="music-widget">
-          <AnimatePresence>
-            {audioInfo && (
-              <motion.div
-                className="music-popover"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <button
-                  onClick={() => setAudioInfo(false)}
-                  aria-label="Đóng thông tin nhạc"
-                >
-                  <X size={14} />
-                </button>
-                <Music2 size={19} />
-                <strong>Một chút nhạc, một chút thơ.</strong>
-                <p>
-                  Bản nhạc của chúng mình đang được chuẩn bị. Cậu vẫn có thể tận
-                  hưởng món quà này nhé.
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <button
-            className={`music-toggle ${playing ? "is-playing" : ""}`}
-            onClick={toggleMusic}
-            aria-label={playing ? "Tắt nhạc" : "Bật nhạc"}
-            aria-pressed={playing}
-            title={playing ? "Tắt nhạc" : "Bật nhạc"}
-          >
-            {playing ? <Volume2 size={17} /> : <VolumeX size={17} />}
-            <span>{playing ? "Nhạc đang bật" : "Một chút nhạc"}</span>
-            {playing && (
-              <span className="music-bars">
-                <i />
-                <i />
-                <i />
-              </span>
-            )}
-          </button>
-        </div>
-        {siteConfig.musicSrc && (
-          <audio
-            ref={audioRef}
-            src={siteConfig.musicSrc}
-            loop
-            preload="none"
-            onError={() => {
-              setPlaying(false);
-              notify("Chưa tìm thấy tệp nhạc. Cậu thử lại sau nhé.");
-            }}
-          />
-        )}
+        <BackgroundMusic />
         <HeartBurst burst={burst} />
         <AnimatePresence>
           {toast && (

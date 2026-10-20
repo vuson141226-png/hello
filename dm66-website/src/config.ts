@@ -1,4 +1,4 @@
-export const siteConfig: { musicSrc: string | null } = {
-  // Add a locally hosted music file you have permission to use, e.g. '/audio/background.mp3'.
-  musicSrc: null,
+export const siteConfig = {
+  musicYouTubeId: "oahyzTO6VFw",
+  musicUrl: "https://www.youtube.com/watch?v=oahyzTO6VFw",
 };
