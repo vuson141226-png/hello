@@ -28,17 +28,7 @@ async function lookup(page: Page, name = fullName, code = studentCode) {
   await page.getByRole('button', { name: 'Nhận lời chúc của mình' }).click()
 }
 
-test.beforeEach(async ({ page }) => {
-  await mockRecipients(page)
-  await page.route('**/data/special-recipients.json', route => route.fulfill({ json: [specialRecipient] }))
-  await page.route('**/test-anniversary/*.svg', route => {
-    const index = photos.findIndex(photo => route.request().url().endsWith(photo.src))
-    const [width, height] = [[800, 1200], [1200, 800], [1000, 1000]][Math.max(0, index) % 3]
-    return route.fulfill({ contentType: 'image/svg+xml', body: `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="#ecd5dd"/><circle cx="${width / 2}" cy="${height / 2}" r="180" fill="#ac597b"/></svg>` })
-  })
-})
-
-test('opens the special celebration immediately and exports the entire anniversary letter', async ({ page }) => {
+async function recordCardText(page: Page) {
   await page.addInitScript(() => {
     Object.defineProperty(window, 'showSaveFilePicker', { configurable: true, value: undefined })
     const paintedText: string[] = []
@@ -50,6 +40,28 @@ test('opens the special celebration immediately and exports the entire anniversa
       return original.call(this, value, x, y, maxWidth)
     }
   })
+}
+
+async function displayedLetterText(page: Page) {
+  return page.locator('.card-letter p').evaluateAll(paragraphs => paragraphs.map(paragraph => {
+    const copy = paragraph.cloneNode(true) as HTMLElement
+    copy.querySelectorAll('[data-card-decoration]').forEach(decoration => decoration.remove())
+    return copy.textContent
+  }).join(' ').replace(/\s+/g, ' ').trim())
+}
+
+test.beforeEach(async ({ page }) => {
+  await mockRecipients(page)
+  await page.route('**/data/special-recipients.json', route => route.fulfill({ json: [specialRecipient] }))
+  await page.route('**/test-anniversary/*.svg', route => {
+    const index = photos.findIndex(photo => route.request().url().endsWith(photo.src))
+    const [width, height] = [[800, 1200], [1200, 800], [1000, 1000]][Math.max(0, index) % 3]
+    return route.fulfill({ contentType: 'image/svg+xml', body: `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="#ecd5dd"/><circle cx="${width / 2}" cy="${height / 2}" r="180" fill="#ac597b"/></svg>` })
+  })
+})
+
+test('opens the special celebration immediately and exports the entire anniversary letter', async ({ page }) => {
+  await recordCardText(page)
   await page.goto('/#/your-wish')
   await lookup(page, '  NGUOI YEU THU ', ' anniversary-test-only ')
   await expect(page.getByRole('heading', { level: 1, name: 'Chúc mừng 1 tháng yêu nhau' })).toBeVisible()
@@ -58,8 +70,7 @@ test('opens the special celebration immediately and exports the entire anniversa
   await expect(page.locator('.card-dear')).toHaveText('Dear Phương,')
   await expect(page.locator('.greeting-card h2')).toHaveText('Chúc mừng 1 tháng yêu nhau!')
   await expect(page.locator('.anniversary-letter-note')).toContainText('20/10')
-  const displayedLetter = await page.locator('.card-letter p').allTextContents()
-  expect(displayedLetter.join(' ').replace(/\s+/g, ' ').trim()).toBe(letter.join(' ').replace(/\s+/g, ' ').trim())
+  expect(await displayedLetterText(page)).toBe(letter.join(' ').replace(/\s+/g, ' ').trim())
   await expect(page.locator('.anniversary-opening .anniversary-photo-button')).toHaveCount(2)
   await expect(page.locator('.anniversary-letter > p')).toHaveCount(4)
   await expect(page.locator('.card-letter .anniversary-photo-button')).toHaveCount(0)
@@ -137,6 +148,7 @@ for (const width of [320, 390, 1440]) {
   test(`keeps all photos readable without cropping or horizontal overflow at ${width}px with reduced motion`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 })
     await page.emulateMedia({ reducedMotion: 'reduce' })
+    if (width === 390) await recordCardText(page)
     await page.goto('/#/your-wish')
     await lookup(page)
     await expect(page.getByRole('heading', { level: 1, name: 'Chúc mừng 1 tháng yêu nhau' })).toBeVisible()
@@ -151,24 +163,72 @@ for (const width of [320, 390, 1440]) {
       const bounds = await image.boundingBox()
       expect(bounds!.x).toBeGreaterThanOrEqual(-1)
       expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1)
+      if (width <= 760) expect(bounds!.width, 'Phone photos must remain large enough to see').toBeGreaterThanOrEqual(90)
     }
-    await expect(page.locator('.card-letter .anniversary-photo-group,.anniversary-letter-chapter')).toHaveCount(0)
+    await expect(page.locator('.anniversary-letter > p')).toHaveCount(4)
+    expect(await displayedLetterText(page)).toBe(letter.join(' ').replace(/\s+/g, ' ').trim())
     const letterBounds = (await page.locator('.card-letter').boundingBox())!
-    expect(letterBounds.width).toBeGreaterThan(width <= 760 ? 150 : 360)
-    for (const rail of await page.locator('.anniversary-letter-scene > .anniversary-photo-group').all()) {
-      const photoBoxes = await rail.locator('.anniversary-photo-button').all()
-      expect(photoBoxes.length).toBeGreaterThanOrEqual(4)
-      for (const photo of photoBoxes) {
-        const photoBounds = (await photo.boundingBox())!
-        const horizontalGap = Math.max(letterBounds.x, photoBounds.x)
-          - Math.min(letterBounds.x + letterBounds.width, photoBounds.x + photoBounds.width)
-        expect(horizontalGap, 'The photo must stay alongside the text, even on a phone').toBeGreaterThan(0)
+    if (width <= 760) {
+      expect(letterBounds.width, 'The letter uses the phone width instead of a narrow center rail').toBeGreaterThanOrEqual(width === 320 ? 240 : 300)
+      await expect(page.locator('.card-letter .anniversary-photo-button')).toHaveCount(9)
+      await expect(page.locator('.anniversary-letter-scene > .anniversary-photo-group')).toHaveCount(0)
+      const overlaps = await page.locator('.anniversary-letter').evaluate(container => {
+        const photoRects = Array.from(container.querySelectorAll('.anniversary-photo-button')).map(photo => photo.getBoundingClientRect())
+        const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT)
+        let node: Node | null
+        let count = 0
+        while ((node = walker.nextNode())) {
+          if (!node.textContent?.trim() || node.parentElement?.closest('.anniversary-photo-group')) continue
+          const range = document.createRange()
+          range.selectNodeContents(node)
+          for (const text of range.getClientRects()) {
+            if (photoRects.some(photo => Math.min(text.right, photo.right) - Math.max(text.left, photo.left) > 1
+              && Math.min(text.bottom, photo.bottom) - Math.max(text.top, photo.top) > 1)) count += 1
+          }
+        }
+        return count
+      })
+      expect(overlaps, 'Floating photos must not cover the letter text').toBe(0)
+    } else {
+      expect(letterBounds.width).toBeGreaterThan(360)
+      await expect(page.locator('.card-letter .anniversary-photo-group')).toHaveCount(0)
+      const rails = page.locator('.anniversary-letter-scene > .anniversary-photo-group')
+      await expect(rails).toHaveCount(2)
+      for (const rail of await rails.all()) {
+        const photoBoxes = await rail.locator('.anniversary-photo-button').all()
+        expect(photoBoxes.length).toBeGreaterThanOrEqual(4)
+        for (const photo of photoBoxes) {
+          const photoBounds = (await photo.boundingBox())!
+          const horizontalGap = Math.max(letterBounds.x, photoBounds.x)
+            - Math.min(letterBounds.x + letterBounds.width, photoBounds.x + photoBounds.width)
+          expect(horizontalGap, 'Desktop photos stay alongside the letter').toBeGreaterThan(0)
+        }
+        const first = (await photoBoxes[0].boundingBox())!
+        const last = (await photoBoxes[photoBoxes.length - 1].boundingBox())!
+        expect(last.y - first.y, 'Photos decorate the length of the letter').toBeGreaterThan(letterBounds.height * 0.6)
       }
-      const first = (await photoBoxes[0].boundingBox())!
-      const last = (await photoBoxes[photoBoxes.length - 1].boundingBox())!
-      expect(last.y - first.y, 'Photos decorate the length of the letter').toBeGreaterThan(letterBounds.height * 0.6)
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true)
     await page.screenshot({ path: testInfo.outputPath(`anniversary-${width}.png`), fullPage: true })
+    if (width === 390) {
+      await expect(page.getByRole('button', { name: 'Lưu thiệp của mình' })).toBeEnabled()
+      const paintedText = await page.evaluate(() => (window as unknown as { anniversaryPaintedText: string[] }).anniversaryPaintedText.join(' '))
+      for (const paragraph of letter) expect(paintedText).toContain(paragraph)
+      expect(paintedText).not.toContain('Kỷ niệm 03')
+      const opener = page.getByRole('button', { name: 'Xem ảnh kỷ niệm 3: Khung hình thử 3', exact: true })
+      await opener.click()
+      await expect(page.getByRole('dialog')).toBeVisible()
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await expect(page.getByRole('dialog')).toBeVisible()
+      await expect(page.locator('.anniversary-photo-button')).toHaveCount(11)
+      await expect(page.locator('.card-letter .anniversary-photo-button')).toHaveCount(0)
+      await page.keyboard.press('Escape')
+      await expect(opener).toBeFocused()
+      await page.setViewportSize({ width: 390, height: 900 })
+      await expect(page.locator('.anniversary-photo-button')).toHaveCount(11)
+      await expect(page.locator('.card-letter .anniversary-photo-button')).toHaveCount(9)
+      expect(await displayedLetterText(page)).toBe(letter.join(' ').replace(/\s+/g, ' ').trim())
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true)
+    }
   })
 }

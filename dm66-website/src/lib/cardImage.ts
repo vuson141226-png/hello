@@ -149,7 +149,11 @@ export async function createCardImage(source: HTMLDivElement, recipientId: strin
     .map((node) => node.textContent).join("").trim();
   const date = content("h2 em");
   const paragraphs = Array.from(source.querySelectorAll(".card-letter p"))
-    .map((paragraph) => paragraph.textContent?.trim() || "");
+    .map((paragraph) => {
+      const copy = paragraph.cloneNode(true) as HTMLElement;
+      copy.querySelectorAll("[data-card-decoration]").forEach((decoration) => decoration.remove());
+      return copy.textContent?.trim() || "";
+    });
   const note = content(".card-placeholder-note");
   const signature = content(".card-signature > span");
   const footer = content(".card-signature > small");

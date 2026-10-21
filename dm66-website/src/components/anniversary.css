@@ -231,7 +231,7 @@
 .anniversary-photo-button:focus-visible .anniversary-photo-enlarge {
   opacity: 1;
 }
-.anniversary-polaroid > figcaption {
+.anniversary-polaroid > .anniversary-photo-caption {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -241,7 +241,7 @@
   font-family: var(--font-script);
   font-size: 18px;
 }
-.anniversary-polaroid > figcaption > svg {
+.anniversary-polaroid > .anniversary-photo-caption > svg {
   color: #cf9aae;
   stroke-width: 1.3;
 }
@@ -321,8 +321,8 @@
 }
 .anniversary-photo-group--rail-left .anniversary-photo-button > img,
 .anniversary-photo-group--rail-right .anniversary-photo-button > img { max-height: 165px; }
-.anniversary-photo-group--rail-left figcaption,
-.anniversary-photo-group--rail-right figcaption { padding: 10px 1px 11px; font-size: 16px; }
+.anniversary-photo-group--rail-left .anniversary-photo-caption,
+.anniversary-photo-group--rail-right .anniversary-photo-caption { padding: 10px 1px 11px; font-size: 16px; }
 .anniversary-page .result-layout {
   max-width: 1160px;
   margin-inline: auto;
@@ -487,23 +487,30 @@
 }
 @media (max-width: 760px) {
   .anniversary-page.page-shell { width: calc(100% - 22px); }
-  .anniversary-letter-scene { grid-template-columns: 60px minmax(0, 1fr) 60px; gap: 9px; }
-  .anniversary-page .greeting-card { padding: 25px 18px 30px; }
+  .anniversary-letter-scene { display: block; }
+  .anniversary-page .greeting-card { padding: 26px 18px 30px; }
   .anniversary-page .card-topline { margin-bottom: 22px; gap: 5px; font-size: 6px; letter-spacing: 0.5px; }
   .anniversary-page .greeting-card h2 { font-size: 32px; }
-  .anniversary-page .card-letter { font-size: 13px; line-height: 2; }
-  .anniversary-photo-group--rail-left .anniversary-polaroid,
-  .anniversary-photo-group--rail-right .anniversary-polaroid { padding: 3px 3px 0; }
-  .anniversary-photo-group--rail-left figcaption,
-  .anniversary-photo-group--rail-right figcaption { justify-content: center; padding: 7px 0 8px; }
-  .anniversary-photo-group--rail-left figcaption > span,
-  .anniversary-photo-group--rail-right figcaption > span,
-  .anniversary-photo-group--rail-left .anniversary-photo-enlarge,
-  .anniversary-photo-group--rail-right .anniversary-photo-enlarge { display: none; }
-  .anniversary-photo-group--rail-left figcaption > svg,
-  .anniversary-photo-group--rail-right figcaption > svg { width: 10px; height: 10px; }
-  .anniversary-photo-group--rail-left .anniversary-photo-button::after,
-  .anniversary-photo-group--rail-right .anniversary-photo-button::after { content: ""; position: absolute; inset: -3px; }
+  .anniversary-page .card-letter { display: flow-root; font-size: 14px; line-height: 1.95; }
+  .anniversary-photo-group--inline-left,
+  .anniversary-photo-group--inline-right {
+    display: block;
+    clear: both;
+    width: clamp(104px, 30vw, 144px);
+    margin-block: 9px 15px;
+    shape-margin: 12px;
+  }
+  .anniversary-photo-group--inline-left { float: left; margin-right: 18px; }
+  .anniversary-photo-group--inline-right { float: right; margin-left: 18px; }
+  .anniversary-photo-group--inline-left .anniversary-polaroid,
+  .anniversary-photo-group--inline-right .anniversary-polaroid { display: block; margin: 0; padding: 5px 5px 0; transform: rotate(-3deg); }
+  .anniversary-photo-group--inline-right .anniversary-polaroid { transform: rotate(3deg); }
+  .anniversary-photo-group--inline-left .anniversary-photo-button > img,
+  .anniversary-photo-group--inline-right .anniversary-photo-button > img { max-height: 180px; }
+  .anniversary-photo-group--inline-left .anniversary-photo-caption,
+  .anniversary-photo-group--inline-right .anniversary-photo-caption { display: flex; justify-content: center; gap: 6px; padding: 7px 0 8px; font-size: 14px; line-height: 1.2; }
+  .anniversary-photo-group--inline-left .anniversary-photo-enlarge,
+  .anniversary-photo-group--inline-right .anniversary-photo-enlarge { display: none; }
 }
 @media (max-width: 600px) {
   .anniversary-opening .anniversary-hero {
@@ -526,11 +533,10 @@
   .anniversary-polaroid { padding: 6px 6px 0; }
   .anniversary-photo-tape { width: 42px; height: 17px; left: calc(50% - 21px); top: -8px; }
   .anniversary-photo-button > img { max-height: 300px; }
-  .anniversary-polaroid > figcaption { padding: 10px 0 12px; gap: 3px; font-size: 15px; }
-  .anniversary-polaroid > figcaption > svg { width: 10px; height: 10px; }
+  .anniversary-polaroid > .anniversary-photo-caption { padding: 10px 0 12px; gap: 3px; font-size: 15px; }
+  .anniversary-polaroid > .anniversary-photo-caption > svg { width: 10px; height: 10px; }
   .anniversary-page .result-layout { gap: 23px; }
   .anniversary-letter-note { max-width: 290px; margin-inline: auto; font-size: 10px; line-height: 1.9; }
-  .anniversary-letter-scene { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; }
   .anniversary-page .greeting-card { padding: 22px 14px 27px; }
   .anniversary-page .card-dear { font-size: 29px; }
   .anniversary-page .greeting-card h2 { margin-block: 8px 18px; font-size: 29px; text-wrap: balance; }
@@ -549,12 +555,11 @@
   .anniversary-opening .anniversary-hero { padding: 32px 20px 25px; }
   .anniversary-hero h1 { font-size: 32px; }
   .anniversary-hero-message { font-size: 10px; }
-  .anniversary-letter-scene { grid-template-columns: 43px minmax(0, 1fr) 43px; gap: 7px; }
   .anniversary-page .greeting-card { padding-inline: 12px; }
   .anniversary-page .greeting-card h2 { font-size: 27px; }
   .anniversary-page .card-dear { font-size: 27px; }
   .anniversary-page .card-signature > span { font-size: 23px; }
-  .anniversary-polaroid > figcaption { font-size: 14px; }
+  .anniversary-polaroid > .anniversary-photo-caption { font-size: 14px; }
 }
 @media (hover: none) {
   .anniversary-photo-enlarge { opacity: 1; padding: 4px 7px; font-size: 8px; }

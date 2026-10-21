@@ -24,3 +24,9 @@ Lời chúc giữ nguyên cách viết, từ ngữ, lỗi gõ và biểu tượn
 | `photo-09.jpg` | 251475 | `4d18f6816d366dcad9cc8e15898a99f4240751a9e119da57acee5c1c96ccaaf9` |
 | `photo-10.jpg` | 325769 | `f6939f0aaf72f46e0db8f22493d565b8e5882d157986a9abaaa786ce7691b0ae` |
 | `photo-11.jpg` | 249155 | `5f74ff91cf06e7c12cd9640805ba583572c4a8e43773e00eab56f9ab6939824c` |
+
+## Bố cục trên điện thoại
+
+Ở màn hình rộng tối đa 760px, chín ảnh quanh thư được đặt so le trái/phải trong dòng chữ; hai ảnh mở đầu giữ riêng. Khung ảnh rộng 104–144px theo màn hình, có viền giấy và góc nghiêng nhẹ, ảnh gốc hiển thị đầy đủ. Lá thư dùng toàn chiều ngang phần giấy, chữ ôm cạnh ảnh rồi trở về hết chiều ngang khi qua ảnh; không xếp ảnh thành hàng chen giữa các đoạn hoặc dồn cuối thư. Máy tính giữ hai cột ảnh quanh phần thư giữa.
+
+Cả hai bố cục dùng chung 11 ảnh và một hộp xem lớn. Khi đổi kích thước màn hình lúc xem ảnh, đóng hộp đưa con trỏ về nút ảnh tương ứng trong bố cục mới. Nhãn ảnh chỉ dùng trang trí giao diện; phần tạo PNG bỏ các khối `data-card-decoration` trước khi lấy chữ để giữ nguyên toàn bộ lời chúc.
