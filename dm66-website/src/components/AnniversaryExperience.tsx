@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { CSSProperties, ReactNode, RefObject } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Flower2, Heart, Sparkles, X } from "lucide-react";
@@ -17,17 +17,28 @@ const celebrationPieces = [
   [93, 61, -18, 0.22], [13, 85, 25, 0.48], [88, 86, -12, 0.5],
 ];
 
+const mobileLayoutQuery = "(max-width: 760px)";
+const subscribeMobileLayout = (listener: () => void) => {
+  const query = window.matchMedia(mobileLayoutQuery);
+  query.addEventListener("change", listener);
+  return () => query.removeEventListener("change", listener);
+};
+const getMobileLayout = () => window.matchMedia(mobileLayoutQuery).matches;
+
 const PhotoContext = createContext<{
   images: AnniversaryPhoto[];
+  mobileLayout: boolean;
   openPhoto: (index: number, opener: HTMLButtonElement) => void;
-}>({ images: [], openPhoto: () => undefined });
+}>({ images: [], mobileLayout: false, openPhoto: () => undefined });
 
 /** One viewer connects the photos scattered throughout the letter. */
 export function AnniversaryPhotoProvider({ images, children }: { images: AnniversaryPhoto[]; children: ReactNode }) {
+  const mobileLayout = useSyncExternalStore(subscribeMobileLayout, getMobileLayout, () => false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
+  const openerIndexRef = useRef<number | null>(null);
   const selectedPhoto = activeIndex === null ? null : images[activeIndex];
   const isOpen = activeIndex !== null;
 
@@ -52,15 +63,19 @@ export function AnniversaryPhotoProvider({ images, children }: { images: Anniver
   const closePhoto = () => dialogRef.current?.close();
   const onDialogClose = () => {
     setActiveIndex(null);
-    openerRef.current?.focus({ preventScroll: true });
+    const opener = openerRef.current?.isConnected
+      ? openerRef.current
+      : document.querySelector<HTMLButtonElement>(`[data-photo-number="${(openerIndexRef.current ?? 0) + 1}"] .anniversary-photo-button`);
+    opener?.focus({ preventScroll: true });
   };
   const movePhoto = (direction: number) => {
     setActiveIndex((index) => index === null ? null : (index + direction + images.length) % images.length);
   };
 
   return (
-    <PhotoContext.Provider value={{ images, openPhoto: (index, opener) => {
+    <PhotoContext.Provider value={{ images, mobileLayout, openPhoto: (index, opener) => {
       openerRef.current = opener;
+      openerIndexRef.current = index;
       setActiveIndex(index);
     } }}>
       {children}
@@ -101,19 +116,23 @@ export function AnniversaryPhotoProvider({ images, children }: { images: Anniver
   );
 }
 
-export function AnniversaryPhotoGroup({ indices, placement }: { indices: number[]; placement: "opening" | "rail-left" | "rail-right" }) {
+export function AnniversaryPhotoGroup({ indices, placement }: { indices: number[]; placement: "opening" | "rail-left" | "rail-right" | "inline-left" | "inline-right" }) {
   const { images, openPhoto } = useContext(PhotoContext);
   const available = indices.filter((index) => images[index]);
   if (!available.length) return null;
+  const inline = placement.startsWith("inline-");
+  const Group = inline ? "span" : "div";
+  const Frame = inline ? "span" : "figure";
+  const Caption = inline ? "span" : "figcaption";
   return (
-    <div className={`anniversary-photo-group anniversary-photo-group--${placement}`} aria-label="Những khung hình của chúng mình">
+    <Group className={`anniversary-photo-group anniversary-photo-group--${placement}`} role="group" aria-label="Những khung hình của chúng mình" data-card-decoration={inline ? "" : undefined}>
       {available.map((index, position) => {
         const photo = images[index];
-        return <figure
+        return <Frame
           className="anniversary-polaroid"
           key={photo.src}
           data-photo-number={index + 1}
-          style={placement === "opening" ? undefined : {
+          style={placement === "opening" || inline ? undefined : {
             "--photo-position": `${12 + position * 76 / Math.max(1, available.length - 1)}%`,
           } as CSSProperties}
         >
@@ -127,19 +146,20 @@ export function AnniversaryPhotoGroup({ indices, placement }: { indices: number[
             <img src={photo.src} alt={photo.altText} width={photo.width} height={photo.height} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
             <span className="anniversary-photo-enlarge" aria-hidden="true">Xem ảnh</span>
           </button>
-          <figcaption><span>Kỷ niệm {String(index + 1).padStart(2, "0")}</span><Heart size={13} aria-hidden="true" /></figcaption>
-        </figure>;
+          <Caption className="anniversary-photo-caption"><span>Kỷ niệm {String(index + 1).padStart(2, "0")}</span><Heart size={13} aria-hidden="true" /></Caption>
+        </Frame>;
       })}
-    </div>
+    </Group>
   );
 }
 
 /** The letter stays in the middle; photos follow its edges without splitting its copy. */
 export function AnniversaryLetterScene({ children }: { children: ReactNode }) {
+  const { mobileLayout } = useContext(PhotoContext);
   return <div className="anniversary-letter-scene">
-    <AnniversaryPhotoGroup indices={[2, 4, 6, 8, 10]} placement="rail-left" />
+    {!mobileLayout && <AnniversaryPhotoGroup indices={[2, 4, 6, 8, 10]} placement="rail-left" />}
     <div className="anniversary-letter-center">{children}</div>
-    <AnniversaryPhotoGroup indices={[3, 5, 7, 9]} placement="rail-right" />
+    {!mobileLayout && <AnniversaryPhotoGroup indices={[3, 5, 7, 9]} placement="rail-right" />}
   </div>;
 }
 
@@ -205,11 +225,33 @@ function letterSections(text: string) {
 }
 
 export function AnniversaryLetter({ text, replay }: { text: string; replay: number }) {
+  const { images, mobileLayout } = useContext(PhotoContext);
+  const sections = letterSections(text);
+  const totalWords = sections.reduce((total, section) => total + section.split(" ").length, 0);
+  const photoCount = mobileLayout ? Math.max(0, images.length - 2) : 0;
+  const anchors = Array.from({ length: photoCount }, (_, position) => ({
+    index: position + 2,
+    word: Math.floor(position * totalWords / photoCount),
+  }));
+  let wordOffset = 0;
+
   return (
     <motion.div key={replay} className="card-letter anniversary-letter" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.18 } } }}>
-      {letterSections(text).map((section, index) => (
-        <motion.p key={index} variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }} transition={{ duration: 0.45 }}>{section}</motion.p>
-      ))}
+      {sections.map((section, index) => {
+        const words = section.split(" ");
+        const decorations = anchors.filter((anchor) => anchor.word >= wordOffset && anchor.word < wordOffset + words.length);
+        const content: ReactNode[] = [];
+        let cursor = 0;
+        decorations.forEach((anchor) => {
+          const position = anchor.word - wordOffset;
+          if (position > cursor) content.push(words.slice(cursor, position).join(" ") + " ");
+          content.push(<AnniversaryPhotoGroup key={anchor.index} indices={[anchor.index]} placement={anchor.index % 2 === 0 ? "inline-left" : "inline-right"} />);
+          cursor = position;
+        });
+        content.push(words.slice(cursor).join(" "));
+        wordOffset += words.length;
+        return <motion.p key={index} variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }} transition={{ duration: 0.45 }}>{content}</motion.p>;
+      })}
     </motion.div>
   );
 }
